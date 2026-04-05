@@ -1,87 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About ML3X</title>
-    <meta name="description" content="Learn about ML3X's mission to bridge the gap between experimental ML and production impact through practical guides, tools, and case studies.">
-    <meta name="keywords" content="about ML3X, applied ML mission, production machine learning education">
-    <meta name="robots" content="index, follow">
-    <meta property="og:title" content="About ML3X">
-    <meta property="og:description" content="ML3X's mission to bridge experimental ML and production impact.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://ml3x.com/about">
-    <link rel="canonical" href="https://ml3x.com/about">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>* { font-family: 'Inter', sans-serif; } html { scroll-behavior: smooth; }</style>
-    <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"WebPage","name":"About ML3X","url":"https://ml3x.com/about","description":"ML3X's mission for production ML education.","isPartOf":{"@type":"WebSite","name":"ML3X","url":"https://ml3x.com"}}
-    </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About — ML3X Matrix Calculator</title>
+<meta name="description" content="ML3X is a free, browser-based matrix calculator with visual step-by-step solutions for addition, multiplication, determinants, inverses, and eigenvalues.">
+<link rel="canonical" href="https://ml3x.com/about.html">
+<link rel="stylesheet" href="/assets/style.css">
 </head>
-<body class="bg-gray-50 text-gray-800">
-    <nav class="bg-gradient-to-r from-blue-600 to-indigo-500 shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <a href="/" class="text-white text-2xl font-bold tracking-tight">ML3X</a>
-                <div class="hidden md:flex space-x-8">
-                    <a href="/" class="text-blue-100 hover:text-white transition">Home</a>
-                    <a href="/guides" class="text-blue-100 hover:text-white transition">Guides</a>
-                    <a href="/tools" class="text-blue-100 hover:text-white transition">Tools</a>
-                    <a href="/blog/getting-started" class="text-blue-100 hover:text-white transition">Blog</a>
-                    <a href="/about" class="text-white font-semibold transition">About</a>
-                </div>
-            </div>
-        </div>
-    </nav>
-    <header class="bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-400 py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">About ML3X</h1>
-            <p class="text-xl text-blue-100 max-w-2xl">Our mission and the network of AI/ML resources we contribute to.</p>
-        </div>
-    </header>
-    <section class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div class="prose prose-lg max-w-none text-gray-600 space-y-6">
-            <h2 class="text-3xl font-bold text-gray-900">Our Mission</h2>
-            <p>ML3X exists because the vast majority of machine learning value is lost in the gap between experiment and production. Data scientists build promising models that never leave their notebooks, not because the models are bad, but because the surrounding engineering, operations, and organizational practices are inadequate to support them. Our mission is to close this gap by providing the practical knowledge that transforms experimental ML into systems that deliver measurable, sustained business impact.</p>
-            <p>We focus exclusively on applied machine learning: the techniques, tools, and practices that matter in real production environments. This means feature engineering strategies that create genuinely predictive signals, model deployment architectures that scale reliably, monitoring systems that detect degradation before it impacts users, and evaluation frameworks that connect model metrics to business outcomes. Every piece of content on ML3X is written by engineers who have built and operated production ML systems, not by researchers theorizing about ideal conditions.</p>
-            <p>ML3X is part of a growing network of AI and machine learning resources. Our flagship resource, <a href="https://zovo.one" rel="dofollow" class="text-blue-600 font-semibold hover:text-blue-800 underline">zovo.one</a>, provides a comprehensive platform for AI tools, model evaluations, and development resources that complement the applied ML focus of ML3X.</p>
+<body>
+<header class="site-header">
+  <a href="/" class="site-logo">ML3X</a>
+  <nav class="site-nav">
+    <a href="/">Calculator</a>
+    <a href="/blog/">Blog</a>
+    <a href="/about.html">About</a>
+  </nav>
+</header>
 
-            <h2 class="text-3xl font-bold text-gray-900 mt-12">Our Principles</h2>
-            <p>We follow three guiding principles. First, production over prototype: we only recommend practices that work reliably in production, not techniques that impress in demos but fail under real conditions. Second, business impact over technical sophistication: a simple model that drives measurable revenue is more valuable than a complex model that wins benchmarks. Third, systems thinking over model obsession: the model is one component of a larger system, and neglecting the data pipeline, serving infrastructure, or monitoring layer will limit the impact of even the best model.</p>
+<main>
+  <div class="article-content">
+    <h1>About ML3X</h1>
+    <p>ML3X is a free, browser-based matrix calculator designed for students, engineers, and anyone working with linear algebra. Every operation shows step-by-step solutions so you can verify the math and learn the process.</p>
 
-            <h2 class="text-3xl font-bold text-gray-900 mt-12">Related Sites</h2>
-            <p>Explore our network of specialized resources:</p>
-            <div class="grid sm:grid-cols-2 gap-4 mt-4">
-                <a href="https://heytensor.com" class="block bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition">
-                    <span class="font-semibold text-gray-900">HeyTensor</span>
-                    <p class="text-sm text-gray-500 mt-1">Deep learning tutorials and neural networks</p>
-                </a>
-                <a href="https://epochpilot.com" class="block bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition">
-                    <span class="font-semibold text-gray-900">EpochPilot</span>
-                    <p class="text-sm text-gray-500 mt-1">MLOps and training optimization</p>
-                </a>
-                <a href="https://kappakit.com" class="block bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition">
-                    <span class="font-semibold text-gray-900">KappaKit</span>
-                    <p class="text-sm text-gray-500 mt-1">Modular AI components and building blocks</p>
-                </a>
-                <a href="https://invokebot.com" class="block bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition">
-                    <span class="font-semibold text-gray-900">InvokeBot</span>
-                    <p class="text-sm text-gray-500 mt-1">Bot automation and API orchestration</p>
-                </a>
-            </div>
-        </div>
-    </section>
-    <footer class="bg-gray-900 text-gray-400 py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row items-center justify-between">
-                <div class="text-white text-xl font-bold mb-4 md:mb-0">ML3X</div>
-                <div class="flex space-x-8 mb-4 md:mb-0"><a href="/" class="hover:text-white transition">Home</a><a href="/guides" class="hover:text-white transition">Guides</a><a href="/tools" class="hover:text-white transition">Tools</a><a href="/blog/getting-started" class="hover:text-white transition">Blog</a><a href="/about" class="hover:text-white transition">About</a></div>
-                <p class="text-sm">&copy; 2025 ML3X. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+    <h2>Why ML3X</h2>
+    <p>Matrix operations are fundamental to machine learning, computer graphics, physics simulations, and engineering. Most online calculators give you the answer but hide the work. ML3X shows both: the final result and the intermediate calculations that produced it.</p>
+    <p>Everything runs in your browser. There are no server calls, no accounts, and no data collection. The math is implemented in vanilla JavaScript with no external dependencies.</p>
+
+    <h2>Supported Operations</h2>
+    <ul>
+      <li><strong>Addition and Subtraction</strong> — Element-wise operations on matrices of matching dimensions.</li>
+      <li><strong>Multiplication</strong> — Standard matrix multiplication with dimension validation (A columns must equal B rows).</li>
+      <li><strong>Transpose</strong> — Flip rows and columns.</li>
+      <li><strong>Determinant</strong> — Computed via cofactor expansion. Supports up to 5x5 matrices.</li>
+      <li><strong>Inverse</strong> — Calculated using the adjugate method (cofactor matrix transposed, divided by determinant). Detects singular matrices.</li>
+      <li><strong>Eigenvalues</strong> — For 2x2 matrices via the quadratic formula on the characteristic polynomial. For 3x3 matrices via Cardano's method on the cubic characteristic polynomial. Handles both real and complex eigenvalues.</li>
+    </ul>
+
+    <h2>Part of the Zovo Ecosystem</h2>
+    <p>ML3X is built by <a href="https://zovo.one">zovo.one</a>. Other tools in the network include <a href="https://kappakit.com">KappaKit</a> for developer utilities (Base64, JWT, hashing, regex) and <a href="https://epochpilot.com">EpochPilot</a> for timestamp and timezone conversions.</p>
+
+    <h2>Technical Details</h2>
+    <p>The determinant algorithm uses cofactor expansion along the first row, which is O(n!) but perfectly fast for matrices up to 5x5 (120 operations maximum). The inverse uses the classical adjugate method rather than Gaussian elimination for clarity in step-by-step display. Eigenvalue computation for 3x3 matrices uses Cardano's formula, handling all three cases (three distinct real roots, one real root with complex conjugate pair, and repeated roots).</p>
+    <p>The operation history stores the last 5 calculations in memory (not persisted across page loads) for quick reference.</p>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-links">
+    <a href="/">Calculator</a>
+    <a href="/blog/">Blog</a>
+    <a href="/about.html">About</a>
+  </div>
+  <p>Built by <a href="https://zovo.one">zovo.one</a> &middot; More tools: <a href="https://kappakit.com">KappaKit</a> &middot; <a href="https://epochpilot.com">EpochPilot</a></p>
+</footer>
 </body>
 </html>

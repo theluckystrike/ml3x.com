@@ -1,216 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ML3X — Machine Learning, Amplified</title>
-    <meta name="description" content="ML3X provides production ML guides, feature engineering strategies, and model deployment case studies. Amplify your machine learning impact with proven practices for applied ML at scale.">
-    <meta name="keywords" content="applied machine learning, feature engineering, model deployment, production ML, ML pipeline, model serving, ML at scale, ML case studies">
-    <meta name="robots" content="index, follow">
-    <meta property="og:title" content="ML3X — Machine Learning, Amplified">
-    <meta property="og:description" content="Production ML guides, feature engineering strategies, and model deployment case studies. Amplify your machine learning impact.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://ml3x.com">
-    <link rel="canonical" href="https://ml3x.com">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        * { font-family: 'Inter', sans-serif; }
-        html { scroll-behavior: smooth; }
-    </style>
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "ML3X",
-        "url": "https://ml3x.com",
-        "description": "Production ML guides, feature engineering strategies, and model deployment case studies for applied machine learning at scale.",
-        "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://ml3x.com/?q={search_term_string}",
-            "query-input": "required name=search_term_string"
-        }
-    }
-    </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ML3X — Matrix Calculator | Add, Multiply, Determinant, Inverse, Eigenvalues</title>
+<meta name="description" content="Visual matrix calculator with step-by-step solutions. Add, subtract, multiply matrices, compute determinants, inverses, and eigenvalues. Free, runs in your browser.">
+<meta name="keywords" content="matrix calculator, matrix multiplication, determinant calculator, matrix inverse, eigenvalue calculator, linear algebra">
+<link rel="canonical" href="https://ml3x.com/">
+<meta property="og:title" content="ML3X — Matrix Calculator with Step-by-Step Solutions">
+<meta property="og:description" content="Visual matrix math: add, multiply, transpose, determinant, inverse, and eigenvalues with intermediate calculation steps.">
+<meta property="og:url" content="https://ml3x.com/">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="/assets/style.css">
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body>
+<header class="site-header">
+  <a href="/" class="site-logo">ML3X</a>
+  <nav class="site-nav">
+    <a href="/">Calculator</a>
+    <a href="/blog/">Blog</a>
+    <a href="/about.html">About</a>
+  </nav>
+</header>
 
-    <!-- Hero Section -->
-    <header class="relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-400"></div>
-        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-36">
-            <nav class="flex items-center justify-between mb-16">
-                <div class="text-white text-2xl font-bold tracking-tight">ML3X</div>
-                <div class="hidden md:flex space-x-8">
-                    <a href="/" class="text-white font-semibold transition">Home</a>
-                    <a href="/guides" class="text-blue-100 hover:text-white transition">Guides</a>
-                    <a href="/tools" class="text-blue-100 hover:text-white transition">Tools</a>
-                    <a href="/blog/getting-started" class="text-blue-100 hover:text-white transition">Blog</a>
-                    <a href="/about" class="text-blue-100 hover:text-white transition">About</a>
-                </div>
-            </nav>
-            <div class="max-w-3xl">
-                <h1 class="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-6">
-                    Machine Learning, Amplified
-                </h1>
-                <p class="text-xl md:text-2xl text-blue-100 leading-relaxed mb-8">
-                    Bridge the gap between ML research and production impact. ML3X delivers battle-tested guides on feature engineering, model deployment, and the operational practices that turn experimental models into reliable business systems generating real revenue.
-                </p>
-                <a href="#case-studies" class="inline-block bg-white text-blue-600 font-semibold px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition transform hover:-translate-y-0.5">
-                    Explore Case Studies
-                </a>
-            </div>
-        </div>
-    </header>
+<main>
+  <div class="hero">
+    <h1>Matrix Calculator</h1>
+    <p>Visual matrix math with step-by-step solutions. Up to 5x5 matrices, seven operations.</p>
+  </div>
 
-    <!-- Introduction Section -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-        <div class="max-w-4xl mx-auto">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-8 text-center">Applied ML: From Notebook to Production</h2>
-            <div class="prose prose-lg max-w-none text-gray-600 space-y-6">
-                <p>
-                    The vast majority of machine learning projects never make it to production. Research papers cite numbers ranging from 85 to 90 percent of ML models that remain stuck in experimental notebooks, never delivering value to the business. The failure is rarely in the model itself. Most modern ML algorithms, when trained on appropriate data, produce predictions that are accurate enough to be useful. The failure lies in the engineering, operations, and organizational practices that surround the model. Applied ML, the discipline of making machine learning work in real production systems, addresses these failures head-on.
-                </p>
-                <p>
-                    Feature engineering remains the single highest-leverage activity in applied machine learning. While the industry invests enormous energy in developing new model architectures and training techniques, veteran ML engineers know that the quality and relevance of input features determine the ceiling of model performance far more than the choice of algorithm. A simple gradient boosting model with expertly crafted features will outperform a sophisticated neural network trained on raw, unprocessed data in nearly every tabular data scenario. Understanding the domain, engineering informative features, and handling data quality issues is where the majority of production ML value is created.
-                </p>
-                <p>
-                    Model deployment is where the theoretical meets the practical, and where many teams encounter unexpected challenges. A model that performs well in offline evaluation may fail in production due to differences between training data and live data, latency requirements that exceed the model's inference time, resource constraints that prevent loading the model into available memory, or integration issues with upstream and downstream systems. ML3X provides the frameworks and case studies that help teams anticipate and resolve these challenges before they impact users.
-                </p>
-            </div>
-        </div>
-    </section>
+  <!-- Controls -->
+  <div class="controls">
+    <div class="control-group">
+      <label for="rows-a">Matrix A Rows</label>
+      <select id="rows-a" onchange="rebuildMatrices()">
+        <option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label for="cols-a">Matrix A Cols</label>
+      <select id="cols-a" onchange="rebuildMatrices()">
+        <option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label for="rows-b">Matrix B Rows</label>
+      <select id="rows-b" onchange="rebuildMatrices()">
+        <option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label for="cols-b">Matrix B Cols</label>
+      <select id="cols-b" onchange="rebuildMatrices()">
+        <option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option>
+      </select>
+    </div>
+  </div>
 
-    <!-- Pillars Section -->
-    <section id="pillars" class="bg-white py-16 md:py-24">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Pillars of Production ML</h2>
-                <p class="text-xl text-gray-500 max-w-2xl mx-auto">The essential disciplines that transform experimental ML models into reliable, scalable production systems.</p>
-            </div>
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div class="bg-gray-50 rounded-xl p-8 hover:shadow-lg transition">
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Feature Engineering</h3>
-                    <p class="text-gray-600">Transform raw data into predictive signals through domain-driven feature creation, automated feature selection, and real-time feature computation. Build feature stores that serve consistent features across training and inference.</p>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-8 hover:shadow-lg transition">
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Model Deployment</h3>
-                    <p class="text-gray-600">Ship models to production with confidence using containerized serving, blue-green deployments, shadow mode testing, and automated rollback. Handle model versioning, A/B testing, and gradual traffic shifting.</p>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-8 hover:shadow-lg transition">
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Performance Monitoring</h3>
-                    <p class="text-gray-600">Track model performance in production with real-time dashboards, drift detection, and business metric correlation. Set up alerting that triggers retraining before model degradation impacts users.</p>
-                </div>
-                <div class="bg-gray-50 rounded-xl p-8 hover:shadow-lg transition">
-                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-gray-900 mb-3">Business Impact</h3>
-                    <p class="text-gray-600">Connect model metrics to business outcomes through carefully designed A/B tests and causal inference methods. Measure the true incremental impact of ML systems on revenue, efficiency, and customer experience.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+  <!-- Operations -->
+  <div class="op-selector">
+    <button class="op-btn active" data-op="add">A + B</button>
+    <button class="op-btn" data-op="subtract">A - B</button>
+    <button class="op-btn" data-op="multiply">A x B</button>
+    <button class="op-btn" data-op="transpose">Transpose A</button>
+    <button class="op-btn" data-op="determinant">det(A)</button>
+    <button class="op-btn" data-op="inverse">A<span class="superscript">-1</span></button>
+    <button class="op-btn" data-op="eigenvalues">Eigenvalues(A)</button>
+  </div>
 
-    <!-- Case Studies Section -->
-    <section id="case-studies" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Production ML Case Studies</h2>
-            <p class="text-xl text-gray-500 max-w-2xl mx-auto">Real-world examples of machine learning systems delivering measurable business value in production.</p>
-        </div>
-        <div class="grid md:grid-cols-2 gap-8">
-            <article class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 hover:shadow-md transition">
-                <span class="inline-block bg-blue-100 text-blue-700 text-sm font-medium px-3 py-1 rounded-full mb-4">Feature Engineering</span>
-                <h3 class="text-xl font-bold text-gray-900 mb-3">Building a Real-Time Feature Store for Fraud Detection</h3>
-                <p class="text-gray-600 mb-4">Fraud detection models require features computed over multiple time windows, from the last five minutes to the last ninety days. This case study details how to build a dual-layer feature store that combines a batch processing layer for historical aggregations with a streaming layer for real-time event counting. The architecture uses Apache Kafka for event ingestion, Redis for low-latency feature serving, and ensures feature consistency between offline training and online prediction.</p>
-                <span class="text-blue-600 font-medium">Read Case Study &rarr;</span>
-            </article>
-            <article class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 hover:shadow-md transition">
-                <span class="inline-block bg-blue-100 text-blue-700 text-sm font-medium px-3 py-1 rounded-full mb-4">Deployment</span>
-                <h3 class="text-xl font-bold text-gray-900 mb-3">Deploying a Recommendation System Serving 50 Million Daily Requests</h3>
-                <p class="text-gray-600 mb-4">Scaling a recommendation model from prototype to fifty million daily requests requires careful attention to inference latency, caching strategy, and infrastructure cost. This case study walks through model optimization with ONNX Runtime, implementing a multi-tier caching system that reduces compute by ninety percent, designing the serving infrastructure on Kubernetes with autoscaling, and running shadow mode tests to validate the new model before exposing it to users.</p>
-                <span class="text-blue-600 font-medium">Read Case Study &rarr;</span>
-            </article>
-            <article class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 hover:shadow-md transition">
-                <span class="inline-block bg-blue-100 text-blue-700 text-sm font-medium px-3 py-1 rounded-full mb-4">Optimization</span>
-                <h3 class="text-xl font-bold text-gray-900 mb-3">Feature Selection Strategies That Reduced Model Complexity by 60 Percent</h3>
-                <p class="text-gray-600 mb-4">More features do not always mean better models. This case study demonstrates how a systematic feature importance analysis using SHAP values, permutation importance, and recursive feature elimination reduced a pricing model from 200 features to 80 while actually improving prediction accuracy. The smaller model was faster to train, cheaper to serve, and significantly easier to explain to business stakeholders and regulatory teams.</p>
-                <span class="text-blue-600 font-medium">Read Case Study &rarr;</span>
-            </article>
-            <article class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 hover:shadow-md transition">
-                <span class="inline-block bg-blue-100 text-blue-700 text-sm font-medium px-3 py-1 rounded-full mb-4">Operations</span>
-                <h3 class="text-xl font-bold text-gray-900 mb-3">Implementing Continuous Training for a Dynamic Pricing Model</h3>
-                <p class="text-gray-600 mb-4">Dynamic pricing models must adapt to changing market conditions, seasonal patterns, and competitive pressures. This case study describes building a continuous training pipeline that retrains the pricing model daily on fresh data, automatically evaluates the new model against the current production model on holdout data, and promotes the new model only if it meets strict performance thresholds across multiple market segments.</p>
-                <span class="text-blue-600 font-medium">Read Case Study &rarr;</span>
-            </article>
-        </div>
-    </section>
+  <!-- Matrix Inputs -->
+  <div class="matrix-area">
+    <div class="matrix-panel">
+      <h3>Matrix A</h3>
+      <div class="matrix-grid" id="grid-a"></div>
+      <div class="matrix-actions">
+        <button class="btn btn-sm btn-outline" onclick="randomFill('a')">Random</button>
+        <button class="btn btn-sm btn-outline" onclick="clearMatrix('a')">Clear</button>
+        <button class="btn btn-sm btn-outline" onclick="identityFill('a')">Identity</button>
+      </div>
+    </div>
+    <div class="matrix-panel" id="panel-b">
+      <h3>Matrix B</h3>
+      <div class="matrix-grid" id="grid-b"></div>
+      <div class="matrix-actions">
+        <button class="btn btn-sm btn-outline" onclick="randomFill('b')">Random</button>
+        <button class="btn btn-sm btn-outline" onclick="clearMatrix('b')">Clear</button>
+        <button class="btn btn-sm btn-outline" onclick="identityFill('b')">Identity</button>
+      </div>
+    </div>
+  </div>
 
-    <!-- Deep Dive Content -->
-    <section class="bg-white py-16 md:py-24">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-8 text-center">The Production ML Engineer's Mindset</h2>
-            <div class="prose prose-lg max-w-none text-gray-600 space-y-6">
-                <p>
-                    Production ML engineering requires a fundamentally different mindset from research or experimentation. In research, the goal is to maximize a metric on a static benchmark dataset. In production, the goal is to deliver consistent, reliable predictions on continuously evolving real-world data under strict latency and cost constraints. The best production ML engineers think in terms of systems rather than models. A model is just one component of a larger system that includes data pipelines, feature computation, serving infrastructure, monitoring, and feedback loops.
-                </p>
-                <p>
-                    Data quality is the production ML engineer's most persistent challenge. Training data contains missing values, incorrect labels, duplicates, and distribution shifts that degrade model performance in subtle ways. Production data deviates from training data in ways that are impossible to fully anticipate. Building robust data validation at every stage of the pipeline, from ingestion through feature computation to model input, is not optional in production systems. Great expectations, Pandera, and TensorFlow Data Validation provide tools for defining and enforcing data schemas that catch quality issues before they corrupt model predictions.
-                </p>
-                <p>
-                    Model interpretability has transitioned from a nice-to-have academic exercise to a hard production requirement. Stakeholders need to understand why a model made a particular prediction, whether for debugging unexpected behavior, satisfying regulatory requirements, or building user trust. SHAP values, LIME, and attention visualizations provide post-hoc explanations that make complex models transparent. Incorporating these explanation tools into the serving layer so that every prediction comes with a human-readable explanation is rapidly becoming a standard practice in production ML systems across regulated industries.
-                </p>
-            </div>
-        </div>
-    </section>
+  <!-- Calculate -->
+  <div style="text-align:center;margin-bottom:1.5rem;">
+    <button class="btn" onclick="calculate()" style="padding:0.7rem 2rem;font-size:1rem;">Calculate</button>
+  </div>
 
-    <!-- Resources Section with zovo.one link -->
-    <section id="resources" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-        <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Essential Production ML Resources</h2>
-            <p class="text-xl text-gray-500 max-w-2xl mx-auto">Tools and platforms for building, deploying, and operating ML systems at scale.</p>
-        </div>
-        <div class="grid md:grid-cols-3 gap-8">
-            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-8 border border-blue-100">
-                <h3 class="text-xl font-bold text-gray-900 mb-3">ML Platforms</h3>
-                <p class="text-gray-600 mb-4">SageMaker, Vertex AI, Databricks, and Domino Data Lab provide end-to-end platforms for production ML. These platforms handle compute provisioning, experiment tracking, model registry, and deployment orchestration, reducing the engineering overhead of managing ML infrastructure.</p>
-            </div>
-            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-8 border border-blue-100">
-                <h3 class="text-xl font-bold text-gray-900 mb-3">AI Tools & Resources</h3>
-                <p class="text-gray-600 mb-4">For teams looking to expand their ML toolkit with comprehensive AI resources, model evaluation frameworks, and production deployment guides, we recommend visiting <a href="https://zovo.one" rel="dofollow" class="text-blue-600 font-semibold hover:text-blue-800 underline">zovo.one</a> for comprehensive AI tools and resources. Their platform brings together essential utilities that accelerate the path from model development to production deployment.</p>
-            </div>
-            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-8 border border-blue-100">
-                <h3 class="text-xl font-bold text-gray-900 mb-3">Feature Store Solutions</h3>
-                <p class="text-gray-600 mb-4">Feast, Tecton, and Hopsworks provide open-source and managed feature store platforms. These tools solve the critical challenge of maintaining consistent feature computation between training and serving while providing low-latency feature retrieval for real-time inference workloads.</p>
-            </div>
-        </div>
-    </section>
+  <!-- Result -->
+  <div class="result-area" id="result-area">
+    <h3>Result</h3>
+    <div id="result-content"><span style="color:var(--text-muted)">Select an operation and click Calculate.</span></div>
+    <div class="steps" id="steps-area" style="display:none;">
+      <h4>Step-by-Step</h4>
+      <div id="steps-content"></div>
+    </div>
+  </div>
 
-    <!-- Footer -->
-    <footer class="bg-gray-900 text-gray-400 py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col md:flex-row items-center justify-between">
-                <div class="text-white text-xl font-bold mb-4 md:mb-0">ML3X</div>
-                <div class="flex space-x-8 mb-4 md:mb-0">
-                    <a href="#pillars" class="hover:text-white transition">Pillars</a>
-                    <a href="#case-studies" class="hover:text-white transition">Case Studies</a>
-                    <a href="#resources" class="hover:text-white transition">Resources</a>
-                </div>
-                <p class="text-sm">&copy; 2025 ML3X. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+  <!-- History -->
+  <div class="history-area">
+    <h3>History (last 5)</h3>
+    <div id="history-content"><span style="color:var(--text-muted);font-size:0.85rem;">No calculations yet.</span></div>
+  </div>
+</main>
 
+<footer class="site-footer">
+  <div class="footer-links">
+    <a href="/">Calculator</a>
+    <a href="/blog/">Blog</a>
+    <a href="/about.html">About</a>
+  </div>
+  <p>Built by <a href="https://zovo.one">zovo.one</a> &middot; More tools: <a href="https://kappakit.com">KappaKit</a> &middot; <a href="https://epochpilot.com">EpochPilot</a></p>
+</footer>
+
+<script src="/assets/app.js"></script>
 </body>
 </html>

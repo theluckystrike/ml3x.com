@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linear Algebra Operations Every ML Engineer Should Know — ML3X</title>
+<meta name="description" content="A practical reference for essential linear algebra operations in production ML: matrix multiplication, decomposition, eigenvalues, SVD, norms, and their real-world applications.">
+<link rel="canonical" href="https://ml3x.com/blog/post-2.html">
+<meta property="og:title" content="Linear Algebra Operations Every ML Engineer Should Know">
+<meta property="og:type" content="article">
+<link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+<header class="site-header">
+  <a href="/" class="site-logo">ML3X</a>
+  <nav class="site-nav">
+    <a href="/">Calculator</a>
+    <a href="/blog/">Blog</a>
+    <a href="/about.html">About</a>
+  </nav>
+</header>
+
+<main>
+  <article class="article-content">
+    <h1>Linear Algebra Operations Every ML Engineer Should Know</h1>
+    <div class="blog-meta">March 10, 2025 &middot; 12 min read</div>
+
+    <p>Machine learning is applied linear algebra. This is not a metaphor. When you define a neural network layer, you are specifying a matrix multiplication. When you compute a loss gradient, you are performing a matrix transpose and multiply. When you reduce dimensions with PCA, you are computing an eigendecomposition.</p>
+
+    <p>This post is a practical reference — not a textbook chapter. For each operation, we cover what it does, where it appears in ML, and the implementation details that matter in production.</p>
+
+    <h2>1. Matrix Multiplication</h2>
+
+    <p>The single most important operation in ML. If you understand nothing else, understand this.</p>
+
+    <pre><code># The rule: (m, n) @ (n, p) → (m, p)
+# Inner dimensions must match. Result has outer dimensions.
+
+import numpy as np
+A = np.array([[1, 2], [3, 4]])      # (2, 2)
+B = np.array([[5, 6], [7, 8]])      # (2, 2)
+C = A @ B                            # (2, 2)
+# C = [[1*5+2*7, 1*6+2*8],
+#      [3*5+4*7, 3*6+4*8]]
+# C = [[19, 22],
+#      [43, 50]]</code></pre>
+
+    <h3>Where it appears</h3>
+    <ul>
+      <li>Every dense/linear layer: <code>y = Wx + b</code></li>
+      <li>Attention mechanisms: <code>QK^T</code> and <code>softmax(scores) @ V</code></li>
+      <li>Convolutions (implemented as matrix multiplication via im2col)</li>
+      <li>Batch normalization (element-wise, but the statistics computation uses matmul)</li>
+    </ul>
+
+    <h3>Production considerations</h3>
+    <p>Matrix multiplication is O(n^3) for square matrices, but hardware (GPUs, TPUs) is specifically designed to parallelize it. NVIDIA's tensor cores perform 4x4 matmul in a single clock cycle. The practical bottleneck is usually memory bandwidth (moving data to/from compute units), not arithmetic throughput.</p>
+
+    <p>For small matrices (under 5x5), you can verify your multiplication by hand or with our <a href="https://ml3x.com/">matrix calculator</a> before scaling up.</p>
+
+    <h2>2. Transpose</h2>
+
+    <p>Swaps rows and columns. Turns (m, n) into (n, m).</p>
+
+    <pre><code>A = np.array([[1, 2, 3],
+              [4, 5, 6]])      # (2, 3)
+A_T = A.T                      # (3, 2)
+# [[1, 4],
+#  [2, 5],
+#  [3, 6]]</code></pre>
+
+    <h3>Where it appears</h3>
+    <ul>
+      <li>Gradient computation: <code>dW = X^T @ dL/dY</code></li>
+      <li>Covariance matrix: <code>Sigma = X^T @ X / (n-1)</code></li>
+      <li>Normal equation: <code>beta = (X^T X)^(-1) X^T y</code></li>
+      <li>Symmetric matrices: <code>A = A^T</code> (covariance matrices are always symmetric)</li>
+    </ul>
+
+    <p>Key property: <code>(AB)^T = B^T A^T</code>. The transpose of a product reverses the order. This rule appears constantly in gradient derivations.</p>
+
+    <h2>3. Determinant</h2>
+
+    <p>A scalar value that encodes several properties of a square matrix at once.</p>
+
+    <pre><code># 2x2 determinant
+A = np.array([[a, b], [c, d]])
+det_A = a*d - b*c
+
+# For any size
+det_A = np.linalg.det(A)</code></pre>
+
+    <h3>Where it appears</h3>
+    <ul>
+      <li>Checking if a matrix is invertible (<code>det != 0</code>)</li>
+      <li>Gaussian distributions: the normalization constant includes <code>|Sigma|^(-1/2)</code></li>
+      <li>Volume scaling: determinant measures how a transformation changes volume</li>
+      <li>Change of variables in probability: Jacobian determinant</li>
+    </ul>
+
+    <h3>Practical note</h3>
+    <p>In production, you rarely compute determinants directly. Instead, you use decompositions (LU, Cholesky) and compute the determinant as a product of diagonal elements. For log-determinants (common in Gaussian models), this avoids numerical overflow.</p>
+
+    <h2>4. Matrix Inverse</h2>
+
+    <p>The matrix <code>A^(-1)</code> such that <code>A @ A^(-1) = I</code>.</p>
+
+    <pre><code># 2x2 inverse formula
+A = np.array([[a, b], [c, d]])
+A_inv = (1/(a*d - b*c)) * np.array([[d, -b], [-c, a]])
+
+# General inverse
+A_inv = np.linalg.inv(A)
+
+# Better: solve the system directly
+x = np.linalg.solve(A, b)  # Equivalent to x = A_inv @ b but faster and more stable</code></pre>
+
+    <h3>Where it appears</h3>
+    <ul>
+      <li>Ordinary Least Squares: <code>beta = (X^T X)^(-1) X^T y</code></li>
+      <li>Gaussian processes: inverting the kernel matrix</li>
+      <li>Kalman filter: inverting the innovation covariance</li>
+      <li>Newton's method: <code>x_{n+1} = x_n - H^(-1) @ gradient</code></li>
+    </ul>
+
+    <h3>Production rule</h3>
+    <p>Never call <code>np.linalg.inv()</code> in production code. Use <code>np.linalg.solve()</code> or a decomposition. Direct inversion is O(n^3) and numerically unstable for ill-conditioned matrices. Regularization (<code>A + lambda*I</code>) improves conditioning.</p>
+
+    <h2>5. Eigendecomposition</h2>
+
+    <p>Decomposes a square matrix into <code>A = Q * Lambda * Q^(-1)</code>, where Lambda is a diagonal matrix of eigenvalues and Q contains the eigenvectors.</p>
+
+    <pre><code>eigenvalues, eigenvectors = np.linalg.eig(A)
+
+# For symmetric matrices (covariance, Gram), use eigh (faster, more stable)
+eigenvalues, eigenvectors = np.linalg.eigh(A)</code></pre>
+
+    <h3>Where it appears</h3>
+    <ul>
+      <li><strong>PCA</strong>: Eigenvectors of the covariance matrix are the principal components</li>
+      <li><strong>Spectral clustering</strong>: Eigenvectors of the graph Laplacian</li>
+      <li><strong>Google PageRank</strong>: Dominant eigenvector of the link matrix</li>
+      <li><strong>Stability analysis</strong>: Eigenvalues of the Hessian determine optimization landscape</li>
+      <li><strong>Matrix powers</strong>: <code>A^n = Q * Lambda^n * Q^(-1)</code> (efficient for large n)</li>
+    </ul>
+
+    <pre><code># PCA implementation
+X_centered = X - X.mean(axis=0)
+cov = X_centered.T @ X_centered / (len(X) - 1)
+eigenvalues, eigenvectors = np.linalg.eigh(cov)
+
+# Sort descending
+idx = np.argsort(eigenvalues)[::-1]
+components = eigenvectors[:, idx[:k]]  # Top k components
+X_reduced = X_centered @ components</code></pre>
+
+    <h2>6. Singular Value Decomposition (SVD)</h2>
+
+    <p>The most powerful decomposition in numerical linear algebra. Works on any matrix (not just square).</p>
+
+    <pre><code>U, S, Vt = np.linalg.svd(X)
+# U: (m, m) left singular vectors
+# S: (min(m,n),) singular values
+# Vt: (n, n) right singular vectors (transposed)
+# X ≈ U[:, :k] @ diag(S[:k]) @ Vt[:k, :]  (rank-k approximation)</code></pre>
+
+    <h3>Where it appears</h3>
+    <ul>
+      <li><strong>PCA</strong>: SVD of the data matrix directly (more numerically stable than eigendecomposition of covariance)</li>
+      <li><strong>Recommender systems</strong>: Matrix factorization via truncated SVD</li>
+      <li><strong>Image compression</strong>: Keep top-k singular values</li>
+      <li><strong>Pseudoinverse</strong>: <code>A+ = V @ diag(1/S) @ U^T</code></li>
+      <li><strong>Solving least squares</strong>: <code>np.linalg.lstsq</code> uses SVD internally</li>
+      <li><strong>Low-rank approximation</strong>: LoRA (Low-Rank Adaptation) for fine-tuning large language models</li>
+    </ul>
+
+    <pre><code># Image compression example
+from PIL import Image
+img = np.array(Image.open('photo.jpg').convert('L'))  # Grayscale
+
+U, S, Vt = np.linalg.svd(img, full_matrices=False)
+
+# Keep top 50 singular values (out of e.g. 1000)
+k = 50
+compressed = U[:, :k] @ np.diag(S[:k]) @ Vt[:k, :]
+
+# Original: m*n values. Compressed: m*k + k + k*n values.
+# For 1000x1000 image, k=50: 100,050 vs 1,000,000 (10x compression)</code></pre>
+
+    <h2>7. Norms</h2>
+
+    <p>Norms measure the "size" of vectors and matrices. Different norms have different properties and ML applications.</p>
+
+    <pre><code># Vector norms
+L1 = np.sum(np.abs(x))           # Manhattan distance, promotes sparsity
+L2 = np.sqrt(np.sum(x**2))       # Euclidean distance
+Linf = np.max(np.abs(x))         # Maximum absolute value
+
+# Matrix norms
+Frobenius = np.sqrt(np.sum(A**2))  # Element-wise L2
+spectral = np.max(np.linalg.svd(A, compute_uv=False))  # Largest singular value</code></pre>
+
+    <h3>ML applications</h3>
+    <ul>
+      <li><strong>L2 regularization</strong> (Ridge/weight decay): <code>loss + lambda * ||W||_2^2</code></li>
+      <li><strong>L1 regularization</strong> (Lasso): <code>loss + lambda * ||W||_1</code> (produces sparse weights)</li>
+      <li><strong>Gradient clipping</strong>: Rescale gradient if <code>||g||_2 > threshold</code></li>
+      <li><strong>Batch normalization</strong>: Normalizes by L2 norm of feature statistics</li>
+      <li><strong>Cosine similarity</strong>: <code>cos(a,b) = (a . b) / (||a||_2 * ||b||_2)</code></li>
+    </ul>
+
+    <h2>8. Hadamard (Element-wise) Product</h2>
+
+    <p>Not a "standard" linear algebra operation, but ubiquitous in ML. Multiply corresponding elements.</p>
+
+    <pre><code>C = A * B  # Element-wise in numpy (NOT matrix multiplication)
+# C[i,j] = A[i,j] * B[i,j]</code></pre>
+
+    <h3>Where it appears</h3>
+    <ul>
+      <li><strong>Attention masking</strong>: Zero out positions by multiplying with a 0/1 mask</li>
+      <li><strong>Gating mechanisms</strong>: LSTM gates multiply element-wise with cell state</li>
+      <li><strong>Feature interactions</strong>: Element-wise products of embeddings</li>
+      <li><strong>Dropout</strong>: Element-wise multiplication with random binary mask</li>
+    </ul>
+
+    <h2>9. Cholesky Decomposition</h2>
+
+    <p>For symmetric positive definite matrices (like covariance matrices), <code>A = L @ L^T</code> where L is lower triangular.</p>
+
+    <pre><code>L = np.linalg.cholesky(A)
+# Solve Ax = b efficiently:
+# 1. Solve Ly = b (forward substitution)
+# 2. Solve L^T x = y (backward substitution)</code></pre>
+
+    <h3>Where it appears</h3>
+    <ul>
+      <li>Gaussian process inference (inverting kernel matrices efficiently)</li>
+      <li>Sampling from multivariate Gaussians: <code>samples = L @ z + mean</code> where <code>z ~ N(0, I)</code></li>
+      <li>Log-determinant computation: <code>log|A| = 2 * sum(log(diag(L)))</code></li>
+    </ul>
+
+    <p>Cholesky is twice as fast as general LU decomposition and is numerically very stable for the matrices that appear in ML (which are usually symmetric positive semi-definite after regularization). Research platforms like <a href="https://heytensor.com">HeyTensor</a> and model management tools discussed at <a href="https://zovo.one">Zovo</a> rely on these decompositions for efficient computation at scale.</p>
+
+    <h2>10. Matrix Rank and Condition Number</h2>
+
+    <p>The rank tells you how many linearly independent rows (or columns) a matrix has. The condition number tells you how numerically stable operations on that matrix will be.</p>
+
+    <pre><code>rank = np.linalg.matrix_rank(A)
+cond = np.linalg.cond(A)
+
+# High condition number = numerically unstable
+# Rule of thumb: if cond > 1/machine_epsilon, expect problems
+# For float64: machine_epsilon ≈ 2.2e-16, so cond > ~1e16 is bad</code></pre>
+
+    <h3>ML implications</h3>
+    <ul>
+      <li>Rank-deficient feature matrices indicate multicollinearity (redundant features)</li>
+      <li>High condition number explains training instability and exploding gradients</li>
+      <li>Low-rank approximation (SVD truncation, LoRA) is effective when the data is inherently low-rank</li>
+    </ul>
+
+    <h2>Putting It All Together</h2>
+
+    <p>Here is a mental model for how these operations connect in a typical ML pipeline:</p>
+
+    <pre><code># Data preparation
+X = load_data()                           # Matrix representation
+X = X - X.mean(axis=0)                    # Centering (vector subtraction)
+X = X / X.std(axis=0)                     # Scaling (element-wise division)
+
+# Dimensionality reduction (Eigendecomposition or SVD)
+U, S, Vt = np.linalg.svd(X, full_matrices=False)
+X_reduced = X @ Vt[:k].T                  # Matrix multiplication
+
+# Model (Linear regression via normal equation)
+beta = np.linalg.solve(X.T @ X + lambda*I, X.T @ y)  # Inverse + matmul
+
+# Neural network (forward pass)
+h1 = relu(X @ W1 + b1)                    # Matmul + element-wise
+h2 = relu(h1 @ W2 + b2)                   # Matmul + element-wise
+output = h2 @ W3 + b3                     # Matmul
+
+# Gradient (backward pass)
+dW3 = h2.T @ d_output                     # Transpose + matmul
+dW2 = h1.T @ (d_h2 * relu_grad(h2))       # Transpose + Hadamard + matmul</code></pre>
+
+    <p>Every line is a matrix operation. The entire ML pipeline — from raw data to trained model — is a sequence of multiplications, transpositions, decompositions, and element-wise operations. Master these ten operations, and you have the tools to understand any ML paper, debug any dimension mismatch, and optimize any computational bottleneck.</p>
+  </article>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-links">
+    <a href="/">Calculator</a>
+    <a href="/blog/">Blog</a>
+    <a href="/about.html">About</a>
+  </div>
+  <p>Built by <a href="https://zovo.one">zovo.one</a> &middot; More tools: <a href="https://kappakit.com">KappaKit</a> &middot; <a href="https://epochpilot.com">EpochPilot</a></p>
+</footer>
+</body>
+</html>
