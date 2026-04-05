@@ -173,6 +173,7 @@ function matTranspose(a) {
 // Determinant via cofactor expansion (recursive, bounded to 5x5)
 function matDet(m) {
   var n = m.length;
+  if (n > 7) return NaN;
   if (n === 1) return m[0][0];
   if (n === 2) return m[0][0] * m[1][1] - m[0][1] * m[1][0];
   var det = 0;
@@ -441,14 +442,16 @@ function calculate() {
       historyLabel = 'Transpose ' + rA + 'x' + cA;
     }
     else if (currentOp === 'determinant') {
-      if (rA !== cA) { showError('Matrix must be square for determinant.'); return; }
+    if (rA > 7) { showError('Determinant limited to 7x7 matrices.'); return; }
+    if (rA !== cA) { showError('Matrix must be square for determinant.'); return; }
       var det = matDet(a);
       resultHtml = '<div class="scalar-result">det(A) = ' + fmtNum(det) + '</div>';
       stepsHtml = stepsDet(a);
       historyLabel = 'det(' + rA + 'x' + cA + ') = ' + fmtNum(det);
     }
     else if (currentOp === 'inverse') {
-      if (rA !== cA) { showError('Matrix must be square for inverse.'); return; }
+    if (rA > 7) { showError('Inverse limited to 7x7 matrices.'); return; }
+    if (rA !== cA) { showError('Matrix must be square for inverse.'); return; }
       var inv = matInverse(a);
       if (!inv) { showError('Matrix is singular (determinant = 0). No inverse exists.'); return; }
       resultHtml = renderMatrix(inv);
