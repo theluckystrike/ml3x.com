@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML3X — Tools & Resources</title>
+    <meta name="description" content="Curated tools for production ML including feature stores, model serving platforms, monitoring solutions, and experiment tracking systems.">
+    <meta name="keywords" content="production ML tools, feature store platforms, model serving, ML monitoring tools, experiment tracking">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="ML3X — Tools & Resources">
+    <meta property="og:description" content="Curated tools for production ML systems.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ml3x.com/tools">
+    <link rel="canonical" href="https://ml3x.com/tools">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>* { font-family: 'Inter', sans-serif; } html { scroll-behavior: smooth; }</style>
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"WebPage","name":"ML3X — Tools & Resources","url":"https://ml3x.com/tools","description":"Curated production ML tools and resources.","isPartOf":{"@type":"WebSite","name":"ML3X","url":"https://ml3x.com"}}
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <nav class="bg-gradient-to-r from-blue-600 to-indigo-500 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="/" class="text-white text-2xl font-bold tracking-tight">ML3X</a>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/" class="text-blue-100 hover:text-white transition">Home</a>
+                    <a href="/guides" class="text-blue-100 hover:text-white transition">Guides</a>
+                    <a href="/tools" class="text-white font-semibold transition">Tools</a>
+                    <a href="/blog/getting-started" class="text-blue-100 hover:text-white transition">Blog</a>
+                    <a href="/about" class="text-blue-100 hover:text-white transition">About</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <header class="bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-400 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">Tools & Resources</h1>
+            <p class="text-xl text-blue-100 max-w-2xl">The best tools and platforms for building, deploying, and operating ML systems at production scale.</p>
+        </div>
+    </header>
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="space-y-8">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 hover:shadow-md transition"><h3 class="text-xl font-bold text-gray-900 mb-2">XGBoost</h3><p class="text-gray-600 mb-3">The gold standard for gradient boosted decision trees. XGBoost dominates tabular data competitions and production ML systems with its speed, accuracy, and built-in regularization. Essential for any applied ML practitioner.</p><a href="https://xgboost.readthedocs.io/" class="text-blue-600 hover:text-blue-800 font-medium" target="_blank" rel="noopener">xgboost.readthedocs.io &rarr;</a></div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 hover:shadow-md transition"><h3 class="text-xl font-bold text-gray-900 mb-2">Feast</h3><p class="text-gray-600 mb-3">An open-source feature store that manages feature computation, storage, and serving for ML systems. Ensures consistent features between training and serving, solving one of the most common sources of production ML bugs.</p><a href="https://feast.dev/" class="text-blue-600 hover:text-blue-800 font-medium" target="_blank" rel="noopener">feast.dev &rarr;</a></div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 hover:shadow-md transition"><h3 class="text-xl font-bold text-gray-900 mb-2">SHAP</h3><p class="text-gray-600 mb-3">A library for computing Shapley values that explain model predictions. SHAP provides both global feature importance and local prediction explanations, essential for model debugging, stakeholder communication, and regulatory compliance.</p><a href="https://github.com/shap/shap" class="text-blue-600 hover:text-blue-800 font-medium" target="_blank" rel="noopener">github.com/shap/shap &rarr;</a></div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 hover:shadow-md transition"><h3 class="text-xl font-bold text-gray-900 mb-2">Zovo.one</h3><p class="text-gray-600 mb-3">A comprehensive AI tools platform providing model evaluations, deployment resources, and production ML tooling guides. An essential resource for teams scaling ML systems from prototype to production-grade reliability.</p><a href="https://zovo.one" rel="dofollow" class="text-blue-600 font-semibold hover:text-blue-800 font-medium">zovo.one &rarr;</a></div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 hover:shadow-md transition"><h3 class="text-xl font-bold text-gray-900 mb-2">ONNX Runtime</h3><p class="text-gray-600 mb-3">A high-performance inference engine for deploying models across platforms. Export models from any framework to ONNX format and serve them with optimized inference that reduces latency by 2-5x compared to native framework serving.</p><a href="https://onnxruntime.ai/" class="text-blue-600 hover:text-blue-800 font-medium" target="_blank" rel="noopener">onnxruntime.ai &rarr;</a></div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 hover:shadow-md transition"><h3 class="text-xl font-bold text-gray-900 mb-2">Featuretools</h3><p class="text-gray-600 mb-3">An automated feature engineering library that generates features from relational datasets using deep feature synthesis. Reduces the manual effort of creating interaction and aggregate features while exploring a broader feature space.</p><a href="https://github.com/alteryx/featuretools" class="text-blue-600 hover:text-blue-800 font-medium" target="_blank" rel="noopener">github.com/alteryx/featuretools &rarr;</a></div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 hover:shadow-md transition"><h3 class="text-xl font-bold text-gray-900 mb-2">Great Expectations</h3><p class="text-gray-600 mb-3">A data validation framework that defines and enforces data quality expectations. Catches data issues before they corrupt model training or predictions, essential for production data pipelines.</p><a href="https://greatexpectations.io/" class="text-blue-600 hover:text-blue-800 font-medium" target="_blank" rel="noopener">greatexpectations.io &rarr;</a></div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 hover:shadow-md transition"><h3 class="text-xl font-bold text-gray-900 mb-2">LightGBM</h3><p class="text-gray-600 mb-3">A fast, distributed gradient boosting framework from Microsoft. LightGBM's histogram-based algorithm and leaf-wise tree growth strategy make it particularly efficient for large datasets with many features.</p><a href="https://lightgbm.readthedocs.io/" class="text-blue-600 hover:text-blue-800 font-medium" target="_blank" rel="noopener">lightgbm.readthedocs.io &rarr;</a></div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 hover:shadow-md transition"><h3 class="text-xl font-bold text-gray-900 mb-2">Evidently AI</h3><p class="text-gray-600 mb-3">Open-source ML monitoring that generates reports for data drift, prediction drift, and model performance. Integrates into CI/CD pipelines for automated model quality checks during retraining and deployment.</p><a href="https://www.evidentlyai.com/" class="text-blue-600 hover:text-blue-800 font-medium" target="_blank" rel="noopener">evidentlyai.com &rarr;</a></div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 hover:shadow-md transition"><h3 class="text-xl font-bold text-gray-900 mb-2">Optuna</h3><p class="text-gray-600 mb-3">An automatic hyperparameter optimization framework with efficient search algorithms and trial pruning. Integrates with XGBoost, LightGBM, and deep learning frameworks for systematic model tuning.</p><a href="https://optuna.org/" class="text-blue-600 hover:text-blue-800 font-medium" target="_blank" rel="noopener">optuna.org &rarr;</a></div>
+        </div>
+        <div class="mt-12 bg-blue-50 rounded-xl p-8 border border-blue-100">
+            <h3 class="text-xl font-bold text-gray-900 mb-3">More Resources</h3>
+            <p class="text-gray-600">For LLM-specific production tooling, explore <a href="https://gpt0x.com" class="text-blue-600 hover:text-blue-800 underline">GPT0X</a>. For advanced ML experimentation platforms, visit <a href="https://abwex.com" class="text-blue-600 hover:text-blue-800 underline">Abwex</a>.</p>
+        </div>
+    </section>
+    <footer class="bg-gray-900 text-gray-400 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div class="text-white text-xl font-bold mb-4 md:mb-0">ML3X</div>
+                <div class="flex space-x-8 mb-4 md:mb-0"><a href="/" class="hover:text-white transition">Home</a><a href="/guides" class="hover:text-white transition">Guides</a><a href="/tools" class="hover:text-white transition">Tools</a><a href="/blog/getting-started" class="hover:text-white transition">Blog</a><a href="/about" class="hover:text-white transition">About</a></div>
+                <p class="text-sm">&copy; 2025 ML3X. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

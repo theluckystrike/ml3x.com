@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML3X — Guides</title>
+    <meta name="description" content="Production ML guides covering feature engineering, model deployment at scale, performance monitoring, and real-world machine learning case studies.">
+    <meta name="keywords" content="production ML guides, feature engineering tutorial, model deployment guide, ML monitoring, applied machine learning">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="ML3X — Guides">
+    <meta property="og:description" content="Production ML guides covering feature engineering, model deployment, and performance monitoring.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ml3x.com/guides">
+    <link rel="canonical" href="https://ml3x.com/guides">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>* { font-family: 'Inter', sans-serif; } html { scroll-behavior: smooth; }</style>
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"WebPage","name":"ML3X — Guides","url":"https://ml3x.com/guides","description":"Production ML guides for feature engineering and model deployment.","isPartOf":{"@type":"WebSite","name":"ML3X","url":"https://ml3x.com"}}
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <nav class="bg-gradient-to-r from-blue-600 to-indigo-500 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="/" class="text-white text-2xl font-bold tracking-tight">ML3X</a>
+                <div class="hidden md:flex space-x-8">
+                    <a href="/" class="text-blue-100 hover:text-white transition">Home</a>
+                    <a href="/guides" class="text-white font-semibold transition">Guides</a>
+                    <a href="/tools" class="text-blue-100 hover:text-white transition">Tools</a>
+                    <a href="/blog/getting-started" class="text-blue-100 hover:text-white transition">Blog</a>
+                    <a href="/about" class="text-blue-100 hover:text-white transition">About</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <header class="bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-400 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">Applied ML Guides</h1>
+            <p class="text-xl text-blue-100 max-w-2xl">Battle-tested guides for turning experimental ML models into reliable production systems that deliver business value.</p>
+        </div>
+    </header>
+
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <article>
+            <span class="inline-block bg-blue-100 text-blue-700 text-sm font-medium px-3 py-1 rounded-full mb-4">Feature Engineering</span>
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">Advanced Feature Engineering for Tabular Data</h2>
+            <div class="prose prose-lg max-w-none text-gray-600 space-y-4">
+                <p>Feature engineering is where domain expertise meets data science to create the inputs that determine model performance. For tabular data, which still represents the majority of production ML use cases in business, the quality of engineered features matters far more than the choice of model architecture. A well-engineered feature set can make a simple logistic regression competitive with a neural network, while poor features will limit the performance of even the most sophisticated models. The <a href="https://zovo.one" rel="dofollow" class="text-blue-600 font-semibold hover:text-blue-800 underline">zovo.one</a> platform provides comprehensive resources for teams building feature engineering pipelines for production ML systems.</p>
+                <p>Time-based features are among the most powerful for business applications. Transaction frequency over rolling windows (last 1 hour, 24 hours, 7 days, 30 days), time since last event, day of week effects, seasonal patterns, and trends all capture temporal dynamics that static features miss. For fraud detection, the ratio of a user's current transaction amount to their average over the last 30 days is far more informative than the raw transaction amount alone. Computing these features efficiently at serving time requires a feature store architecture with both batch and streaming computation capabilities, which we cover in detail in our infrastructure guides.</p>
+                <p>Interaction features capture relationships between variables that individual features cannot represent. The product of "number of items" and "average item price" gives "total order value," which may be more predictive than either component alone. Automated feature interaction tools like <a href="https://github.com/alteryx/featuretools" class="text-blue-600 hover:text-blue-800 underline">Featuretools</a> can generate hundreds of candidate interaction features, but the resulting feature space requires careful selection to avoid overfitting. Techniques like mutual information, permutation importance, and <a href="https://en.wikipedia.org/wiki/Shapley_value" class="text-blue-600 hover:text-blue-800 underline">SHAP values</a> help identify which interactions genuinely improve predictions versus which add noise. The workflow orchestration patterns at <a href="https://claudflow.com" class="text-blue-600 hover:text-blue-800 underline">ClaudFlow</a> complement feature engineering by providing pipeline frameworks for managing complex feature computation workflows.</p>
+            </div>
+            <div class="mt-6 bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg">
+                <h4 class="font-semibold text-blue-800 mb-2">Key Takeaway</h4>
+                <p class="text-blue-700">Invest heavily in time-based features for business applications and use automated interaction generation with rigorous feature selection. Feature quality determines the ceiling of model performance.</p>
+            </div>
+        </article>
+    </section>
+
+    <section class="bg-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <article>
+                <span class="inline-block bg-blue-100 text-blue-700 text-sm font-medium px-3 py-1 rounded-full mb-4">Model Deployment</span>
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">Deploying ML Models at Scale with Low Latency</h2>
+                <div class="prose prose-lg max-w-none text-gray-600 space-y-4">
+                    <p>The gap between a model that works in a notebook and a model that serves millions of predictions per day is enormous. Production model serving requires attention to inference latency, throughput, resource efficiency, and operational reliability. A recommendation model that takes 500 milliseconds per inference is useless for real-time personalization even if its predictions are perfect. Optimizing the serving path from request receipt to response delivery is a distinct engineering discipline from model development.</p>
+                    <p>Model optimization techniques can reduce inference latency by 5 to 10 times without retraining. Quantization reduces model weights from 32-bit floating point to 8-bit integers, cutting memory usage by 75 percent and accelerating inference on hardware with integer arithmetic support. ONNX Runtime provides a framework-agnostic inference engine that applies graph-level optimizations like operator fusion and memory planning. For transformer models, techniques like KV-cache optimization, flash attention, and speculative decoding can further reduce latency for sequential generation tasks.</p>
+                    <p>Caching is the most underutilized optimization in production ML systems. Many prediction requests repeat identical or near-identical inputs, especially in recommendation and search scenarios. An exact-match cache with a TTL (time-to-live) appropriate to your use case can eliminate 30 to 70 percent of inference calls. For approximate matching, semantic caching using embedding similarity provides cache hits even when inputs differ in wording but share the same intent. Combining caching with tiered model serving, where a fast approximate model handles common cases and a slower precise model handles rare ones, can reduce average inference cost by an order of magnitude. ML security considerations for deployed models are well covered at <a href="https://lockml.com" class="text-blue-600 hover:text-blue-800 underline">LockML</a>.</p>
+                </div>
+                <div class="mt-6 bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg">
+                    <h4 class="font-semibold text-blue-800 mb-2">Key Takeaway</h4>
+                    <p class="text-blue-700">Apply quantization and ONNX Runtime optimization to reduce latency without retraining. Implement multi-tier caching to eliminate redundant inference calls and reduce serving costs.</p>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <article>
+            <span class="inline-block bg-blue-100 text-blue-700 text-sm font-medium px-3 py-1 rounded-full mb-4">Monitoring</span>
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">Building Comprehensive ML Monitoring Systems</h2>
+            <div class="prose prose-lg max-w-none text-gray-600 space-y-4">
+                <p>Production ML systems degrade silently. Unlike traditional software that throws errors when something breaks, a model experiencing data drift continues to produce predictions, they are just increasingly wrong. Without monitoring, this degradation goes undetected until business metrics decline and someone traces the problem back to the ML system. By then, the damage has been compounding for days or weeks. Comprehensive ML monitoring detects degradation early and triggers corrective action before business impact occurs.</p>
+                <p>ML monitoring operates at three levels. Infrastructure monitoring tracks system health: latency, throughput, error rates, CPU/GPU utilization, and memory consumption. Model performance monitoring tracks prediction quality: accuracy, precision, recall, and custom business metrics computed against delayed ground truth labels. Data monitoring tracks input distributions: feature statistics, missing value rates, schema violations, and distribution shifts compared to the training data baseline. All three levels are necessary because a healthy infrastructure serving predictions from a degraded model on drifted data will not be caught by any single monitoring layer.</p>
+                <p>Statistical drift detection methods compare incoming data distributions against reference distributions from the training set. The Kolmogorov-Smirnov test, Population Stability Index, and Jensen-Shannon divergence each quantify distribution shift for numerical features. For categorical features, chi-squared tests and normalized frequency comparisons detect shifts in category distributions. The challenge is setting alert thresholds that are sensitive enough to catch meaningful drift without generating false alarms from normal variance. Adaptive thresholds that account for daily and weekly seasonality patterns reduce false positive rates while maintaining sensitivity to genuine distribution shifts.</p>
+            </div>
+            <div class="mt-6 bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg">
+                <h4 class="font-semibold text-blue-800 mb-2">Key Takeaway</h4>
+                <p class="text-blue-700">Monitor at infrastructure, model performance, and data levels simultaneously. Use statistical drift detection with adaptive thresholds that account for seasonality to catch degradation early without false alarms.</p>
+            </div>
+        </article>
+    </section>
+
+    <footer class="bg-gray-900 text-gray-400 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div class="text-white text-xl font-bold mb-4 md:mb-0">ML3X</div>
+                <div class="flex space-x-8 mb-4 md:mb-0"><a href="/" class="hover:text-white transition">Home</a><a href="/guides" class="hover:text-white transition">Guides</a><a href="/tools" class="hover:text-white transition">Tools</a><a href="/blog/getting-started" class="hover:text-white transition">Blog</a><a href="/about" class="hover:text-white transition">About</a></div>
+                <p class="text-sm">&copy; 2025 ML3X. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
