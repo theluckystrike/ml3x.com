@@ -21,9 +21,7 @@ Enter your matrix values in the grid editor or paste a comma-separated matrix. S
 
 - Vanilla JavaScript (no frameworks, no dependencies)
 - Client-side only — your data never leaves your browser
-- Part of the [Zovo Tools](https://zovo.one) open network
 
-## Related Tools
 
 - [Tensor Shape Calculator](https://heytensor.com) — trace tensor dimensions through neural network layers
 - [ML Cheat Sheet Generator](https://ml0x.com) — quick-reference formulas for linear algebra in ML

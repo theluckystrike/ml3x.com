@@ -23,22 +23,8 @@
     <h1>About ML3X</h1>
     <p>ML3X is a free, browser-based matrix calculator designed for students, engineers, and anyone working with linear algebra. Every operation shows step-by-step solutions so you can verify the math and learn the process.</p>
 
-    <h2>Why ML3X</h2>
-    <p>Matrix operations are fundamental to machine learning, computer graphics, physics simulations, and engineering. Most online calculators give you the answer but hide the work. ML3X shows both: the final result and the intermediate calculations that produced it.</p>
-    <p>Everything runs in your browser. There are no server calls, no accounts, and no data collection. The math is implemented in vanilla JavaScript with no external dependencies.</p>
-
-    <h2>Supported Operations</h2>
-    <ul>
-      <li><strong>Addition and Subtraction</strong> — Element-wise operations on matrices of matching dimensions.</li>
-      <li><strong>Multiplication</strong> — Standard matrix multiplication with dimension validation (A columns must equal B rows).</li>
-      <li><strong>Transpose</strong> — Flip rows and columns.</li>
-      <li><strong>Determinant</strong> — Computed via cofactor expansion. Supports up to 5x5 matrices.</li>
-      <li><strong>Inverse</strong> — Calculated using the adjugate method (cofactor matrix transposed, divided by determinant). Detects singular matrices.</li>
-      <li><strong>Eigenvalues</strong> — For 2x2 matrices via the quadratic formula on the characteristic polynomial. For 3x3 matrices via Cardano's method on the cubic characteristic polynomial. Handles both real and complex eigenvalues.</li>
-    </ul>
-
-    <h2>Part of the Zovo Ecosystem</h2>
-    <p>ML3X is built by <a href="https://zovo.one">zovo.one</a>. Other tools in the network include <a href="https://kappakit.com">KappaKit</a> for developer utilities (Base64, JWT, hashing, regex) and <a href="https://epochpilot.com">EpochPilot</a> for timestamp and timezone conversions.</p>
+    <h2>About This Project</h2>
+    <p>ML3X is a free, browser-based matrix calculator for developers and students. Multiply, invert, transpose, and compute eigenvalues — no installation needed.</p>
 
     <h2>Technical Details</h2>
     <p>The determinant algorithm uses cofactor expansion along the first row, which is O(n!) but perfectly fast for matrices up to 5x5 (120 operations maximum). The inverse uses the classical adjugate method rather than Gaussian elimination for clarity in step-by-step display. Eigenvalue computation for 3x3 matrices uses Cardano's formula, handling all three cases (three distinct real roots, one real root with complex conjugate pair, and repeated roots).</p>
@@ -46,13 +32,8 @@
   </div>
 </main>
 
-<footer class="site-footer">
-  <div class="footer-links">
-    <a href="/">Calculator</a>
-    <a href="/blog/">Blog</a>
-    <a href="/about.html">About</a>
-  </div>
-  <p>Built by <a href="https://zovo.one">zovo.one</a> &middot; More tools: <a href="https://kappakit.com">KappaKit</a> &middot; <a href="https://epochpilot.com">EpochPilot</a></p>
-</footer>
+<footer>
+    <p>&copy; 2025 ML3X</p>
+  </footer>
 </body>
 </html>

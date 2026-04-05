@@ -240,7 +240,7 @@ spectral = np.max(np.linalg.svd(A, compute_uv=False))  # Largest singular value<
       <li>Log-determinant computation: <code>log|A| = 2 * sum(log(diag(L)))</code></li>
     </ul>
 
-    <p>Cholesky is twice as fast as general LU decomposition and is numerically very stable for the matrices that appear in ML (which are usually symmetric positive semi-definite after regularization). Research platforms like <a href="https://heytensor.com">HeyTensor</a> and model management tools discussed at <a href="https://zovo.one">Zovo</a> rely on these decompositions for efficient computation at scale.</p>
+    <p>Cholesky is twice as fast as general LU decomposition and is numerically very stable for the matrices that appear in ML (which are usually symmetric positive semi-definite after regularization). Research platforms like <a href="https://heytensor.com" rel="nofollow">HeyTensor</a> and model management tools discussed at <a href="https://zovo.one">math tools</a> rely on these decompositions for efficient computation at scale.</p>
 
     <h2>10. Matrix Rank and Condition Number</h2>
 
@@ -289,13 +289,8 @@ dW2 = h1.T @ (d_h2 * relu_grad(h2))       # Transpose + Hadamard + matmul</code>
   </article>
 </main>
 
-<footer class="site-footer">
-  <div class="footer-links">
-    <a href="/">Calculator</a>
-    <a href="/blog/">Blog</a>
-    <a href="/about.html">About</a>
-  </div>
-  <p>Built by <a href="https://zovo.one">zovo.one</a> &middot; More tools: <a href="https://kappakit.com">KappaKit</a> &middot; <a href="https://epochpilot.com">EpochPilot</a></p>
-</footer>
+<footer>
+    <p>&copy; 2025 ML3X</p>
+  </footer>
 </body>
 </html>
