@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>ML3X — Matrix Calculator Blog</title>
+  <link href="https://ml3x.com/blog/" rel="alternate"/>
+  <link href="https://ml3x.com/blog/feed.xml" rel="self"/>
+  <id>https://ml3x.com/blog/</id>
+  <updated>2026-04-06T00:00:00Z</updated>
+  <author><name>ML3X — Matrix Calculator</name></author>
+  <entry>
+    <title>Matrix Math for Machine Learning: A Visual Guide — ML3X</title>
+    <link href="https://ml3x.com/blog/post-1.html" rel="alternate"/>
+    <id>https://ml3x.com/blog/post-1.html</id>
+    <updated>2026-04-06T00:00:00Z</updated>
+    <summary>How matrices power machine learning: data representation, linear transformations, neural network computations, and why understanding matrix math makes you a better ML engineer.</summary>
+  </entry>
+  <entry>
+    <title>Linear Algebra Operations Every ML Engineer Should Know — ML3X</title>
+    <link href="https://ml3x.com/blog/post-2.html" rel="alternate"/>
+    <id>https://ml3x.com/blog/post-2.html</id>
+    <updated>2026-04-06T00:00:00Z</updated>
+    <summary>A practical reference for essential linear algebra operations in production ML: matrix multiplication, decomposition, eigenvalues, SVD, norms, and their real-world applications.</summary>
+  </entry>
+</feed>
