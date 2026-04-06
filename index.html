@@ -7,17 +7,25 @@
 <meta name="description" content="Visual matrix calculator with step-by-step solutions. Add, subtract, multiply matrices, compute determinants, inverses, and eigenvalues. Free, runs in your browser.">
 <meta name="keywords" content="matrix calculator, matrix multiplication, determinant calculator, matrix inverse, eigenvalue calculator, linear algebra">
 <link rel="canonical" href="https://ml3x.com/">
+<link rel="alternate" hreflang="en" href="https://ml3x.com/">
+<link rel="alternate" hreflang="x-default" href="https://ml3x.com/">
 <link rel="alternate" type="application/atom+xml" title="ML3X — Matrix Calculator Blog Feed" href="/blog/feed.xml">
-<meta property="og:title" content="ML3X — Matrix Calculator with Step-by-Step Solutions">
-<meta property="og:description" content="Visual matrix math: add, multiply, transpose, determinant, inverse, and eigenvalues with intermediate calculation steps.">
-<meta property="og:url" content="https://ml3x.com/">
 <meta property="og:type" content="website">
+<meta property="og:title" content="ML3X — Matrix Calculator with Step-by-Step Solutions">
+<meta property="og:description" content="Visual matrix math: add, multiply, transpose, determinant, inverse, and eigenvalues with intermediate calculation steps. Free, runs in your browser.">
+<meta property="og:url" content="https://ml3x.com/">
+<meta property="og:site_name" content="Zovo Tools">
+<meta property="og:image" content="https://ml3x.com/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ML3X — Matrix Calculator with Step-by-Step Solutions">
+<meta name="twitter:description" content="Visual matrix math: add, multiply, transpose, determinant, inverse, and eigenvalues with intermediate calculation steps.">
+<meta name="twitter:image" content="https://ml3x.com/assets/og-image.png">
 <link rel="stylesheet" href="/assets/style.css">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "ML3X — Matrix Calculator | Add, Multiply, Determinant, Inverse, Eigenvalues",
+  "name": "ML3X — Matrix Calculator",
   "url": "https://ml3x.com/",
   "description": "Visual matrix calculator with step-by-step solutions. Add, subtract, multiply matrices, compute determinants, inverses, and eigenvalues. Free, runs in your browser.",
   "applicationCategory": "EducationalApplication",
@@ -29,8 +37,68 @@
   },
   "author": {
     "@type": "Person",
-    "name": "Zovo"
-  }
+    "name": "Michael Lip",
+    "url": "https://zovo.one"
+  },
+  "datePublished": "2026-04-05",
+  "dateModified": "2026-04-06",
+  "featureList": ["Matrix Addition and Subtraction", "Matrix Multiplication with Step-by-Step", "Matrix Transpose", "Determinant Calculator (up to 5x5)", "Matrix Inverse via Adjugate Method", "Eigenvalue Computation with Cardano's Formula", "Calculation History (last 5 operations)"]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I multiply two matrices?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Enter your matrices into ML3X, select the A x B operation, and click Calculate. The tool shows the result and a step-by-step breakdown of each element calculation. For multiplication to work, the number of columns in Matrix A must equal the number of rows in Matrix B."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I calculate the determinant of a matrix?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Enter your square matrix into ML3X and select the det(A) operation. The calculator uses cofactor expansion along the first row and shows every intermediate step. Supports matrices up to 5x5. A determinant of zero means the matrix is singular and has no inverse."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can ML3X compute eigenvalues?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. ML3X computes eigenvalues for matrices up to 5x5. For 2x2 matrices it uses the quadratic formula, for 3x3 it uses Cardano's formula handling all three cases (three distinct real roots, complex conjugate pairs, and repeated roots). The step-by-step display shows the characteristic polynomial."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the maximum matrix size ML3X supports?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "ML3X supports matrices up to 5x5. The determinant uses cofactor expansion which is O(n!) but runs instantly for matrices of this size. For larger matrices, consider using NumPy or MATLAB. The 5x5 limit covers the vast majority of homework problems and quick engineering checks."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I find the inverse of a matrix?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Enter your square matrix, select the A inverse operation, and click Calculate. ML3X uses the classical adjugate method (adjugate divided by determinant) rather than Gaussian elimination, which makes the step-by-step display clearer. If the determinant is zero, the matrix has no inverse."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does ML3X save my calculations?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "ML3X keeps a history of your last 5 calculations in browser memory for quick reference. The history is not persisted across page loads and no data is ever sent to a server. Everything runs entirely in your browser."
+      }
+    }
+  ]
 }
 </script>
 </head>
@@ -52,6 +120,7 @@
   <div class="hero">
     <h1>Matrix Calculator</h1>
     <p>Visual matrix math with step-by-step solutions. Up to 5x5 matrices, seven operations.</p>
+    <p style="font-size:0.85rem;color:var(--text-muted);">Built by <a href="/about.html">Michael Lip</a></p>
   </div>
 
   <!-- Controls -->
@@ -135,6 +204,66 @@
     <h3>History (last 5)</h3>
     <div id="history-content"><span style="color:var(--text-muted);font-size:0.85rem;">No calculations yet.</span></div>
   </div>
+
+  <div class="last-updated"><time datetime="2026-04-06">Last updated: April 6, 2026</time></div>
+
+  <!-- FAQ Section -->
+  <section class="faq-section" style="max-width:720px;margin:2rem auto;">
+    <h2>Frequently Asked Questions</h2>
+
+    <details>
+      <summary>How do I multiply two matrices?</summary>
+      <p>Enter your matrices into ML3X, select the A x B operation, and click Calculate. The matrix calculator shows the result and a step-by-step breakdown of each element calculation. For multiplication to work, the number of columns in Matrix A must equal the number of rows in Matrix B.</p>
+    </details>
+
+    <details>
+      <summary>How do I calculate the determinant of a matrix?</summary>
+      <p>Enter your square matrix and select det(A). ML3X uses cofactor expansion along the first row and shows every intermediate step. It supports matrices up to 5x5. A determinant of zero means the matrix is singular and has no inverse.</p>
+    </details>
+
+    <details>
+      <summary>Can ML3X compute eigenvalues?</summary>
+      <p>Yes. ML3X computes eigenvalues for square matrices up to 5x5. For 2x2 matrices it uses the quadratic formula, for 3x3 it uses Cardano's formula handling all three root cases. The display shows the characteristic polynomial so you can verify the computation.</p>
+    </details>
+
+    <details>
+      <summary>How do I find the inverse of a matrix?</summary>
+      <p>Enter your square matrix, select the inverse operation, and click Calculate. ML3X uses the adjugate method (adjugate divided by determinant) which makes the step-by-step display clear and educational. If the determinant is zero, no inverse exists.</p>
+    </details>
+
+    <details>
+      <summary>What is the maximum matrix size supported?</summary>
+      <p>ML3X supports matrices up to 5x5 for all operations. The determinant algorithm uses cofactor expansion which is O(n!) but runs instantly at this size. For larger matrices, consider NumPy or MATLAB. The 5x5 limit covers most homework problems and quick engineering checks.</p>
+    </details>
+
+    <details>
+      <summary>Is my data saved anywhere?</summary>
+      <p>ML3X keeps a history of your last 5 calculations in browser memory for quick reference. Nothing is persisted across page loads and no data is ever sent to a server. The entire matrix calculator runs in your browser with zero network requests.</p>
+    </details>
+  </section>
+
+  <!-- How It Works Explainer Section -->
+  <section class="explainer-section" style="max-width:720px;margin:2rem auto;line-height:1.7;">
+    <h2>How ML3X Works</h2>
+
+    <p>ML3X is a free, browser-based matrix calculator designed for students, engineers, and developers who need to perform linear algebra operations with full transparency into the math. Unlike black-box calculators that only show the final answer, ML3X displays step-by-step solutions for every operation, making it both a computation tool and a learning aid. You can add, subtract, and multiply matrices up to 5x5, compute determinants, find matrix inverses, and calculate eigenvalues — all with detailed intermediate calculations visible on screen.</p>
+
+    <p>The calculator supports seven operations: addition (A + B), subtraction (A - B), multiplication (A x B), transpose, determinant, inverse, and eigenvalue computation. For matrix multiplication, every element of the result matrix shows the dot product calculation that produced it. For determinants, the cofactor expansion is displayed row by row. The inverse computation uses the classical adjugate method (adjugate matrix divided by determinant), chosen over Gaussian elimination specifically because it produces a clearer step-by-step display for educational purposes.</p>
+
+    <p>Eigenvalue computation is the most mathematically complex feature. For 2x2 matrices, ML3X solves the characteristic polynomial using the quadratic formula. For 3x3 matrices, it uses Cardano's formula, correctly handling all three cases: three distinct real roots, one real root with a complex conjugate pair, and repeated roots. The characteristic polynomial is displayed so users can verify the computation independently.</p>
+
+    <h3>Features</h3>
+    <p>ML3X provides matrix addition and subtraction with element-wise step display, matrix multiplication with full dot-product breakdown for each result element, transpose visualization, determinant computation via cofactor expansion with all minors shown, matrix inverse using the adjugate method with step-by-step cofactor and adjugate display, eigenvalue calculation with characteristic polynomial, and a calculation history storing the last 5 operations for quick reference. The matrix inputs include random fill, clear, and identity matrix buttons for fast setup.</p>
+
+    <h3>Who Uses This</h3>
+    <p>ML3X is built for linear algebra students who need to verify homework solutions and understand the computation process, machine learning engineers checking dimension arithmetic before implementing matrix operations in code, data scientists working with covariance matrices, PCA, and other linear algebra-heavy analyses, and software developers who need quick matrix calculations without opening MATLAB or a Python notebook. If you work with neural network layers and need to trace tensor shapes through your architecture, <a href="https://heytensor.com">HeyTensor</a> provides a dedicated tensor shape calculator. For time-based computations and cron scheduling, <a href="https://epochpilot.com">EpochPilot</a> offers epoch conversion and timezone tools. General developer utilities like Base64 encoding and JWT decoding are available at <a href="https://kappakit.com">KappaKit</a>.</p>
+
+    <h3>Privacy</h3>
+    <p>All matrix calculations run locally in your browser. No matrix data, computation results, or history entries are sent to any server. The source code is open on <a href="https://github.com/theluckystrike/ml3x.com">GitHub</a>. There are no cookies, no analytics scripts, and no tracking of any kind.</p>
+
+    <h3>Contact</h3>
+    <p>ML3X is built and maintained by <a href="https://zovo.one">Michael Lip</a>. For questions or feedback, email <a href="mailto:michael@zovo.one">michael@zovo.one</a> or visit the project on <a href="https://github.com/theluckystrike/ml3x.com">GitHub</a>.</p>
+  </section>
 </main>
 
 <footer>
