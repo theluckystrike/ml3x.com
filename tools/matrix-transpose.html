@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matrix Transpose Calculator — Rows to Columns | ML3X</title>
+<meta name="description" content="Transpose any matrix (swap rows and columns). Properties of transpose, symmetric matrices, and orthogonal matrices. Used in ML, statistics, and linear algebra.">
+<meta name="keywords" content="matrix transpose, transpose calculator, rows to columns, symmetric matrix, orthogonal matrix, transpose properties">
+<link rel="canonical" href="https://ml3x.com/tools/matrix-transpose.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Matrix Transpose Calculator — Rows to Columns | ML3X">
+<meta property="og:description" content="Transpose any matrix (swap rows and columns). Properties of transpose, symmetric matrices, and orthogonal matrices. Used in ML, statistics, and linear algebra.">
+<meta property="og:url" content="https://ml3x.com/tools/matrix-transpose.html">
+<meta property="og:site_name" content="Zovo Tools">
+<meta property="og:image" content="https://ml3x.com/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Matrix Transpose Calculator — Rows to Columns | ML3X">
+<meta name="twitter:description" content="Transpose any matrix (swap rows and columns). Properties of transpose, symmetric matrices, and orthogonal matrices.">
+<meta name="twitter:image" content="https://ml3x.com/assets/og-image.png">
+<link rel="stylesheet" href="/assets/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Matrix Transpose Calculator — ML3X",
+  "url": "https://ml3x.com/tools/matrix-transpose.html",
+  "description": "Transpose any matrix (swap rows and columns). Properties of transpose, symmetric matrices, and orthogonal matrices. Used in ML, statistics, and linear algebra.",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Michael Lip",
+    "url": "https://zovo.one"
+  },
+  "datePublished": "2026-04-10",
+  "dateModified": "2026-04-10"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What does transposing a matrix do?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Transposing a matrix swaps its rows and columns. The element at row i, column j moves to row j, column i. If the original matrix has dimensions m x n, the transpose has dimensions n x m. For example, a 3x2 matrix becomes a 2x3 matrix. The first row of the original becomes the first column of the transpose."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a symmetric matrix?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A symmetric matrix equals its own transpose: A = A^T. This means a[i][j] = a[j][i] for all entries, so the matrix is mirrored across its main diagonal. Symmetric matrices are always square, have real eigenvalues, and can be diagonalized by an orthogonal matrix. The covariance matrix in statistics is always symmetric."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the transpose of a product (AB)^T?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The transpose of a product reverses the order: (AB)^T = B^T * A^T. This reversal rule extends to any number of factors: (ABC)^T = C^T * B^T * A^T. This property is essential in deriving gradient formulas for neural networks during backpropagation."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is an orthogonal matrix?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "An orthogonal matrix Q satisfies Q^T * Q = I, meaning its transpose equals its inverse: Q^T = Q^(-1). The columns of an orthogonal matrix are orthonormal (unit length and mutually perpendicular). Orthogonal matrices preserve lengths and angles, so they represent rotations and reflections. Their determinant is always +1 (rotation) or -1 (reflection)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How is the transpose used in machine learning?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The transpose appears throughout machine learning. In gradient computation, the gradient of a loss with respect to weights involves transposed Jacobian matrices. The normal equation for linear regression uses X^T: w = (X^T X)^(-1) X^T y. Covariance matrices are computed as (1/n) X^T X. Attention mechanisms in transformers compute Q * K^T to measure similarity between queries and keys."
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<header class="site-header">
+  <a href="/" class="site-logo">ML3X</a>
+  <nav class="site-nav">
+    <a href="/">Calculator</a>
+    <a href="/blog/">Blog</a>
+    <a href="/about.html">About</a>
+      <div class="nav-right">
+      <a href="https://zovo.one/pricing?utm_source=ml3x.com&amp;utm_medium=satellite&amp;utm_campaign=nav-link" class="nav-pro" target="_blank">Go Pro &#10022;</a>
+      <a href="https://zovo.one/tools" class="nav-zovo">Zovo Tools</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="hero">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a> &raquo; <a href="/tools/">Tools</a> &raquo; <span>Matrix Transpose</span>
+    </nav>
+    <h1>Matrix Transpose Calculator</h1>
+    <p>Swap rows and columns of any matrix. Learn transpose properties, symmetric matrices, orthogonal matrices, and how the transpose powers gradient computation in machine learning.</p>
+  </div>
+
+  <section style="max-width:720px;margin:2rem auto;line-height:1.7;">
+    <h2>Transpose Definition and Notation</h2>
+    <p>The transpose of a matrix A, written A<sup>T</sup> (also denoted A&prime; or A<sup>t</sup>), is obtained by swapping rows and columns. Formally:</p>
+    <p style="text-align:center;font-family:monospace;font-size:1.1rem;margin:1.5rem 0;padding:1rem;background:var(--bg-secondary,#f5f5f5);border-radius:8px;">
+      A<sup>T</sup>[i][j] = A[j][i]
+    </p>
+    <p>If A is an m &times; n matrix, then A<sup>T</sup> is n &times; m. The first row of A becomes the first column of A<sup>T</sup>, the second row becomes the second column, and so on. For example, if A = [[1, 2, 3], [4, 5, 6]] (a 2&times;3 matrix), then A<sup>T</sup> = [[1, 4], [2, 5], [3, 6]] (a 3&times;2 matrix).</p>
+    <p>The transpose of a column vector is a row vector, and vice versa. This is particularly important in linear algebra notation: the dot product of two column vectors u and v can be written as u<sup>T</sup>v, producing a 1&times;1 matrix (a scalar). The outer product is uv<sup>T</sup>, producing an n&times;n matrix from two n&times;1 vectors.</p>
+
+    <h2>Key Properties of the Transpose</h2>
+    <p>The transpose satisfies several algebraic identities that are used constantly in proofs and derivations:</p>
+    <p><strong>Double transpose:</strong> (A<sup>T</sup>)<sup>T</sup> = A. Transposing twice returns the original matrix.</p>
+    <p><strong>Sum rule:</strong> (A + B)<sup>T</sup> = A<sup>T</sup> + B<sup>T</sup>. Transposing distributes over addition.</p>
+    <p><strong>Scalar rule:</strong> (cA)<sup>T</sup> = cA<sup>T</sup>. Scalars pass through the transpose.</p>
+    <p><strong>Product rule:</strong> (AB)<sup>T</sup> = B<sup>T</sup>A<sup>T</sup>. The order reverses. This extends to any number of factors: (ABC)<sup>T</sup> = C<sup>T</sup>B<sup>T</sup>A<sup>T</sup>.</p>
+    <p><strong>Determinant:</strong> det(A<sup>T</sup>) = det(A). Transposing does not change the determinant.</p>
+    <p><strong>Inverse:</strong> (A<sup>T</sup>)<sup>-1</sup> = (A<sup>-1</sup>)<sup>T</sup>. The transpose and inverse operations commute.</p>
+
+    <h2>Symmetric and Orthogonal Matrices</h2>
+    <p>A <strong>symmetric matrix</strong> is one that equals its own transpose: A = A<sup>T</sup>. This means a[i][j] = a[j][i] for every pair of indices &mdash; the matrix is mirrored across its main diagonal. Symmetric matrices must be square. The covariance matrix in statistics, computed as (1/n)X<sup>T</sup>X (where X is the centered data matrix), is always symmetric. Symmetric matrices have the special property that all their eigenvalues are real (never complex), and they can always be diagonalized by an orthogonal matrix (the spectral theorem).</p>
+    <p>An <strong>orthogonal matrix</strong> Q satisfies Q<sup>T</sup>Q = QQ<sup>T</sup> = I, meaning Q<sup>T</sup> = Q<sup>-1</sup>. The columns of Q are orthonormal: they have unit length and are mutually perpendicular. Orthogonal matrices represent rotations (when det = +1) and reflections (when det = -1). They preserve lengths, angles, and distances, making them essential in computer graphics, signal processing, and numerical linear algebra. The Gram-Schmidt process, Householder reflections, and Givens rotations all produce orthogonal matrices.</p>
+
+    <h2>Transpose in Machine Learning</h2>
+    <p>The transpose is ubiquitous in machine learning computations. In a neural network layer computing y = Wx + b, the gradient of the loss with respect to the input x involves W<sup>T</sup>: &part;L/&part;x = W<sup>T</sup> &middot; &part;L/&part;y. This is why backpropagation through a linear layer multiplies the incoming gradient by the transposed weight matrix.</p>
+    <p>The normal equation for linear regression is w = (X<sup>T</sup>X)<sup>-1</sup>X<sup>T</sup>y, where X<sup>T</sup>X is a square matrix (the Gram matrix) even when X is not square. In attention mechanisms, the similarity between queries Q and keys K is computed as QK<sup>T</sup>, a matrix product that pairs every query with every key. The SVD (Singular Value Decomposition) factors any m&times;n matrix as A = U&Sigma;V<sup>T</sup>, where U and V are orthogonal matrices. This decomposition powers latent semantic analysis, recommendation systems, and image compression.</p>
+  </section>
+
+  <section class="faq-section" style="max-width:720px;margin:2rem auto;">
+    <h2>Frequently Asked Questions</h2>
+    <details>
+      <summary>What does transposing a matrix do?</summary>
+      <p>Transposing a matrix swaps its rows and columns. The element at row i, column j moves to row j, column i. If the original matrix has dimensions m &times; n, the transpose has dimensions n &times; m. For example, a 3&times;2 matrix becomes a 2&times;3 matrix. The first row of the original becomes the first column of the transpose.</p>
+    </details>
+    <details>
+      <summary>What is a symmetric matrix?</summary>
+      <p>A symmetric matrix equals its own transpose: A = A<sup>T</sup>. This means a[i][j] = a[j][i] for all entries, so the matrix is mirrored across its main diagonal. Symmetric matrices are always square, have real eigenvalues, and can be diagonalized by an orthogonal matrix. The covariance matrix in statistics is always symmetric.</p>
+    </details>
+    <details>
+      <summary>What is the transpose of a product (AB)<sup>T</sup>?</summary>
+      <p>The transpose of a product reverses the order: (AB)<sup>T</sup> = B<sup>T</sup>A<sup>T</sup>. This reversal rule extends to any number of factors: (ABC)<sup>T</sup> = C<sup>T</sup>B<sup>T</sup>A<sup>T</sup>. This property is essential in deriving gradient formulas for neural networks during backpropagation.</p>
+    </details>
+    <details>
+      <summary>What is an orthogonal matrix?</summary>
+      <p>An orthogonal matrix Q satisfies Q<sup>T</sup>Q = I, meaning its transpose equals its inverse: Q<sup>T</sup> = Q<sup>-1</sup>. The columns of an orthogonal matrix are orthonormal (unit length and mutually perpendicular). Orthogonal matrices preserve lengths and angles, so they represent rotations and reflections. Their determinant is always +1 (rotation) or -1 (reflection).</p>
+    </details>
+    <details>
+      <summary>How is the transpose used in machine learning?</summary>
+      <p>The transpose appears throughout machine learning. In gradient computation, the gradient of a loss with respect to weights involves transposed Jacobian matrices. The normal equation for linear regression uses X<sup>T</sup>: w = (X<sup>T</sup>X)<sup>-1</sup>X<sup>T</sup>y. Covariance matrices are computed as (1/n)X<sup>T</sup>X. Attention mechanisms in transformers compute QK<sup>T</sup> to measure similarity between queries and keys.</p>
+    </details>
+  </section>
+
+  <section style="max-width:720px;margin:2rem auto;">
+    <h2>Related Tools</h2>
+    <ul>
+      <li><a href="/tools/matrix-multiplication.html">Matrix Multiplication Calculator</a> &mdash; (AB)<sup>T</sup> = B<sup>T</sup>A<sup>T</sup></li>
+      <li><a href="/tools/eigenvalue-calculator.html">Eigenvalue Calculator</a> &mdash; symmetric matrices have real eigenvalues</li>
+      <li><a href="/tools/determinant-calculator.html">Determinant Calculator</a> &mdash; det(A<sup>T</sup>) = det(A)</li>
+    </ul>
+  </section>
+
+  <section style="max-width:720px;margin:2rem auto;">
+    <p style="font-size:0.9rem;color:var(--text-muted);">Built by <a href="https://zovo.one">Michael Lip</a>. Try the <a href="/">ML3X Matrix Calculator</a> for interactive step-by-step solutions.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">Zovo Tools</div>
+        <div class="footer-tagline">Free developer tools by a solo dev. No tracking.</div>
+        <a href="https://zovo.one/pricing?utm_source=ml3x.com&utm_medium=satellite&utm_campaign=footer-link" class="footer-cta">Zovo Lifetime — $99 once, free forever &rarr;</a>
+        <div class="footer-copy">&copy; 2026 <a href="https://zovo.one">Zovo</a> &middot; 47/500 founding spots</div>
+    </div>
+</footer>
+
+<nav class="zovo-network" aria-label="Zovo Tools Network">
+    <div class="zovo-network-inner">
+        <h3 class="zovo-network-title">Explore More Tools</h3>
+        <div class="zovo-network-links">
+            <a href="https://abwex.com">ABWex — A/B Testing</a>
+            <a href="https://claudflow.com">ClaudFlow — Workflows</a>
+            <a href="https://claudhq.com">ClaudHQ — Prompts</a>
+            <a href="https://claudkit.com">ClaudKit — API</a>
+            <a href="https://enhio.com">Enhio — Text Tools</a>
+            <a href="https://epochpilot.com">EpochPilot — Timestamps</a>
+            <a href="https://gen8x.com">Gen8X — Color Tools</a>
+            <a href="https://gpt0x.com">GPT0X — AI Models</a>
+            <a href="https://heytensor.com">HeyTensor — ML Tools</a>
+            <a href="https://invokebot.com">InvokeBot — Webhooks</a>
+            <a href="https://kappafy.com">Kappafy — JSON</a>
+            <a href="https://kappakit.com">KappaKit — Dev Toolkit</a>
+            <a href="https://kickllm.com">KickLLM — LLM Costs</a>
+            <a href="https://krzen.com">Krzen — Image Tools</a>
+            <a href="https://lochbot.com">LochBot — Security</a>
+            <a href="https://lockml.com">LockML — ML Compare</a>
+        </div>
+    </div>
+</nav>
+
+<script src="/assets/js/share.js"></script>
+</body>
+</html>

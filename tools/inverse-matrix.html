@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inverse Matrix Calculator — Gauss-Jordan Method | ML3X</title>
+<meta name="description" content="Find the inverse of a matrix using Gauss-Jordan elimination. Step-by-step solution with augmented matrix method. Check if a matrix is invertible.">
+<meta name="keywords" content="inverse matrix calculator, matrix inverse, Gauss-Jordan elimination, augmented matrix, invertible matrix, non-singular matrix">
+<link rel="canonical" href="https://ml3x.com/tools/inverse-matrix.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Inverse Matrix Calculator — Gauss-Jordan Method | ML3X">
+<meta property="og:description" content="Find the inverse of a matrix using Gauss-Jordan elimination. Step-by-step solution with augmented matrix method. Check if a matrix is invertible.">
+<meta property="og:url" content="https://ml3x.com/tools/inverse-matrix.html">
+<meta property="og:site_name" content="Zovo Tools">
+<meta property="og:image" content="https://ml3x.com/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Inverse Matrix Calculator — Gauss-Jordan Method | ML3X">
+<meta name="twitter:description" content="Find the inverse of a matrix using Gauss-Jordan elimination. Step-by-step solution with augmented matrix method.">
+<meta name="twitter:image" content="https://ml3x.com/assets/og-image.png">
+<link rel="stylesheet" href="/assets/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Inverse Matrix Calculator — ML3X",
+  "url": "https://ml3x.com/tools/inverse-matrix.html",
+  "description": "Find the inverse of a matrix using Gauss-Jordan elimination. Step-by-step solution with augmented matrix method. Check if a matrix is invertible.",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Michael Lip",
+    "url": "https://zovo.one"
+  },
+  "datePublished": "2026-04-10",
+  "dateModified": "2026-04-10"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "When does a matrix have an inverse?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A square matrix has an inverse if and only if its determinant is non-zero. Equivalently, the matrix must have full rank, meaning all its rows (and columns) are linearly independent. A non-square matrix (like 3x4) never has a standard inverse, though it may have a left or right pseudo-inverse."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the Gauss-Jordan elimination method for finding an inverse?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Form the augmented matrix [A | I] by placing the identity matrix next to A. Apply row operations to reduce the left side to the identity matrix. The right side then becomes A inverse. If the left side cannot be reduced to the identity (a zero row appears), the matrix is singular and has no inverse."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the shortcut formula for a 2x2 inverse?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For a 2x2 matrix [[a, b], [c, d]] with determinant det = ad - bc, the inverse is (1/det) * [[d, -b], [-c, a]]. You swap the diagonal elements, negate the off-diagonal elements, and divide everything by the determinant. This only works when det is not zero."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does A times A-inverse equal?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A times its inverse equals the identity matrix I, and A-inverse times A also equals I. The identity matrix has ones on the diagonal and zeros everywhere else. This relationship works in both directions: AA^(-1) = A^(-1)A = I. It is the matrix equivalent of multiplying a number by its reciprocal to get 1."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How is the matrix inverse used to solve systems of equations?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "If a system of linear equations is written as Ax = b, where A is the coefficient matrix and b is the constants vector, then the solution is x = A^(-1) * b (provided A is invertible). This gives the unique solution directly. In practice, Gaussian elimination is preferred over computing the full inverse because it is more numerically stable and computationally efficient."
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<header class="site-header">
+  <a href="/" class="site-logo">ML3X</a>
+  <nav class="site-nav">
+    <a href="/">Calculator</a>
+    <a href="/blog/">Blog</a>
+    <a href="/about.html">About</a>
+      <div class="nav-right">
+      <a href="https://zovo.one/pricing?utm_source=ml3x.com&amp;utm_medium=satellite&amp;utm_campaign=nav-link" class="nav-pro" target="_blank">Go Pro &#10022;</a>
+      <a href="https://zovo.one/tools" class="nav-zovo">Zovo Tools</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="hero">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a> &raquo; <a href="/tools/">Tools</a> &raquo; <span>Inverse Matrix</span>
+    </nav>
+    <h1>Inverse Matrix Calculator</h1>
+    <p>Find the inverse of any square matrix using the Gauss-Jordan elimination method. Step-by-step augmented matrix reduction with invertibility check.</p>
+  </div>
+
+  <section style="max-width:720px;margin:2rem auto;line-height:1.7;">
+    <h2>When Does an Inverse Exist?</h2>
+    <p>A square matrix A has an inverse A<sup>-1</sup> if and only if its determinant is non-zero. The inverse satisfies two equations simultaneously: A&middot;A<sup>-1</sup> = I and A<sup>-1</sup>&middot;A = I, where I is the identity matrix. When det(A) = 0, the matrix is called singular, and no inverse exists. The determinant serves as the gatekeeper: before attempting any inverse computation, check that det(A) &ne; 0.</p>
+    <p>Equivalently, a matrix is invertible when its rows are linearly independent (no row can be written as a combination of the others), when the system Ax = b has a unique solution for every b, and when the matrix has full rank. These are all different ways of stating the same underlying condition.</p>
+
+    <h2>The Gauss-Jordan Method</h2>
+    <p>The Gauss-Jordan elimination method is the most systematic approach to computing a matrix inverse. The idea is elegant: form the augmented matrix [A | I] by placing the n&times;n identity matrix to the right of A, then apply elementary row operations to transform the left side into the identity. Whatever operations accomplish this will simultaneously transform the right side into A<sup>-1</sup>.</p>
+    <p>The three elementary row operations are: (1) swap two rows, (2) multiply a row by a non-zero scalar, and (3) add a scalar multiple of one row to another. These operations are applied systematically &mdash; first producing zeros below each pivot (forward elimination), then zeros above each pivot (back substitution), and finally scaling each pivot to 1.</p>
+
+    <h3>Example: 2&times;2 Inverse</h3>
+    <p>Find the inverse of A = [[4, 7], [2, 6]]. First, det(A) = 4&middot;6 - 7&middot;2 = 24 - 14 = 10 &ne; 0, so the inverse exists.</p>
+    <p>For 2&times;2 matrices, there is a direct shortcut formula:</p>
+    <p style="text-align:center;font-family:monospace;font-size:1.1rem;margin:1.5rem 0;padding:1rem;background:var(--bg-secondary,#f5f5f5);border-radius:8px;">
+      A<sup>-1</sup> = (1/det) &middot; [[d, -b], [-c, a]]
+    </p>
+    <p>Applying this: A<sup>-1</sup> = (1/10) &middot; [[6, -7], [-2, 4]] = [[0.6, -0.7], [-0.2, 0.4]]. You can verify: A&middot;A<sup>-1</sup> = [[4&middot;0.6 + 7&middot;(-0.2), 4&middot;(-0.7) + 7&middot;0.4], [2&middot;0.6 + 6&middot;(-0.2), 2&middot;(-0.7) + 6&middot;0.4]] = [[1, 0], [0, 1]] = I.</p>
+
+    <h2>Applications and Properties</h2>
+    <p>The matrix inverse is central to solving systems of linear equations. Given Ax = b, if A is invertible, the unique solution is x = A<sup>-1</sup>b. While computing the full inverse and multiplying is valid, Gaussian elimination applied directly to the augmented matrix [A | b] is more efficient in practice, requiring O(n&sup3;) operations versus O(n&sup3;) for the inverse plus O(n&sup2;) for the multiplication.</p>
+    <p>Key properties of matrix inverses include: (AB)<sup>-1</sup> = B<sup>-1</sup>A<sup>-1</sup> (note the reversed order), (A<sup>T</sup>)<sup>-1</sup> = (A<sup>-1</sup>)<sup>T</sup> (transpose and inverse commute), and (kA)<sup>-1</sup> = (1/k)A<sup>-1</sup> for any non-zero scalar k. The inverse of a diagonal matrix is simply the diagonal matrix with reciprocal entries. The inverse of an orthogonal matrix equals its transpose: Q<sup>-1</sup> = Q<sup>T</sup>.</p>
+    <p>In machine learning, matrix inverses appear in the normal equation for linear regression: <strong>w = (X<sup>T</sup>X)<sup>-1</sup>X<sup>T</sup>y</strong>, which gives the optimal weight vector in closed form. However, directly inverting X<sup>T</sup>X is numerically unstable for ill-conditioned matrices. Practitioners use the pseudo-inverse (Moore-Penrose inverse) or regularized variants like ridge regression, which adds a small diagonal term: w = (X<sup>T</sup>X + &lambda;I)<sup>-1</sup>X<sup>T</sup>y. The regularization ensures the matrix is always invertible.</p>
+    <p>Cryptographic applications include the Hill cipher, which encrypts text by multiplying character vectors by an invertible key matrix modulo 26. Decryption requires the modular inverse of the key matrix. In control theory, the inverse of the controllability matrix determines whether a system can be driven to any desired state.</p>
+  </section>
+
+  <section class="faq-section" style="max-width:720px;margin:2rem auto;">
+    <h2>Frequently Asked Questions</h2>
+    <details>
+      <summary>When does a matrix have an inverse?</summary>
+      <p>A square matrix has an inverse if and only if its determinant is non-zero. Equivalently, the matrix must have full rank, meaning all its rows (and columns) are linearly independent. A non-square matrix (like 3&times;4) never has a standard inverse, though it may have a left or right pseudo-inverse.</p>
+    </details>
+    <details>
+      <summary>What is the Gauss-Jordan elimination method for finding an inverse?</summary>
+      <p>Form the augmented matrix [A | I] by placing the identity matrix next to A. Apply row operations to reduce the left side to the identity matrix. The right side then becomes A<sup>-1</sup>. If the left side cannot be reduced to the identity (a zero row appears), the matrix is singular and has no inverse.</p>
+    </details>
+    <details>
+      <summary>What is the shortcut formula for a 2&times;2 inverse?</summary>
+      <p>For a 2&times;2 matrix [[a, b], [c, d]] with determinant det = ad - bc, the inverse is (1/det) &middot; [[d, -b], [-c, a]]. You swap the diagonal elements, negate the off-diagonal elements, and divide everything by the determinant. This only works when det is not zero.</p>
+    </details>
+    <details>
+      <summary>What does A times A-inverse equal?</summary>
+      <p>A times its inverse equals the identity matrix I, and A-inverse times A also equals I. The identity matrix has ones on the diagonal and zeros everywhere else. This relationship works in both directions: AA<sup>-1</sup> = A<sup>-1</sup>A = I. It is the matrix equivalent of multiplying a number by its reciprocal to get 1.</p>
+    </details>
+    <details>
+      <summary>How is the matrix inverse used to solve systems of equations?</summary>
+      <p>If a system of linear equations is written as Ax = b, where A is the coefficient matrix and b is the constants vector, then the solution is x = A<sup>-1</sup>b (provided A is invertible). This gives the unique solution directly. In practice, Gaussian elimination is preferred over computing the full inverse because it is more numerically stable and computationally efficient.</p>
+    </details>
+  </section>
+
+  <section style="max-width:720px;margin:2rem auto;">
+    <h2>Related Tools</h2>
+    <ul>
+      <li><a href="/tools/determinant-calculator.html">Determinant Calculator</a> &mdash; check if det &ne; 0 before computing the inverse</li>
+      <li><a href="/tools/matrix-multiplication.html">Matrix Multiplication Calculator</a> &mdash; verify A&middot;A<sup>-1</sup> = I</li>
+      <li><a href="/tools/eigenvalue-calculator.html">Eigenvalue Calculator</a> &mdash; eigenvalues of A<sup>-1</sup> are 1/&lambda;</li>
+    </ul>
+  </section>
+
+  <section style="max-width:720px;margin:2rem auto;">
+    <p style="font-size:0.9rem;color:var(--text-muted);">Built by <a href="https://zovo.one">Michael Lip</a>. Try the <a href="/">ML3X Matrix Calculator</a> for interactive step-by-step solutions.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">Zovo Tools</div>
+        <div class="footer-tagline">Free developer tools by a solo dev. No tracking.</div>
+        <a href="https://zovo.one/pricing?utm_source=ml3x.com&utm_medium=satellite&utm_campaign=footer-link" class="footer-cta">Zovo Lifetime — $99 once, free forever &rarr;</a>
+        <div class="footer-copy">&copy; 2026 <a href="https://zovo.one">Zovo</a> &middot; 47/500 founding spots</div>
+    </div>
+</footer>
+
+<nav class="zovo-network" aria-label="Zovo Tools Network">
+    <div class="zovo-network-inner">
+        <h3 class="zovo-network-title">Explore More Tools</h3>
+        <div class="zovo-network-links">
+            <a href="https://abwex.com">ABWex — A/B Testing</a>
+            <a href="https://claudflow.com">ClaudFlow — Workflows</a>
+            <a href="https://claudhq.com">ClaudHQ — Prompts</a>
+            <a href="https://claudkit.com">ClaudKit — API</a>
+            <a href="https://enhio.com">Enhio — Text Tools</a>
+            <a href="https://epochpilot.com">EpochPilot — Timestamps</a>
+            <a href="https://gen8x.com">Gen8X — Color Tools</a>
+            <a href="https://gpt0x.com">GPT0X — AI Models</a>
+            <a href="https://heytensor.com">HeyTensor — ML Tools</a>
+            <a href="https://invokebot.com">InvokeBot — Webhooks</a>
+            <a href="https://kappafy.com">Kappafy — JSON</a>
+            <a href="https://kappakit.com">KappaKit — Dev Toolkit</a>
+            <a href="https://kickllm.com">KickLLM — LLM Costs</a>
+            <a href="https://krzen.com">Krzen — Image Tools</a>
+            <a href="https://lochbot.com">LochBot — Security</a>
+            <a href="https://lockml.com">LockML — ML Compare</a>
+        </div>
+    </div>
+</nav>
+
+<script src="/assets/js/share.js"></script>
+</body>
+</html>
