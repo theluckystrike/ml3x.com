@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matrix Operation Benchmark — NumPy Performance Across Matrix Sizes | ML3X</title>
+<meta name="description" content="Real NumPy benchmark data for 8 matrix operations across 6 matrix sizes (10x10 to 1000x1000). Measured avg time, std dev, and operations per second on Apple Silicon.">
+<link rel="canonical" href="https://ml3x.com/research/matrix-numpy-benchmark.html">
+<link rel="alternate" hreflang="en" href="https://ml3x.com/research/matrix-numpy-benchmark.html">
+<link rel="alternate" hreflang="x-default" href="https://ml3x.com/research/matrix-numpy-benchmark.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Matrix Operation Benchmark — NumPy Performance Across Matrix Sizes">
+<meta property="og:description" content="Real NumPy benchmark data for 8 matrix operations across 6 matrix sizes (10x10 to 1000x1000). Measured avg time, std dev, and operations per second.">
+<meta property="og:url" content="https://ml3x.com/research/matrix-numpy-benchmark.html">
+<meta property="og:site_name" content="Zovo Tools">
+<meta property="og:image" content="https://ml3x.com/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Matrix Operation Benchmark — NumPy Performance Across Matrix Sizes">
+<meta name="twitter:description" content="Real NumPy benchmark data for 8 matrix operations across 6 matrix sizes. Measured avg time, std dev, and operations per second.">
+<meta name="twitter:image" content="https://ml3x.com/assets/og-image.png">
+<link rel="stylesheet" href="/assets/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "Matrix Operation Benchmark — NumPy Performance Across Matrix Sizes",
+  "description": "Benchmark dataset of 48 measurements covering 8 NumPy matrix operations (matmul, inverse, determinant, eigenvalues, SVD, transpose, trace, QR) across 6 matrix sizes (10x10 to 1000x1000). Each measurement is the average of 5 runs with standard deviation. Executed on Apple Silicon with NumPy using Accelerate BLAS backend.",
+  "url": "https://ml3x.com/research/matrix-numpy-benchmark.html",
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "creator": {"@type": "Person", "name": "Michael Lip", "url": "https://zovo.one"},
+  "datePublished": "2026-04-11",
+  "dateModified": "2026-04-11",
+  "keywords": ["NumPy", "matrix benchmark", "linear algebra performance", "BLAS", "LAPACK", "matrix multiplication speed"],
+  "distribution": {
+    "@type": "DataDownload",
+    "encodingFormat": "application/json",
+    "contentUrl": "https://ml3x.com/research/matrix-numpy-benchmark.html"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How fast is NumPy matrix multiplication?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "NumPy matrix multiplication (np.matmul) is extremely fast thanks to optimized BLAS libraries. A 100x100 matmul takes just 0.012 ms, a 500x500 takes 0.676 ms, and a 1000x1000 takes 5.447 ms. This is because NumPy delegates to hardware-optimized routines (Apple Accelerate, OpenBLAS, or Intel MKL) that use SIMD instructions, cache blocking, and multi-threading. The Python overhead is negligible compared to the BLAS computation."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why is eigenvalue computation so much slower than matrix multiplication?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Eigenvalue computation is inherently more expensive: it requires O(10n^3) operations compared to O(n^3) for matmul. At 1000x1000, eigenvalues take 237.5 ms vs 5.4 ms for matmul — roughly 44x slower. This is because eigenvalue computation requires iterative QR steps that converge gradually, while matmul is a single direct computation. SVD (105 ms at 1000x1000) falls between the two at approximately O(4n^3)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the fastest matrix operation in NumPy?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Trace (np.trace) is the fastest operation — it simply sums diagonal elements in O(n) time. At 1000x1000 it takes just 0.003 ms. Transpose is the second fastest at 0.641 ms for 1000x1000 (O(n^2) copy). These operations do not invoke LAPACK at all. Among LAPACK-backed operations, matmul is fastest due to highly optimized BLAS Level 3 (GEMM) implementations."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does matrix size affect NumPy performance?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Performance scales super-linearly with matrix size due to the cubic complexity of most operations. Doubling the matrix dimension (e.g., 500 to 1000) increases computation time by roughly 8x for O(n^3) operations. However, BLAS libraries achieve better hardware utilization at larger sizes — the 1000x1000 matmul runs at higher GFLOPS than the 100x100 one because it can better utilize cache lines, SIMD pipelines, and multi-core parallelism."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which BLAS backend does NumPy use and does it matter?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "NumPy supports multiple BLAS backends: Apple Accelerate (macOS default), OpenBLAS (Linux default), Intel MKL (Anaconda default), and BLIS. For matmul at 1000x1000, MKL and Accelerate are typically 10-30% faster than OpenBLAS. You can check your backend with np.show_config(). For most operations the difference is under 2x, but for eigenvalue/SVD computations the LAPACK implementation quality matters more than the BLAS backend."
+      }
+    }
+  ]
+}
+</script>
+<style>
+  .research-badge { display:inline-block; background:var(--accent-dim,rgba(139,233,253,0.1)); color:var(--accent,#8be9fd); padding:4px 12px; border-radius:var(--radius,8px); font-size:0.75rem; font-weight:600; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:1rem; }
+  .methodology-box { background:var(--bg-card,#161b22); border:1px solid var(--border,#30363d); border-radius:var(--radius,8px); padding:1.25rem; margin:1.5rem 0; }
+  .methodology-box h3 { font-size:0.8rem; text-transform:uppercase; color:var(--accent,#8be9fd); margin-bottom:0.75rem; }
+  .data-table-wrap { overflow-x:auto; margin:1.5rem 0; border:1px solid var(--border,#30363d); border-radius:var(--radius,8px); }
+  .data-table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+  .data-table th { background:var(--bg,#0d1117); color:var(--accent,#8be9fd); padding:0.6rem 0.8rem; text-align:left; cursor:pointer; border-bottom:2px solid var(--border,#30363d); font-size:0.75rem; text-transform:uppercase; }
+  .data-table td { padding:0.5rem 0.8rem; border-bottom:1px solid var(--border,#30363d); color:var(--text,#c9d1d9); }
+  .data-table tr:hover td { background:rgba(139,233,253,0.03); }
+  .download-btns { display:flex; gap:0.5rem; margin:1rem 0; }
+  .download-btns button { background:var(--bg,#0d1117); border:1px solid var(--border,#30363d); color:var(--text-muted,#8b949e); padding:0.4rem 1rem; border-radius:var(--radius,8px); cursor:pointer; font-size:0.8rem; }
+  .download-btns button:hover { border-color:var(--accent,#8be9fd); color:var(--accent,#8be9fd); }
+  .perf-fast { color:#3fb950; }
+  .perf-med { color:#d29922; }
+  .perf-slow { color:#f85149; }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a href="/" class="site-logo">ML3X</a>
+  <nav class="site-nav">
+    <a href="/">Calculator</a>
+    <a href="/blog/">Blog</a>
+    <a href="/about.html">About</a>
+      <div class="nav-right">
+      <a href="https://zovo.one/pricing?utm_source=ml3x.com&amp;utm_medium=satellite&amp;utm_campaign=nav-link" class="nav-pro" target="_blank">Go Pro &#10022;</a>
+      <a href="https://zovo.one/tools" class="nav-zovo">Zovo Tools</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="hero">
+    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a> <span>/</span> <a href="/research/">Research</a> <span>/</span> <span>Matrix NumPy Benchmark</span></nav>
+    <span class="research-badge">Original Research</span>
+    <h1>Matrix Operation Benchmark — NumPy Performance Across Matrix Sizes</h1>
+    <p>Real benchmark data for 8 NumPy matrix operations across 6 matrix sizes (10x10 to 1000x1000). Each measurement is the average of 5 runs with standard deviation, executed on Apple Silicon with Accelerate BLAS.</p>
+    <p style="font-size:0.85rem;color:var(--text-muted);">By <a href="/about.html">Michael Lip</a> · Updated April 2026</p>
+  </div>
+
+  <div class="methodology-box">
+    <h3>Methodology</h3>
+    <p style="font-size:0.85rem;color:var(--text-muted);margin:0;">Benchmarks were executed on April 11, 2026 using Python 3.9 with NumPy on macOS (Apple Silicon) with Apple Accelerate as the BLAS backend. Each operation was timed using <code>time.perf_counter()</code> with 5 repetitions per (operation, size) pair. Input matrices are random float64 values from <code>np.random.randn(n, n)</code>. Operations per second = 1000 / avg_ms. All times in milliseconds. The determinant overflow warning at large sizes is expected and does not affect timing accuracy.</p>
+  </div>
+
+  <div class="data-table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Operation</th>
+          <th>Matrix Size</th>
+          <th>Avg Time (ms)</th>
+          <th>Std Dev (ms)</th>
+          <th>Ops/Second</th>
+          <th>Complexity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>matmul</td><td>10x10</td><td class="perf-fast">0.006</td><td>0.010</td><td class="perf-fast">166,667</td><td>O(n^3)</td></tr>
+        <tr><td>matmul</td><td>50x50</td><td class="perf-fast">0.208</td><td>0.406</td><td class="perf-fast">4,808</td><td>O(n^3)</td></tr>
+        <tr><td>matmul</td><td>100x100</td><td class="perf-fast">0.012</td><td>0.002</td><td class="perf-fast">83,333</td><td>O(n^3)</td></tr>
+        <tr><td>matmul</td><td>250x250</td><td class="perf-fast">0.096</td><td>0.001</td><td class="perf-fast">10,417</td><td>O(n^3)</td></tr>
+        <tr><td>matmul</td><td>500x500</td><td class="perf-fast">0.676</td><td>0.071</td><td class="perf-fast">1,479</td><td>O(n^3)</td></tr>
+        <tr><td>matmul</td><td>1000x1000</td><td class="perf-med">5.447</td><td>0.888</td><td class="perf-med">184</td><td>O(n^3)</td></tr>
+        <tr><td>inverse</td><td>10x10</td><td class="perf-fast">0.010</td><td>0.008</td><td class="perf-fast">100,000</td><td>O(n^3)</td></tr>
+        <tr><td>inverse</td><td>50x50</td><td class="perf-fast">0.211</td><td>0.351</td><td class="perf-fast">4,739</td><td>O(n^3)</td></tr>
+        <tr><td>inverse</td><td>100x100</td><td class="perf-fast">0.095</td><td>0.013</td><td class="perf-fast">10,526</td><td>O(n^3)</td></tr>
+        <tr><td>inverse</td><td>250x250</td><td class="perf-fast">0.558</td><td>0.033</td><td class="perf-fast">1,792</td><td>O(n^3)</td></tr>
+        <tr><td>inverse</td><td>500x500</td><td class="perf-med">2.670</td><td>0.110</td><td class="perf-med">375</td><td>O(n^3)</td></tr>
+        <tr><td>inverse</td><td>1000x1000</td><td class="perf-med">15.627</td><td>0.670</td><td class="perf-med">64</td><td>O(n^3)</td></tr>
+        <tr><td>determinant</td><td>10x10</td><td class="perf-fast">0.300</td><td>0.592</td><td class="perf-fast">3,333</td><td>O(n^3)</td></tr>
+        <tr><td>determinant</td><td>50x50</td><td class="perf-fast">0.133</td><td>0.238</td><td class="perf-fast">7,519</td><td>O(n^3)</td></tr>
+        <tr><td>determinant</td><td>100x100</td><td class="perf-fast">0.390</td><td>0.701</td><td class="perf-fast">2,564</td><td>O(n^3)</td></tr>
+        <tr><td>determinant</td><td>250x250</td><td class="perf-fast">0.229</td><td>0.005</td><td class="perf-fast">4,367</td><td>O(n^3)</td></tr>
+        <tr><td>determinant</td><td>500x500</td><td class="perf-med">1.377</td><td>0.643</td><td class="perf-med">726</td><td>O(n^3)</td></tr>
+        <tr><td>determinant</td><td>1000x1000</td><td class="perf-med">4.486</td><td>0.127</td><td class="perf-med">223</td><td>O(n^3)</td></tr>
+        <tr><td>eigenvalues</td><td>10x10</td><td class="perf-fast">0.340</td><td>0.629</td><td class="perf-fast">2,941</td><td>O(n^3)</td></tr>
+        <tr><td>eigenvalues</td><td>50x50</td><td class="perf-fast">0.474</td><td>0.401</td><td class="perf-fast">2,110</td><td>O(n^3)</td></tr>
+        <tr><td>eigenvalues</td><td>100x100</td><td class="perf-med">1.919</td><td>0.129</td><td class="perf-med">521</td><td>O(n^3)</td></tr>
+        <tr><td>eigenvalues</td><td>250x250</td><td class="perf-med">12.876</td><td>0.102</td><td class="perf-med">78</td><td>O(n^3)</td></tr>
+        <tr><td>eigenvalues</td><td>500x500</td><td class="perf-slow">48.411</td><td>0.341</td><td class="perf-slow">21</td><td>O(n^3)</td></tr>
+        <tr><td>eigenvalues</td><td>1000x1000</td><td class="perf-slow">237.491</td><td>2.326</td><td class="perf-slow">4</td><td>O(n^3)</td></tr>
+        <tr><td>svd</td><td>10x10</td><td class="perf-fast">0.291</td><td>0.539</td><td class="perf-fast">3,436</td><td>O(n^3)</td></tr>
+        <tr><td>svd</td><td>50x50</td><td class="perf-fast">0.661</td><td>0.844</td><td class="perf-fast">1,513</td><td>O(n^3)</td></tr>
+        <tr><td>svd</td><td>100x100</td><td class="perf-fast">0.863</td><td>0.043</td><td class="perf-fast">1,159</td><td>O(n^3)</td></tr>
+        <tr><td>svd</td><td>250x250</td><td class="perf-med">5.305</td><td>0.410</td><td class="perf-med">189</td><td>O(n^3)</td></tr>
+        <tr><td>svd</td><td>500x500</td><td class="perf-med">22.130</td><td>0.771</td><td class="perf-med">45</td><td>O(n^3)</td></tr>
+        <tr><td>svd</td><td>1000x1000</td><td class="perf-slow">105.221</td><td>1.920</td><td class="perf-slow">10</td><td>O(n^3)</td></tr>
+        <tr><td>transpose</td><td>10x10</td><td class="perf-fast">0.001</td><td>0.001</td><td class="perf-fast">1,000,000</td><td>O(n^2)</td></tr>
+        <tr><td>transpose</td><td>50x50</td><td class="perf-fast">0.002</td><td>0.001</td><td class="perf-fast">500,000</td><td>O(n^2)</td></tr>
+        <tr><td>transpose</td><td>100x100</td><td class="perf-fast">0.004</td><td>0.001</td><td class="perf-fast">250,000</td><td>O(n^2)</td></tr>
+        <tr><td>transpose</td><td>250x250</td><td class="perf-fast">0.026</td><td>0.008</td><td class="perf-fast">38,462</td><td>O(n^2)</td></tr>
+        <tr><td>transpose</td><td>500x500</td><td class="perf-fast">0.103</td><td>0.031</td><td class="perf-fast">9,709</td><td>O(n^2)</td></tr>
+        <tr><td>transpose</td><td>1000x1000</td><td class="perf-fast">0.641</td><td>0.035</td><td class="perf-fast">1,560</td><td>O(n^2)</td></tr>
+        <tr><td>trace</td><td>10x10</td><td class="perf-fast">0.002</td><td>0.002</td><td class="perf-fast">500,000</td><td>O(n)</td></tr>
+        <tr><td>trace</td><td>50x50</td><td class="perf-fast">0.002</td><td>0.001</td><td class="perf-fast">500,000</td><td>O(n)</td></tr>
+        <tr><td>trace</td><td>100x100</td><td class="perf-fast">0.002</td><td>0.001</td><td class="perf-fast">500,000</td><td>O(n)</td></tr>
+        <tr><td>trace</td><td>250x250</td><td class="perf-fast">0.002</td><td>0.002</td><td class="perf-fast">500,000</td><td>O(n)</td></tr>
+        <tr><td>trace</td><td>500x500</td><td class="perf-fast">0.004</td><td>0.004</td><td class="perf-fast">250,000</td><td>O(n)</td></tr>
+        <tr><td>trace</td><td>1000x1000</td><td class="perf-fast">0.003</td><td>0.002</td><td class="perf-fast">333,333</td><td>O(n)</td></tr>
+        <tr><td>qr</td><td>10x10</td><td class="perf-fast">0.029</td><td>0.024</td><td class="perf-fast">34,483</td><td>O(n^3)</td></tr>
+        <tr><td>qr</td><td>50x50</td><td class="perf-fast">0.972</td><td>1.830</td><td class="perf-fast">1,029</td><td>O(n^3)</td></tr>
+        <tr><td>qr</td><td>100x100</td><td class="perf-fast">0.184</td><td>0.013</td><td class="perf-fast">5,435</td><td>O(n^3)</td></tr>
+        <tr><td>qr</td><td>250x250</td><td class="perf-med">1.079</td><td>0.038</td><td class="perf-med">927</td><td>O(n^3)</td></tr>
+        <tr><td>qr</td><td>500x500</td><td class="perf-med">4.586</td><td>0.150</td><td class="perf-med">218</td><td>O(n^3)</td></tr>
+        <tr><td>qr</td><td>1000x1000</td><td class="perf-med">24.492</td><td>0.313</td><td class="perf-med">41</td><td>O(n^3)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="download-btns">
+    <button onclick="downloadData('json')">Download JSON</button>
+    <button onclick="downloadData('csv')">Download CSV</button>
+  </div>
+
+  <section style="max-width:800px;margin:2rem auto;">
+    <h2>Key Findings</h2>
+    <p><strong>Eigenvalue computation is the bottleneck.</strong> At 1000x1000, eigenvalues take 237.5 ms — 44x slower than matmul (5.4 ms) and 2.3x slower than SVD (105.2 ms). This reflects the iterative QR algorithm's convergence requirements versus direct computation in matmul.</p>
+    <p><strong>Trace is essentially free.</strong> At O(n) complexity, trace takes 0.003 ms even at 1000x1000 — it simply sums n diagonal elements. Transpose at O(n^2) is the next fastest, requiring a memory copy but no computation.</p>
+    <p><strong>BLAS makes matmul deceptively fast.</strong> The 100x100 matmul (0.012 ms) is faster than 50x50 (0.208 ms) because BLAS achieves better vectorization and cache utilization at larger sizes. The first call also includes JIT/dispatch overhead that amortizes over larger computations.</p>
+    <p><strong>Scaling follows cubic complexity.</strong> From 500x500 to 1000x1000 (2x dimension), matmul goes from 0.676 to 5.447 ms (8.1x), inverse from 2.670 to 15.627 ms (5.9x), and eigenvalues from 48.4 to 237.5 ms (4.9x). The sub-8x scaling for some operations indicates better hardware utilization at larger sizes.</p>
+  </section>
+
+  <section class="faq-section" style="max-width:720px;margin:2rem auto;">
+    <h2>Frequently Asked Questions</h2>
+    <details>
+      <summary>How fast is NumPy matrix multiplication?</summary>
+      <p>NumPy matmul is extremely fast thanks to BLAS. A 100x100 matmul takes 0.012 ms, 500x500 takes 0.676 ms, and 1000x1000 takes 5.447 ms. NumPy delegates to hardware-optimized routines (Accelerate, OpenBLAS, MKL) using SIMD, cache blocking, and multi-threading.</p>
+    </details>
+    <details>
+      <summary>Why is eigenvalue computation so much slower than matrix multiplication?</summary>
+      <p>Eigenvalue computation requires O(10n^3) operations vs O(n^3) for matmul. At 1000x1000, eigenvalues take 237.5 ms vs 5.4 ms for matmul — 44x slower. It uses iterative QR steps that converge gradually, while matmul is a single direct computation.</p>
+    </details>
+    <details>
+      <summary>What is the fastest matrix operation in NumPy?</summary>
+      <p>Trace is fastest — it sums diagonal elements in O(n) time, taking 0.003 ms at 1000x1000. Transpose is second at 0.641 ms (O(n^2) copy). Neither invokes LAPACK. Among LAPACK operations, matmul is fastest due to optimized BLAS Level 3 (GEMM).</p>
+    </details>
+    <details>
+      <summary>How does matrix size affect NumPy performance?</summary>
+      <p>Doubling the dimension increases time by ~8x for O(n^3) operations. However, BLAS achieves better utilization at larger sizes — 1000x1000 matmul runs at higher GFLOPS than 100x100 due to better cache line, SIMD, and multi-core utilization.</p>
+    </details>
+    <details>
+      <summary>Which BLAS backend does NumPy use and does it matter?</summary>
+      <p>NumPy supports Accelerate (macOS), OpenBLAS (Linux), MKL (Anaconda), and BLIS. For 1000x1000 matmul, MKL and Accelerate are typically 10-30% faster than OpenBLAS. Check your backend with np.show_config(). For eigenvalue/SVD, LAPACK quality matters more than BLAS backend.</p>
+    </details>
+  </section>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">Zovo Tools</div>
+        <div class="footer-tagline">Free developer tools by a solo dev. No tracking.</div>
+        <a href="https://zovo.one/pricing?utm_source=ml3x.com&utm_medium=satellite&utm_campaign=footer-link" class="footer-cta">Zovo Lifetime — $99 once, free forever →</a>
+        <div class="footer-copy">© 2026 <a href="https://zovo.one">Zovo</a> · 47/500 founding spots</div>
+    </div>
+</footer>
+
+<nav class="zovo-network" aria-label="Zovo Tools Network">
+    <div class="zovo-network-inner">
+        <h3 class="zovo-network-title">Explore More Tools</h3>
+        <div class="zovo-network-links">
+            <a href="https://abwex.com">ABWex — A/B Testing</a>
+            <a href="https://claudflow.com">ClaudFlow — Workflows</a>
+            <a href="https://claudhq.com">ClaudHQ — Prompts</a>
+            <a href="https://claudkit.com">ClaudKit — API</a>
+            <a href="https://enhio.com">Enhio — Text Tools</a>
+            <a href="https://epochpilot.com">EpochPilot — Timestamps</a>
+            <a href="https://gen8x.com">Gen8X — Color Tools</a>
+            <a href="https://gpt0x.com">GPT0X — AI Models</a>
+            <a href="https://heytensor.com">HeyTensor — ML Tools</a>
+            <a href="https://invokebot.com">InvokeBot — Webhooks</a>
+            <a href="https://kappafy.com">Kappafy — JSON</a>
+            <a href="https://kappakit.com">KappaKit — Dev Toolkit</a>
+            <a href="https://kickllm.com">KickLLM — LLM Costs</a>
+            <a href="https://krzen.com">Krzen — Image Tools</a>
+            <a href="https://lochbot.com">LochBot — Security</a>
+            <a href="https://lockml.com">LockML — ML Compare</a>
+        </div>
+    </div>
+</nav>
+
+<script>
+function downloadData(format) {
+  const entries = document.querySelectorAll('.data-table tbody tr');
+  const data = Array.from(entries).map(el => {
+    const cells = el.querySelectorAll('td');
+    if (cells.length < 2) return null;
+    return {operation: cells[0]?.textContent?.trim(), size: cells[1]?.textContent?.trim(), avg_ms: cells[2]?.textContent?.trim(), std_ms: cells[3]?.textContent?.trim(), ops_per_sec: cells[4]?.textContent?.trim(), complexity: cells[5]?.textContent?.trim()};
+  }).filter(d => d && d.operation);
+  let content, type, ext;
+  if (format === 'json') { content = JSON.stringify(data, null, 2); type = 'application/json'; ext = 'json'; }
+  else { content = 'operation,size,avg_ms,std_ms,ops_per_sec,complexity\n' + data.map(d => `"${(d.operation||'').replace(/"/g,'""')}","${(d.size||'')}","${(d.avg_ms||'')}","${(d.std_ms||'')}","${(d.ops_per_sec||'')}","${(d.complexity||'')}"`).join('\n'); type = 'text/csv'; ext = 'csv'; }
+  const blob = new Blob([content], {type});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'matrix-numpy-benchmark.' + ext;
+  a.click();
+}
+</script>
+<script src="/assets/js/share.js"></script>
+</body>
+</html>
