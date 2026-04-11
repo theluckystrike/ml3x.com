@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What Are the Rules for Matrix Multiplication? | ML3X</title>
+<meta name="description" content="A(m*n) * B(n*p) = C(m*p). Inner dimensions must match: columns of A = rows of B. Element C[i][j] = sum of A[i][k] * B[k][j] for all k.">
+<link rel="canonical" href="https://ml3x.com/answers/matrix-multiplication-rules.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="What Are the Rules for Matrix Multiplication?">
+<meta property="og:description" content="A(m*n) * B(n*p) = C(m*p). Inner dimensions must match. Element-by-element formula explained.">
+<meta property="og:url" content="https://ml3x.com/answers/matrix-multiplication-rules.html">
+<meta property="og:image" content="https://ml3x.com/assets/og-image.png">
+<meta property="og:site_name" content="Zovo Tools">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="What Are the Rules for Matrix Multiplication?">
+<meta name="twitter:description" content="A(m*n) * B(n*p) = C(m*p). Inner dimensions must match. Formula explained.">
+<meta name="twitter:image" content="https://ml3x.com/assets/og-image.png">
+<link rel="stylesheet" href="/assets/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What are the rules for matrix multiplication?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A(m x n) times B(n x p) = C(m x p). The inner dimensions must match: columns of A must equal rows of B. Each element C[i][j] = sum of A[i][k] * B[k][j] for k from 1 to n. Matrix multiplication is NOT commutative: A*B does not generally equal B*A."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why is matrix multiplication not commutative?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Matrix multiplication is not commutative because A*B and B*A perform different dot products in different orders. In fact, if A is 2x3 and B is 3x4, then A*B is 2x4 but B*A is not even defined (dimensions 3x4 times 2x3 — inner dimensions 4 and 2 don't match)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What properties does matrix multiplication have?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Matrix multiplication is associative: (AB)C = A(BC). It is distributive: A(B+C) = AB + AC. It is NOT commutative: AB != BA in general. The identity matrix I satisfies AI = IA = A for any compatible matrix A."
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<header class="site-header">
+  <a href="/" class="site-logo">ML3X</a>
+  <nav class="site-nav">
+    <a href="/">Calculator</a>
+    <a href="/blog/">Blog</a>
+    <a href="/about.html">About</a>
+    <div class="nav-right">
+      <a href="https://zovo.one/pricing?utm_source=ml3x.com&amp;utm_medium=satellite&amp;utm_campaign=nav-link" class="nav-pro" target="_blank">Go Pro &#10022;</a>
+      <a href="https://zovo.one/tools" class="nav-zovo">Zovo Tools</a>
+    </div>
+  </nav>
+</header>
+
+<main style="max-width:720px;margin:0 auto;padding:2rem 1.5rem;">
+  <nav class="breadcrumb" aria-label="Breadcrumb" style="margin-bottom:1.5rem;font-size:0.9rem;">
+    <a href="/">Home</a> &rsaquo; <a href="/answers/">Answers</a> &rsaquo; <span>Matrix Multiplication Rules</span>
+  </nav>
+
+  <article>
+    <h1>What Are the Rules for Matrix Multiplication?</h1>
+
+    <p><strong>A(m&times;n) &times; B(n&times;p) = C(m&times;p). The inner dimensions must match: columns of A must equal rows of B. Element C[i][j] = sum of A[i][k] &times; B[k][j] for all k from 1 to n.</strong></p>
+
+    <h2>The Dimension Rule</h2>
+    <p>For multiplication to be defined, the number of <strong>columns in A</strong> must equal the number of <strong>rows in B</strong>:</p>
+    <pre style="background:var(--bg-secondary,#1a1a2e);padding:1rem;border-radius:8px;overflow-x:auto;"><code>A: m x [n]  *  B: [n] x p  =  C: m x p
+         ^          ^
+    must match</code></pre>
+    <p>The result matrix C has the <strong>outer dimensions</strong>: rows of A and columns of B.</p>
+
+    <h2>The Element Formula</h2>
+    <p>Each element of the result is a <strong>dot product</strong> of a row from A and a column from B:</p>
+    <pre style="background:var(--bg-secondary,#1a1a2e);padding:1rem;border-radius:8px;overflow-x:auto;"><code>C[i][j] = A[i][1]*B[1][j] + A[i][2]*B[2][j] + ... + A[i][n]*B[n][j]</code></pre>
+
+    <h2>Worked Example</h2>
+    <pre style="background:var(--bg-secondary,#1a1a2e);padding:1rem;border-radius:8px;overflow-x:auto;"><code>A = | 1  2  3 |    B = | 7   8  |
+    | 4  5  6 |        | 9  10  |
+                       | 11  12 |
+
+A is 2x3, B is 3x2, so C = A*B is 2x2.</code></pre>
+
+    <p>Computing each element:</p>
+    <ul>
+      <li>C[1][1] = 1&times;7 + 2&times;9 + 3&times;11 = 7 + 18 + 33 = <strong>58</strong></li>
+      <li>C[1][2] = 1&times;8 + 2&times;10 + 3&times;12 = 8 + 20 + 36 = <strong>64</strong></li>
+      <li>C[2][1] = 4&times;7 + 5&times;9 + 6&times;11 = 28 + 45 + 66 = <strong>139</strong></li>
+      <li>C[2][2] = 4&times;8 + 5&times;10 + 6&times;12 = 32 + 50 + 72 = <strong>154</strong></li>
+    </ul>
+
+    <pre style="background:var(--bg-secondary,#1a1a2e);padding:1rem;border-radius:8px;overflow-x:auto;"><code>C = |  58   64 |
+    | 139  154 |</code></pre>
+
+    <h2>Key Properties</h2>
+    <table style="width:100%;border-collapse:collapse;margin:1rem 0;">
+      <thead>
+        <tr style="border-bottom:2px solid var(--border,#333);">
+          <th style="text-align:left;padding:8px;">Property</th>
+          <th style="text-align:left;padding:8px;">Holds?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--border,#333);">
+          <td style="padding:8px;">Associative: (AB)C = A(BC)</td>
+          <td style="padding:8px;">Yes</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border,#333);">
+          <td style="padding:8px;">Distributive: A(B+C) = AB + AC</td>
+          <td style="padding:8px;">Yes</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border,#333);">
+          <td style="padding:8px;">Commutative: AB = BA</td>
+          <td style="padding:8px;">No (in general)</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--border,#333);">
+          <td style="padding:8px;">Identity: AI = IA = A</td>
+          <td style="padding:8px;">Yes</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>Use the <a href="/">ML3X matrix calculator</a> to multiply matrices up to 5&times;5 with full dot-product step-by-step breakdown for every element.</p>
+
+    <h2>Related Questions</h2>
+    <ul>
+      <li><a href="/answers/2x2-matrix-inverse.html">How do I find the inverse of a 2x2 matrix?</a></li>
+      <li><a href="/answers/3x3-determinant-formula.html">How do I calculate a 3x3 determinant?</a></li>
+      <li><a href="/tools/matrix-multiplication.html">Matrix multiplication calculator tool</a></li>
+      <li><a href="/tools/matrix-transpose.html">Matrix transpose tool</a></li>
+    </ul>
+
+    <div class="last-updated"><time datetime="2026-04-11">Last updated: April 11, 2026</time></div>
+  </article>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">Zovo Tools</div>
+        <div class="footer-tagline">Free developer tools by a solo dev. No tracking.</div>
+        <a href="https://zovo.one/pricing?utm_source=ml3x.com&amp;utm_medium=satellite&amp;utm_campaign=footer-link" class="footer-cta">Zovo Lifetime — $99 once, free forever &rarr;</a>
+        <div class="footer-copy">&copy; 2026 <a href="https://zovo.one">Zovo</a> &middot; 47/500 founding spots</div>
+    </div>
+</footer>
+
+<nav class="zovo-network" aria-label="Zovo Tools Network">
+    <div class="zovo-network-inner">
+        <h3 class="zovo-network-title">Explore More Tools</h3>
+        <div class="zovo-network-links">
+            <a href="https://abwex.com">ABWex — A/B Testing</a>
+            <a href="https://claudflow.com">ClaudFlow — Workflows</a>
+            <a href="https://claudhq.com">ClaudHQ — Prompts</a>
+            <a href="https://claudkit.com">ClaudKit — API</a>
+            <a href="https://enhio.com">Enhio — Text Tools</a>
+            <a href="https://epochpilot.com">EpochPilot — Timestamps</a>
+            <a href="https://gen8x.com">Gen8X — Color Tools</a>
+            <a href="https://gpt0x.com">GPT0X — AI Models</a>
+            <a href="https://heytensor.com">HeyTensor — ML Tools</a>
+            <a href="https://invokebot.com">InvokeBot — Webhooks</a>
+            <a href="https://kappafy.com">Kappafy — JSON</a>
+            <a href="https://kappakit.com">KappaKit — Dev Toolkit</a>
+            <a href="https://kickllm.com">KickLLM — LLM Costs</a>
+            <a href="https://krzen.com">Krzen — Image Tools</a>
+            <a href="https://lochbot.com">LochBot — Security</a>
+            <a href="https://lockml.com">LockML — ML Compare</a>
+        </div>
+    </div>
+</nav>
+</body>
+</html>
