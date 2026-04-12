@@ -90,6 +90,7 @@
   ]
 }
 </script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://ml3x.com/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://ml3x.com/tools/"},{"@type":"ListItem","position":3,"name":"Matrix Multiplication"}]}</script>
 </head>
 <body>
 <header class="site-header">
@@ -120,7 +121,7 @@
     <p style="text-align:center;font-family:monospace;font-size:1.1rem;margin:1.5rem 0;padding:1rem;background:var(--bg-secondary,#f5f5f5);border-radius:8px;">
       C[i][j] = &sum;<sub>k=1..n</sub> A[i][k] &middot; B[k][j]
     </p>
-    <p>This formula tells us that element C[i][j] is the dot product of row i of matrix A and column j of matrix B. For example, to compute C[1][2], you take the first row of A, the second column of B, multiply corresponding entries, and sum the results. The requirement that A has n columns and B has n rows is non-negotiable &mdash; without matching inner dimensions, the dot products are undefined.</p>
+    <p>This formula tells us that element C[i][j] is the dot product of row i of matrix A and column j of matrix B. For example, to compute C[1][2], you take the first row of A, the second column of B, multiply corresponding entries, and sum the results. The requirement that A has n columns and B has n rows is non-negotiable &mdash; without matching inner dimensions, the dot products are not defined.</p>
 
     <h2>Step-by-Step Example: 2&times;3 &times; 3&times;2</h2>
     <p>Consider A = [[1, 2, 3], [4, 5, 6]] and B = [[7, 8], [9, 10], [11, 12]]. Matrix A is 2&times;3 and B is 3&times;2, so the result C will be 2&times;2.</p>
@@ -208,7 +209,6 @@
     </div>
 </nav>
 
-<script src="/assets/js/share.js"></script>
 <script src="/assets/js/pro-nudge.js"></script>
 </body>
 </html>
