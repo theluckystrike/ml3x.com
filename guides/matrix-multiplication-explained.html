@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matrix Multiplication Explained — Step-by-Step Calculator & Guide | ML3X</title>
+<meta name="description" content="Learn how to multiply matrices step by step. Interactive calculator shows every dot product computation. Covers 2x2, 3x3, 4x4 matrix multiplication with rules, properties, and real-world applications.">
+<meta name="keywords" content="matrix multiplication explained, how to multiply matrices, matrix multiplication calculator, 3x3 matrix multiplication step by step, matrix multiplication rules, matrix multiplication examples">
+<link rel="canonical" href="https://ml3x.com/guides/matrix-multiplication-explained.html">
+
+<meta property="og:title" content="Matrix Multiplication Explained — Step-by-Step Calculator & Guide">
+<meta property="og:description" content="Interactive step-by-step matrix multiplication calculator. Learn the rules, see every dot product, and master matrix multiplication with visual examples.">
+<meta property="og:url" content="https://ml3x.com/guides/matrix-multiplication-explained.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Zovo Tools">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Matrix Multiplication Explained — Step-by-Step Calculator & Guide">
+<meta name="twitter:description" content="Interactive step-by-step matrix multiplication calculator with visual dot product breakdowns.">
+
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": "Matrix Multiplication Explained — Step-by-Step Calculator & Guide",
+      "description": "Comprehensive guide to matrix multiplication with an interactive step-by-step calculator. Covers rules, properties, special matrices, and real-world applications.",
+      "author": {
+        "@type": "Person",
+        "name": "Michael Lip",
+        "url": "https://zovo.one"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "ML3X",
+        "url": "https://ml3x.com"
+      },
+      "datePublished": "2026-05-16",
+      "dateModified": "2026-05-16",
+      "mainEntityOfPage": "https://ml3x.com/guides/matrix-multiplication-explained.html",
+      "image": "https://ml3x.com/assets/og-matrix-multiplication.png"
+    },
+    {
+      "@type": "HowTo",
+      "name": "How to Multiply Two Matrices",
+      "description": "Step-by-step instructions for multiplying matrices of any compatible size.",
+      "step": [
+        {
+          "@type": "HowToStep",
+          "position": 1,
+          "name": "Check Dimensions",
+          "text": "Verify that the number of columns in Matrix A equals the number of rows in Matrix B. If A is m x n and B is n x p, the result will be m x p."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 2,
+          "name": "Select Row and Column",
+          "text": "For each cell (i, j) in the result matrix, take row i from Matrix A and column j from Matrix B."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 3,
+          "name": "Compute Dot Product",
+          "text": "Multiply corresponding elements of the selected row and column, then sum all the products. This gives you the value for cell (i, j)."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 4,
+          "name": "Repeat for All Cells",
+          "text": "Repeat steps 2-3 for every cell in the result matrix until all m x p values are computed."
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is matrix multiplication?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Matrix multiplication is an operation that takes two matrices and produces a new matrix. Each element of the result is the dot product of a row from the first matrix and a column from the second matrix. It requires the number of columns in the first matrix to equal the number of rows in the second matrix."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do you multiply a 3x3 matrix?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "To multiply two 3x3 matrices, compute each of the 9 cells in the result by taking the dot product of the corresponding row from Matrix A and column from Matrix B. Each dot product involves multiplying 3 pairs of numbers and summing the results. The output is also a 3x3 matrix."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why is matrix multiplication not commutative?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Matrix multiplication is not commutative because AB does not generally equal BA. The row-column dot product structure means swapping the order changes which rows and columns are paired. In many cases, if AB is defined, BA may not even be defined due to incompatible dimensions."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What dimensions must matrices have to be multiplied?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "For two matrices to be multiplied, the number of columns in the first matrix must equal the number of rows in the second matrix. If Matrix A is m x n and Matrix B is n x p, the product AB will be an m x p matrix."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the time complexity of matrix multiplication?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The naive algorithm for multiplying two n x n matrices has O(n^3) time complexity. Strassen's algorithm reduces this to approximately O(n^2.807). The current best theoretical algorithm achieves roughly O(n^2.3728), though practical implementations typically use the naive or Strassen approach."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --surface2: #1a1a26;
+    --border: #2a2a3a;
+    --text: #e0e0e8;
+    --text-dim: #8888a0;
+    --accent: #6c5ce7;
+    --accent2: #a29bfe;
+    --green: #00cec9;
+    --orange: #fdcb6e;
+    --red: #ff6b6b;
+    --blue: #74b9ff;
+    --font-sans: 'IBM Plex Sans', -apple-system, sans-serif;
+    --font-mono: 'Space Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    font-size: 17px;
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 32px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav-logo {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent2);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    list-style: none;
+    gap: 28px;
+  }
+
+  .nav-links a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  .nav-right { display: flex; align-items: center; }
+
+  .nav-zovo {
+    color: var(--green);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid var(--green);
+    padding: 6px 14px;
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+
+  .nav-zovo:hover {
+    background: var(--green);
+    color: var(--bg);
+  }
+
+  .hero {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 60px 24px 40px;
+    text-align: center;
+  }
+
+  .hero h1 {
+    font-size: 2.6em;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, var(--accent2), var(--green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: 1.15em;
+    color: var(--text-dim);
+    max-width: 640px;
+    margin: 0 auto 24px;
+  }
+
+  .breadcrumb {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+  }
+
+  .breadcrumb a { color: var(--accent2); text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+
+  .content {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  h2 {
+    font-size: 1.7em;
+    margin: 56px 0 20px;
+    color: var(--text);
+    border-left: 4px solid var(--accent);
+    padding-left: 16px;
+  }
+
+  h3 {
+    font-size: 1.3em;
+    margin: 36px 0 14px;
+    color: var(--accent2);
+  }
+
+  p { margin-bottom: 18px; }
+
+  a { color: var(--accent2); }
+
+  strong { color: #fff; font-weight: 600; }
+
+  .formula-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin: 28px 0;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 1.2em;
+  }
+
+  .formula-box .big {
+    font-size: 1.5em;
+    color: var(--accent2);
+    margin: 12px 0;
+  }
+
+  .formula-box .label {
+    font-family: var(--font-sans);
+    font-size: 0.8em;
+    color: var(--text-dim);
+    margin-top: 8px;
+  }
+
+  .example-grid {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    margin: 28px 0;
+    overflow-x: auto;
+    padding: 12px 0;
+  }
+
+  .matrix-display {
+    display: inline-grid;
+    gap: 2px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 8px;
+    background: var(--surface);
+  }
+
+  .matrix-display.cols-2 { grid-template-columns: repeat(2, 48px); }
+  .matrix-display.cols-3 { grid-template-columns: repeat(3, 48px); }
+
+  .matrix-display .cell {
+    width: 48px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 15px;
+    background: var(--surface2);
+    border-radius: 4px;
+  }
+
+  .matrix-display .cell.highlight-row { background: rgba(108, 92, 231, 0.25); border: 1px solid var(--accent); }
+  .matrix-display .cell.highlight-col { background: rgba(0, 206, 201, 0.25); border: 1px solid var(--green); }
+  .matrix-display .cell.highlight-result { background: rgba(253, 203, 110, 0.25); border: 1px solid var(--orange); }
+
+  .op-symbol {
+    font-family: var(--font-mono);
+    font-size: 1.6em;
+    color: var(--text-dim);
+    padding: 0 4px;
+  }
+
+  .step-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 16px 0;
+  }
+
+  .step-box .step-title {
+    font-weight: 600;
+    color: var(--green);
+    margin-bottom: 8px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+  }
+
+  .step-box .step-calc {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    color: var(--accent2);
+    margin: 8px 0;
+  }
+
+  .property-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    margin: 16px 0;
+  }
+
+  .property-card .prop-name {
+    font-weight: 700;
+    color: var(--orange);
+    font-size: 1.05em;
+    margin-bottom: 8px;
+  }
+
+  .property-card .prop-formula {
+    font-family: var(--font-mono);
+    color: var(--accent2);
+    margin: 8px 0;
+    font-size: 15px;
+  }
+
+  .app-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .app-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+  }
+
+  .app-card h4 {
+    color: var(--green);
+    margin-bottom: 8px;
+    font-size: 1em;
+  }
+
+  .app-card p {
+    font-size: 0.92em;
+    color: var(--text-dim);
+    margin-bottom: 0;
+  }
+
+  .mistake-item {
+    background: var(--surface);
+    border-left: 3px solid var(--red);
+    padding: 16px 20px;
+    margin: 12px 0;
+    border-radius: 0 8px 8px 0;
+  }
+
+  .mistake-item .wrong { color: var(--red); font-weight: 600; }
+  .mistake-item .right { color: var(--green); font-weight: 600; }
+
+  .complexity-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 15px;
+  }
+
+  .complexity-table th,
+  .complexity-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .complexity-table th {
+    background: var(--surface);
+    color: var(--accent2);
+    font-weight: 600;
+  }
+
+  .complexity-table td { color: var(--text-dim); }
+  .complexity-table td:first-child { color: var(--text); font-weight: 500; }
+
+  .faq-section { margin-top: 48px; }
+
+  .faq-item {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin: 12px 0;
+    overflow: hidden;
+  }
+
+  .faq-q {
+    padding: 18px 24px;
+    font-weight: 600;
+    cursor: pointer;
+    background: var(--surface);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+  }
+
+  .faq-q::after {
+    content: '+';
+    font-family: var(--font-mono);
+    font-size: 1.3em;
+    color: var(--accent2);
+    transition: transform 0.2s;
+  }
+
+  .faq-q.open::after { content: '-'; }
+
+  .faq-a {
+    padding: 0 24px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s, padding 0.3s;
+    color: var(--text-dim);
+  }
+
+  .faq-a.open {
+    max-height: 400px;
+    padding: 16px 24px 20px;
+  }
+
+  /* Calculator Tool Styles */
+  .calc-tool {
+    background: var(--surface);
+    border: 2px solid var(--accent);
+    border-radius: 16px;
+    padding: 32px;
+    margin: 36px 0;
+  }
+
+  .calc-tool h3 {
+    text-align: center;
+    margin-top: 0;
+    font-size: 1.4em;
+    color: var(--accent2);
+  }
+
+  .calc-controls {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 20px 0;
+  }
+
+  .calc-matrix-section {
+    flex: 1;
+    min-width: 200px;
+    max-width: 320px;
+  }
+
+  .calc-matrix-section label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--accent2);
+    font-family: var(--font-mono);
+    font-size: 14px;
+  }
+
+  .dim-select {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+
+  .dim-select select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+  }
+
+  .matrix-input-grid {
+    display: inline-grid;
+    gap: 4px;
+  }
+
+  .matrix-input-grid input {
+    width: 56px;
+    height: 42px;
+    text-align: center;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    font-family: var(--font-mono);
+    font-size: 15px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .matrix-input-grid input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--bg);
+  }
+
+  .matrix-input-grid input.hl-row {
+    background: rgba(108, 92, 231, 0.2);
+    border-color: var(--accent);
+  }
+
+  .matrix-input-grid input.hl-col {
+    background: rgba(0, 206, 201, 0.2);
+    border-color: var(--green);
+  }
+
+  .calc-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin: 24px 0 16px;
+    flex-wrap: wrap;
+  }
+
+  .calc-buttons button {
+    padding: 12px 28px;
+    border: none;
+    border-radius: 8px;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-calc {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .btn-calc:hover { background: var(--accent2); }
+
+  .btn-step {
+    background: var(--green);
+    color: var(--bg);
+  }
+
+  .btn-step:hover { opacity: 0.85; }
+
+  .btn-reset {
+    background: var(--surface2);
+    color: var(--text-dim);
+    border: 1px solid var(--border) !important;
+  }
+
+  .btn-reset:hover { color: var(--text); border-color: var(--text-dim) !important; }
+
+  .btn-example {
+    background: transparent;
+    color: var(--orange);
+    border: 1px solid var(--orange) !important;
+    font-size: 13px;
+    padding: 8px 16px;
+  }
+
+  .btn-example:hover { background: rgba(253, 203, 110, 0.1); }
+
+  .calc-error {
+    background: rgba(255, 107, 107, 0.1);
+    border: 1px solid var(--red);
+    border-radius: 8px;
+    padding: 14px 20px;
+    color: var(--red);
+    text-align: center;
+    margin: 16px 0;
+    display: none;
+    font-size: 15px;
+  }
+
+  .calc-result {
+    margin-top: 24px;
+    display: none;
+  }
+
+  .result-label {
+    text-align: center;
+    font-weight: 600;
+    color: var(--orange);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  .result-matrix {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .result-grid {
+    display: inline-grid;
+    gap: 4px;
+    border: 2px solid var(--orange);
+    border-radius: 8px;
+    padding: 10px;
+    background: var(--bg);
+  }
+
+  .result-grid .r-cell {
+    width: 64px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    background: var(--surface2);
+    border-radius: 4px;
+    transition: background 0.3s;
+  }
+
+  .result-grid .r-cell.current {
+    background: rgba(253, 203, 110, 0.3);
+    border: 1px solid var(--orange);
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .step-detail {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 16px;
+    text-align: center;
+    display: none;
+  }
+
+  .step-detail .step-info {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+
+  .step-detail .step-formula {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    color: var(--accent2);
+    margin: 10px 0;
+    line-height: 1.6;
+    word-break: break-all;
+  }
+
+  .step-detail .step-value {
+    font-family: var(--font-mono);
+    font-size: 1.3em;
+    color: var(--orange);
+    font-weight: 700;
+    margin-top: 8px;
+  }
+
+  .step-nav {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 16px;
+  }
+
+  .step-nav button {
+    padding: 8px 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+
+  .step-nav button:hover { border-color: var(--accent); }
+  .step-nav button:disabled { opacity: 0.3; cursor: default; }
+
+  ul, ol {
+    margin: 12px 0 18px 24px;
+  }
+
+  li { margin-bottom: 6px; }
+
+  .internal-links {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    margin: 40px 0;
+  }
+
+  .internal-links h4 {
+    color: var(--accent2);
+    margin-bottom: 12px;
+  }
+
+  .internal-links a {
+    display: block;
+    color: var(--green);
+    text-decoration: none;
+    padding: 6px 0;
+    font-size: 15px;
+  }
+
+  .internal-links a:hover { text-decoration: underline; }
+
+  footer {
+    text-align: center;
+    padding: 40px 24px;
+    color: var(--text-dim);
+    font-size: 14px;
+    border-top: 1px solid var(--border);
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  footer a { color: var(--accent2); text-decoration: none; }
+
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 32px 0;
+  }
+
+  .toc h4 {
+    color: var(--accent2);
+    margin-bottom: 12px;
+    font-size: 0.95em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .toc ol { margin: 0; padding-left: 20px; }
+
+  .toc li {
+    margin-bottom: 6px;
+    font-size: 15px;
+  }
+
+  .toc a {
+    color: var(--text-dim);
+    text-decoration: none;
+  }
+
+  .toc a:hover { color: var(--text); }
+
+  .diagram-flex {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: center;
+    margin: 24px 0;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 700px) {
+    .nav { padding: 12px 16px; }
+    .nav-links { gap: 14px; }
+    .nav-links a { font-size: 13px; }
+    .hero h1 { font-size: 1.7em; }
+    .calc-controls { flex-direction: column; align-items: center; }
+    .example-grid { grid-template-columns: 1fr; gap: 8px; justify-items: center; }
+    .op-symbol { font-size: 1.2em; }
+    h2 { font-size: 1.35em; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-logo">ml3x</a>
+  <ul class="nav-links">
+    <li><a href="/">Calculator</a></li>
+    <li><a href="/guides/">Guides</a></li>
+    <li><a href="/answers/">Answers</a></li>
+    <li><a href="/blog/">Blog</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="https://zovo.one/tools" class="nav-zovo">Zovo Tools</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="breadcrumb"><a href="/">ML3X</a> / <a href="/guides/">Guides</a> / Matrix Multiplication</div>
+  <h1>Matrix Multiplication Explained</h1>
+  <p class="hero-sub">A complete step-by-step guide with an interactive calculator that shows every dot product computation. Master 2x2, 3x3, and larger matrix multiplication.</p>
+</header>
+
+<main class="content">
+
+  <nav class="toc">
+    <h4>Table of Contents</h4>
+    <ol>
+      <li><a href="#what-is">What Is Matrix Multiplication?</a></li>
+      <li><a href="#calculator">Interactive Calculator</a></li>
+      <li><a href="#dimension-rule">The Dimension Rule</a></li>
+      <li><a href="#step-by-step">Step-by-Step Walkthrough</a></li>
+      <li><a href="#properties">Properties of Matrix Multiplication</a></li>
+      <li><a href="#special-matrices">Special Matrices</a></li>
+      <li><a href="#applications">Real-World Applications</a></li>
+      <li><a href="#mistakes">Common Mistakes</a></li>
+      <li><a href="#complexity">Computational Complexity</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ol>
+  </nav>
+
+  <!-- SECTION 1: What Is Matrix Multiplication -->
+  <h2 id="what-is">What Is Matrix Multiplication?</h2>
+
+  <p><strong>Matrix multiplication</strong> is a fundamental operation in linear algebra that combines two matrices to produce a third matrix. Unlike scalar multiplication where you simply multiply two numbers, matrix multiplication follows a specific pattern: each entry in the result is the <strong>dot product</strong> of a row from the first matrix and a column from the second matrix.</p>
+
+  <p>Formally, if <strong>A</strong> is an <em>m x n</em> matrix and <strong>B</strong> is an <em>n x p</em> matrix, their product <strong>C = AB</strong> is an <em>m x p</em> matrix where each element is defined as:</p>
+
+  <div class="formula-box">
+    <div class="label">Element (i, j) of the result matrix C</div>
+    <div class="big">C(i,j) = A(i,1)B(1,j) + A(i,2)B(2,j) + ... + A(i,n)B(n,j)</div>
+    <div class="label">Sum of element-wise products of row i from A and column j from B</div>
+  </div>
+
+  <p>In plain language: to find the value in row <em>i</em>, column <em>j</em> of the result, you take the entire row <em>i</em> from the first matrix and the entire column <em>j</em> from the second matrix, multiply them element by element, and add the products together. This operation is known as the <strong>dot product</strong> (or inner product).</p>
+
+  <p>Here is a visual diagram showing how a single cell in the result matrix is computed. The highlighted row from Matrix A and the highlighted column from Matrix B combine to form one element in the result:</p>
+
+  <div class="example-grid">
+    <div class="matrix-display cols-2">
+      <div class="cell highlight-row">1</div>
+      <div class="cell highlight-row">2</div>
+      <div class="cell">3</div>
+      <div class="cell">4</div>
+    </div>
+    <div class="op-symbol">&times;</div>
+    <div class="matrix-display cols-2">
+      <div class="cell highlight-col">5</div>
+      <div class="cell">6</div>
+      <div class="cell highlight-col">7</div>
+      <div class="cell">8</div>
+    </div>
+    <div class="op-symbol">=</div>
+    <div class="matrix-display cols-2">
+      <div class="cell highlight-result">19</div>
+      <div class="cell">?</div>
+      <div class="cell">?</div>
+      <div class="cell">?</div>
+    </div>
+  </div>
+
+  <div class="step-box">
+    <div class="step-title">How C(1,1) = 19</div>
+    <div class="step-calc">Row 1 of A: [1, 2]</div>
+    <div class="step-calc">Col 1 of B: [5, 7]</div>
+    <div class="step-calc">(1 x 5) + (2 x 7) = 5 + 14 = <strong style="color:#fdcb6e">19</strong></div>
+  </div>
+
+  <p>This process repeats for every cell in the result matrix. A 2x2 times 2x2 multiplication requires 4 dot products. A 3x3 times 3x3 requires 9 dot products. Each dot product involves <em>n</em> multiplications and <em>n-1</em> additions, where <em>n</em> is the shared dimension.</p>
+
+  <!-- INTERACTIVE CALCULATOR -->
+  <h2 id="calculator">Interactive Matrix Multiplication Calculator</h2>
+
+  <p>Use this calculator to multiply any two matrices up to 6x6. Enter your values, then click <strong>Calculate</strong> for the instant result or <strong>Step-by-Step</strong> to walk through each cell computation with highlighting.</p>
+
+  <div class="calc-tool">
+    <h3>Matrix Multiplication Calculator</h3>
+
+    <div class="calc-controls">
+      <div class="calc-matrix-section">
+        <label>Matrix A</label>
+        <div class="dim-select">
+          Rows: <select id="aRows" onchange="rebuildMatrices()">
+            <option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option>
+          </select>
+          Cols: <select id="aCols" onchange="rebuildMatrices()">
+            <option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option>
+          </select>
+        </div>
+        <div id="matrixAGrid" class="matrix-input-grid"></div>
+      </div>
+
+      <div style="display:flex;align-items:center;font-size:2em;color:var(--text-dim);padding-top:30px;">&times;</div>
+
+      <div class="calc-matrix-section">
+        <label>Matrix B</label>
+        <div class="dim-select">
+          Rows: <select id="bRows" onchange="rebuildMatrices()">
+            <option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option>
+          </select>
+          Cols: <select id="bCols" onchange="rebuildMatrices()">
+            <option value="2" selected>2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option>
+          </select>
+        </div>
+        <div id="matrixBGrid" class="matrix-input-grid"></div>
+      </div>
+    </div>
+
+    <div class="calc-buttons">
+      <button class="btn-calc" onclick="calculate()">Calculate</button>
+      <button class="btn-step" onclick="startStepMode()">Step-by-Step</button>
+      <button class="btn-reset" onclick="resetCalc()">Reset</button>
+      <button class="btn-example" onclick="loadExample(2)">2x2 Example</button>
+      <button class="btn-example" onclick="loadExample(3)">3x3 Example</button>
+    </div>
+
+    <div class="calc-error" id="calcError"></div>
+
+    <div class="calc-result" id="calcResult">
+      <div class="result-label">Result Matrix C = A &times; B</div>
+      <div class="result-matrix">
+        <div class="result-grid" id="resultGrid"></div>
+      </div>
+      <div class="step-detail" id="stepDetail">
+        <div class="step-info" id="stepInfo"></div>
+        <div class="step-formula" id="stepFormula"></div>
+        <div class="step-value" id="stepValue"></div>
+        <div class="step-nav">
+          <button onclick="prevStep()" id="btnPrev" disabled>Previous</button>
+          <button onclick="nextStep()" id="btnNext">Next</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: Dimension Rule -->
+  <h2 id="dimension-rule">The Dimension Rule: When Can You Multiply?</h2>
+
+  <p>Not all pairs of matrices can be multiplied. The <strong>dimension compatibility rule</strong> is the single most important prerequisite to check before attempting matrix multiplication.</p>
+
+  <div class="formula-box">
+    <div class="label">The Dimension Rule</div>
+    <div class="big">(m &times; n) &times; (n &times; p) = (m &times; p)</div>
+    <div class="label">Columns of A must equal rows of B. The result has rows of A and columns of B.</div>
+  </div>
+
+  <p>The inner dimensions must match. The number of <strong>columns</strong> in Matrix A must equal the number of <strong>rows</strong> in Matrix B. If they do not match, the multiplication is <strong>undefined</strong>, meaning it cannot be performed.</p>
+
+  <h3>Examples of Compatible Dimensions</h3>
+  <ul>
+    <li><strong>(2x3) &times; (3x2)</strong> = 2x2 result. The inner dimension 3 matches.</li>
+    <li><strong>(3x3) &times; (3x3)</strong> = 3x3 result. Square matrices of equal size are always compatible.</li>
+    <li><strong>(4x2) &times; (2x5)</strong> = 4x5 result. The inner dimension 2 matches.</li>
+    <li><strong>(1x4) &times; (4x1)</strong> = 1x1 result. A row vector times a column vector gives a scalar.</li>
+  </ul>
+
+  <h3>Examples of Incompatible Dimensions</h3>
+  <ul>
+    <li><strong>(2x3) &times; (2x3)</strong> cannot be multiplied. Columns of A (3) does not equal rows of B (2).</li>
+    <li><strong>(4x4) &times; (3x4)</strong> cannot be multiplied. Columns of A (4) does not equal rows of B (3).</li>
+  </ul>
+
+  <p>This rule also shows why matrix multiplication is generally <strong>not commutative</strong>. Even if AB is defined, BA might have different dimensions or might not be defined at all. For example, a (2x3) times (3x4) gives a 2x4 matrix, but (3x4) times (2x3) cannot be computed because the inner dimensions (4 and 2) do not match.</p>
+
+  <!-- SECTION 3: Step by Step -->
+  <h2 id="step-by-step">Step-by-Step Walkthrough</h2>
+
+  <h3>2x2 Matrix Multiplication</h3>
+
+  <p>Let us multiply two 2x2 matrices step by step. This is the simplest non-trivial case and the best place to build intuition.</p>
+
+  <div class="example-grid">
+    <div class="matrix-display cols-2">
+      <div class="cell">1</div><div class="cell">2</div>
+      <div class="cell">3</div><div class="cell">4</div>
+    </div>
+    <div class="op-symbol">&times;</div>
+    <div class="matrix-display cols-2">
+      <div class="cell">5</div><div class="cell">6</div>
+      <div class="cell">7</div><div class="cell">8</div>
+    </div>
+    <div class="op-symbol">=</div>
+    <div class="matrix-display cols-2">
+      <div class="cell">19</div><div class="cell">22</div>
+      <div class="cell">43</div><div class="cell">50</div>
+    </div>
+  </div>
+
+  <div class="step-box">
+    <div class="step-title">Cell (1,1): Row 1 of A dot Column 1 of B</div>
+    <div class="step-calc">(1)(5) + (2)(7) = 5 + 14 = <strong style="color:#fdcb6e">19</strong></div>
+  </div>
+
+  <div class="step-box">
+    <div class="step-title">Cell (1,2): Row 1 of A dot Column 2 of B</div>
+    <div class="step-calc">(1)(6) + (2)(8) = 6 + 16 = <strong style="color:#fdcb6e">22</strong></div>
+  </div>
+
+  <div class="step-box">
+    <div class="step-title">Cell (2,1): Row 2 of A dot Column 1 of B</div>
+    <div class="step-calc">(3)(5) + (4)(7) = 15 + 28 = <strong style="color:#fdcb6e">43</strong></div>
+  </div>
+
+  <div class="step-box">
+    <div class="step-title">Cell (2,2): Row 2 of A dot Column 2 of B</div>
+    <div class="step-calc">(3)(6) + (4)(8) = 18 + 32 = <strong style="color:#fdcb6e">50</strong></div>
+  </div>
+
+  <p>A 2x2 multiplication requires <strong>4 dot products</strong>, each involving 2 multiplications and 1 addition, for a total of <strong>8 multiplications and 4 additions</strong>.</p>
+
+  <h3>3x3 Matrix Multiplication</h3>
+
+  <p>Now let us tackle a 3x3 example. The process is identical but with more cells to compute. Each dot product now involves 3 terms.</p>
+
+  <div class="example-grid">
+    <div class="matrix-display cols-3">
+      <div class="cell">1</div><div class="cell">2</div><div class="cell">3</div>
+      <div class="cell">4</div><div class="cell">5</div><div class="cell">6</div>
+      <div class="cell">7</div><div class="cell">8</div><div class="cell">9</div>
+    </div>
+    <div class="op-symbol">&times;</div>
+    <div class="matrix-display cols-3">
+      <div class="cell">9</div><div class="cell">8</div><div class="cell">7</div>
+      <div class="cell">6</div><div class="cell">5</div><div class="cell">4</div>
+      <div class="cell">3</div><div class="cell">2</div><div class="cell">1</div>
+    </div>
+    <div class="op-symbol">=</div>
+    <div class="matrix-display cols-3">
+      <div class="cell">30</div><div class="cell">24</div><div class="cell">18</div>
+      <div class="cell">84</div><div class="cell">69</div><div class="cell">54</div>
+      <div class="cell">138</div><div class="cell">114</div><div class="cell">90</div>
+    </div>
+  </div>
+
+  <div class="step-box">
+    <div class="step-title">Cell (1,1): Row 1 of A dot Column 1 of B</div>
+    <div class="step-calc">(1)(9) + (2)(6) + (3)(3) = 9 + 12 + 9 = <strong style="color:#fdcb6e">30</strong></div>
+  </div>
+
+  <div class="step-box">
+    <div class="step-title">Cell (1,2): Row 1 of A dot Column 2 of B</div>
+    <div class="step-calc">(1)(8) + (2)(5) + (3)(2) = 8 + 10 + 6 = <strong style="color:#fdcb6e">24</strong></div>
+  </div>
+
+  <div class="step-box">
+    <div class="step-title">Cell (1,3): Row 1 of A dot Column 3 of B</div>
+    <div class="step-calc">(1)(7) + (2)(4) + (3)(1) = 7 + 8 + 3 = <strong style="color:#fdcb6e">18</strong></div>
+  </div>
+
+  <div class="step-box">
+    <div class="step-title">Cell (2,1): Row 2 of A dot Column 1 of B</div>
+    <div class="step-calc">(4)(9) + (5)(6) + (6)(3) = 36 + 30 + 18 = <strong style="color:#fdcb6e">84</strong></div>
+  </div>
+
+  <p>The remaining cells follow the same pattern. A 3x3 multiplication requires <strong>9 dot products</strong> with 3 multiplications each, giving <strong>27 multiplications and 18 additions</strong> total. You can use the interactive calculator above to verify these results and see all 9 cells computed step by step.</p>
+
+  <!-- SECTION 4: Properties -->
+  <h2 id="properties">Properties of Matrix Multiplication</h2>
+
+  <p>Matrix multiplication has several important algebraic properties that distinguish it from regular number multiplication. Understanding these properties is essential for working with matrices in any applied context.</p>
+
+  <div class="property-card">
+    <div class="prop-name">Not Commutative</div>
+    <div class="prop-formula">AB &ne; BA (in general)</div>
+    <p>This is the most important distinction from scalar multiplication. Changing the order of matrices usually gives a different result. In fact, even if AB is defined, BA might not be defined at all. For square matrices where both products exist, the results are typically different. There are special cases where AB = BA (for example, when B is the identity matrix, or when both matrices are diagonal), but these are exceptions rather than the rule.</p>
+  </div>
+
+  <div class="property-card">
+    <div class="prop-name">Associative</div>
+    <div class="prop-formula">(AB)C = A(BC)</div>
+    <p>You can group matrix multiplications in any order without changing the result. While the final answer is the same, the choice of grouping can dramatically affect computational cost. The <strong>matrix chain multiplication problem</strong> exploits this property to find the most efficient grouping, potentially reducing billions of operations to millions.</p>
+  </div>
+
+  <div class="property-card">
+    <div class="prop-name">Distributive</div>
+    <div class="prop-formula">A(B + C) = AB + AC &nbsp;&nbsp;and&nbsp;&nbsp; (B + C)A = BA + CA</div>
+    <p>Matrix multiplication distributes over matrix addition, both from the left and from the right. Note that the order matters because multiplication is not commutative: A(B + C) and (B + C)A are generally different.</p>
+  </div>
+
+  <div class="property-card">
+    <div class="prop-name">Transpose Rule</div>
+    <div class="prop-formula">(AB)^T = B^T A^T</div>
+    <p>The transpose of a product is the product of transposes in reverse order. This "reversal" property extends to products of three or more matrices: (ABC)^T = C^T B^T A^T. This property is used extensively in deriving machine learning backpropagation equations and in optimization theory.</p>
+  </div>
+
+  <div class="property-card">
+    <div class="prop-name">Multiplicative Identity</div>
+    <div class="prop-formula">AI = IA = A</div>
+    <p>The identity matrix <strong>I</strong> acts like the number 1. Multiplying any matrix by the identity matrix (of compatible size) returns the original matrix unchanged. This property is fundamental to matrix inverses, where A times A-inverse equals the identity.</p>
+  </div>
+
+  <div class="property-card">
+    <div class="prop-name">Zero Product Anomaly</div>
+    <div class="prop-formula">AB = 0 does not imply A = 0 or B = 0</div>
+    <p>Unlike regular numbers, two nonzero matrices can multiply to give the zero matrix. For example, multiplying [[1, 0], [0, 0]] by [[0, 0], [0, 1]] gives the 2x2 zero matrix, even though neither input is zero. This makes "dividing" by a matrix (when possible) a more delicate operation than dividing real numbers.</p>
+  </div>
+
+  <!-- SECTION 5: Special Matrices -->
+  <h2 id="special-matrices">Special Matrices in Multiplication</h2>
+
+  <p>Certain matrices have special behavior under multiplication that makes them particularly useful in both theory and applications.</p>
+
+  <h3>Identity Matrix (I)</h3>
+  <p>The identity matrix is a square matrix with 1s on the diagonal and 0s everywhere else. It is the multiplicative neutral element: <strong>AI = IA = A</strong> for any compatible matrix A. The 3x3 identity matrix looks like:</p>
+
+  <div class="diagram-flex">
+    <div class="matrix-display cols-3">
+      <div class="cell" style="color:var(--green)">1</div><div class="cell">0</div><div class="cell">0</div>
+      <div class="cell">0</div><div class="cell" style="color:var(--green)">1</div><div class="cell">0</div>
+      <div class="cell">0</div><div class="cell">0</div><div class="cell" style="color:var(--green)">1</div>
+    </div>
+  </div>
+
+  <h3>Zero Matrix (0)</h3>
+  <p>A matrix where every entry is 0. Multiplying any matrix by a zero matrix of compatible size gives a zero matrix: <strong>A &times; 0 = 0</strong>. The zero matrix acts like the number 0 in multiplication.</p>
+
+  <h3>Diagonal Matrix</h3>
+  <p>A square matrix where all off-diagonal entries are zero. Multiplying by a diagonal matrix <strong>scales</strong> each row (left multiplication) or each column (right multiplication) independently. Diagonal matrices commute with each other, providing one of the rare cases where AB = BA. They are extremely efficient to work with computationally since the multiplication reduces from O(n^3) to O(n^2).</p>
+
+  <h3>Symmetric Matrix</h3>
+  <p>A matrix equal to its own transpose: <strong>A = A^T</strong>. While the product of two symmetric matrices is not generally symmetric, the expression <strong>A^T A</strong> is always symmetric for any matrix A. This appears everywhere in statistics (covariance matrices) and optimization (normal equations for least squares).</p>
+
+  <h3>Orthogonal Matrix</h3>
+  <p>A square matrix whose transpose equals its inverse: <strong>Q^T Q = QQ^T = I</strong>. Orthogonal matrices preserve lengths and angles, making them essential for rotations in computer graphics and physics simulations. Their inverses are trivially computed by transposition.</p>
+
+  <!-- SECTION 6: Applications -->
+  <h2 id="applications">Real-World Applications</h2>
+
+  <p>Matrix multiplication is not an abstract exercise. It powers critical computations across nearly every field of science and engineering. Here are the most significant applications.</p>
+
+  <div class="app-grid">
+    <div class="app-card">
+      <h4>Computer Graphics</h4>
+      <p>Every 3D object you see on screen is transformed by matrix multiplication. Translation, rotation, scaling, and perspective projection are all encoded as 4x4 matrices. Your GPU performs billions of matrix multiplications per second to render each frame.</p>
+    </div>
+    <div class="app-card">
+      <h4>Machine Learning</h4>
+      <p>Neural networks are fundamentally chains of matrix multiplications followed by nonlinear activations. A single layer computes y = Wx + b, where W is a weight matrix. Training adjusts these matrices through backpropagation, which itself relies on matrix calculus.</p>
+    </div>
+    <div class="app-card">
+      <h4>Cryptography</h4>
+      <p>The Hill cipher encrypts text by multiplying plaintext vectors by a key matrix over a finite field. Modern lattice-based cryptography, considered quantum-resistant, relies on the hardness of certain problems expressed as matrix equations.</p>
+    </div>
+    <div class="app-card">
+      <h4>Physics Simulations</h4>
+      <p>Quantum mechanics describes states as vectors and observables as matrices. The time evolution of quantum systems is computed through matrix exponentiation. Classical mechanics uses rotation matrices to transform coordinate systems.</p>
+    </div>
+    <div class="app-card">
+      <h4>Economics & Finance</h4>
+      <p>Input-output models by Leontief use matrix multiplication to model how industries depend on each other. Portfolio optimization, risk analysis (covariance matrices), and Markov chain models for market states all rely heavily on matrix operations.</p>
+    </div>
+    <div class="app-card">
+      <h4>Search Engines</h4>
+      <p>Google's original PageRank algorithm computes the dominant eigenvector of a web link matrix through repeated matrix-vector multiplication (power iteration). This determines the relative importance of every page on the internet.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 7: Mistakes -->
+  <h2 id="mistakes">Common Mistakes and How to Avoid Them</h2>
+
+  <p>Matrix multiplication trips up beginners (and sometimes experts) in predictable ways. Here are the most frequent errors and how to avoid each one.</p>
+
+  <div class="mistake-item">
+    <p><span class="wrong">Mistake: Multiplying element by element.</span></p>
+    <p>Many beginners compute C(i,j) = A(i,j) &times; B(i,j). This is the <strong>Hadamard product</strong>, a valid operation but completely different from standard matrix multiplication. True matrix multiplication uses the dot product of rows and columns, not element-wise pairing.</p>
+    <p><span class="right">Fix: Always take row i from A and column j from B, multiply corresponding pairs, and sum.</span></p>
+  </div>
+
+  <div class="mistake-item">
+    <p><span class="wrong">Mistake: Assuming AB = BA.</span></p>
+    <p>Treating matrices like regular numbers and swapping order is one of the most dangerous errors in linear algebra. It can silently produce wrong results in derivations, code, and proofs.</p>
+    <p><span class="right">Fix: Always preserve the order. Write out which matrix is on the left and which is on the right. If you need BA, compute it separately.</span></p>
+  </div>
+
+  <div class="mistake-item">
+    <p><span class="wrong">Mistake: Ignoring dimension compatibility.</span></p>
+    <p>Attempting to multiply a (3x2) matrix by a (3x4) matrix without checking that the inner dimensions match. Many programming errors stem from shape mismatches that produce confusing runtime errors.</p>
+    <p><span class="right">Fix: Before multiplying, always verify that the number of columns in A equals the number of rows in B. Write down the dimensions: (m x n)(n x p) = (m x p).</span></p>
+  </div>
+
+  <div class="mistake-item">
+    <p><span class="wrong">Mistake: Losing track of which row and column you are computing.</span></p>
+    <p>In larger matrices, it is easy to use the wrong row or column, especially when doing computations by hand. One misaligned index propagates errors through the entire result.</p>
+    <p><span class="right">Fix: Label each computation explicitly. Write "C(2,3) = Row 2 of A dot Col 3 of B" before computing. Use the step-by-step calculator above to check your work.</span></p>
+  </div>
+
+  <div class="mistake-item">
+    <p><span class="wrong">Mistake: Forgetting to sum the products.</span></p>
+    <p>Computing the individual products (a1*b1, a2*b2, ...) but forgetting to add them together, leaving a vector instead of a scalar for each cell.</p>
+    <p><span class="right">Fix: The dot product always produces a single number. If your result for one cell has multiple values, you have not finished the computation.</span></p>
+  </div>
+
+  <!-- SECTION 8: Complexity -->
+  <h2 id="complexity">Computational Complexity</h2>
+
+  <p>How expensive is matrix multiplication? This question has driven decades of research in computer science and remains an active area of investigation. The answer depends on both the algorithm used and the matrix size.</p>
+
+  <p>For two <em>n x n</em> matrices, the <strong>naive algorithm</strong> (the row-times-column method we have been using) requires exactly n^3 multiplications and n^2(n-1) additions, giving an overall time complexity of <strong>O(n^3)</strong>. Doubling the matrix size increases computation time by a factor of 8.</p>
+
+  <p>In 1969, Volker Strassen discovered a breakthrough: you can multiply two 2x2 matrices using only <strong>7 multiplications</strong> instead of the naive 8, at the cost of more additions. Applied recursively, this reduces the asymptotic complexity to <strong>O(n^2.807)</strong>. For large matrices (typically n > 64), Strassen's algorithm provides a measurable speedup.</p>
+
+  <table class="complexity-table">
+    <thead>
+      <tr>
+        <th>Algorithm</th>
+        <th>Complexity</th>
+        <th>Year</th>
+        <th>Practical Use</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Naive (schoolbook)</td>
+        <td>O(n^3)</td>
+        <td>Classical</td>
+        <td>Standard for small matrices</td>
+      </tr>
+      <tr>
+        <td>Strassen</td>
+        <td>O(n^2.807)</td>
+        <td>1969</td>
+        <td>Used in practice for large n</td>
+      </tr>
+      <tr>
+        <td>Coppersmith-Winograd</td>
+        <td>O(n^2.376)</td>
+        <td>1990</td>
+        <td>Theoretical only</td>
+      </tr>
+      <tr>
+        <td>Alman-Williams</td>
+        <td>O(n^2.3728)</td>
+        <td>2024</td>
+        <td>Theoretical only</td>
+      </tr>
+      <tr>
+        <td>Theoretical lower bound</td>
+        <td>O(n^2) (conjectured)</td>
+        <td>Open</td>
+        <td>Unknown if achievable</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>In practice, most matrix multiplication in scientific computing uses highly optimized implementations of the naive algorithm that exploit <strong>CPU cache hierarchies, SIMD instructions, and GPU parallelism</strong>. Libraries like BLAS, cuBLAS, and Intel MKL achieve near-theoretical-peak performance by carefully controlling memory access patterns. The constant factors in these optimized implementations often matter more than the asymptotic improvement of Strassen's algorithm for matrices under a few thousand rows.</p>
+
+  <p>For extremely large matrices common in deep learning (such as weight matrices in large language models with dimensions of 10,000+), GPU-accelerated matrix multiplication using tensor cores achieves throughputs exceeding <strong>300 teraflops</strong> on modern hardware, making matrix multiplication one of the most optimized operations in all of computing.</p>
+
+  <!-- SECTION 9: FAQ -->
+  <div class="faq-section">
+    <h2 id="faq">Frequently Asked Questions</h2>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">What is matrix multiplication?</div>
+      <div class="faq-a">
+        <p>Matrix multiplication is an operation that takes two matrices and produces a new matrix. Each element of the result is the dot product of a row from the first matrix and a column from the second matrix. It requires the number of columns in the first matrix to equal the number of rows in the second matrix. The result of multiplying an m x n matrix by an n x p matrix is an m x p matrix.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">How do you multiply a 3x3 matrix?</div>
+      <div class="faq-a">
+        <p>To multiply two 3x3 matrices, compute each of the 9 cells in the result by taking the dot product of the corresponding row from Matrix A and column from Matrix B. Each dot product involves multiplying 3 pairs of numbers and summing the results. For cell (i,j), multiply each element in row i of A by the corresponding element in column j of B, then add them up. The output is also a 3x3 matrix with 27 individual multiplications.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Why is matrix multiplication not commutative?</div>
+      <div class="faq-a">
+        <p>Matrix multiplication is not commutative because AB does not generally equal BA. The row-column dot product structure means swapping the order changes which rows and columns are paired, producing different results. In many cases, if AB is defined, BA may not even be defined due to incompatible dimensions. Even for square matrices of the same size, AB and BA produce different values except in special cases (like when one matrix is the identity or both are diagonal).</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">What dimensions must matrices have to be multiplied?</div>
+      <div class="faq-a">
+        <p>For two matrices to be multiplied, the number of columns in the first matrix must equal the number of rows in the second matrix. If Matrix A is m x n and Matrix B is n x p, the product AB will be an m x p matrix. The shared dimension n is consumed in the dot product computation. If this dimension requirement is not met, the multiplication is undefined and cannot be performed.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">What is the time complexity of matrix multiplication?</div>
+      <div class="faq-a">
+        <p>The naive algorithm for multiplying two n x n matrices has O(n^3) time complexity, requiring n^3 multiplications. Strassen's algorithm (1969) reduces this to approximately O(n^2.807) using a clever divide-and-conquer approach. The current best theoretical bound is roughly O(n^2.3728) from Alman-Williams (2024), though this is impractical. It is conjectured that O(n^2) might be achievable, but this remains an open problem in computer science.</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Can you multiply a 2x3 matrix by a 2x3 matrix?</div>
+      <div class="faq-a">
+        <p>No. A 2x3 matrix has 3 columns, but a 2x3 matrix has 2 rows. Since the number of columns in the first matrix (3) does not equal the number of rows in the second matrix (2), the multiplication is undefined. However, you could multiply a 2x3 matrix by a 3x2 matrix (result: 2x2) or multiply the 2x3 matrix by a 3x3 matrix (result: 2x3).</p>
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">What is the difference between matrix multiplication and element-wise multiplication?</div>
+      <div class="faq-a">
+        <p>Standard matrix multiplication (also called matrix product) computes each result element as the dot product of a row and column. Element-wise multiplication (called the Hadamard product, denoted A &odot; B) simply multiplies corresponding elements: C(i,j) = A(i,j) &times; B(i,j). The Hadamard product requires both matrices to have the same dimensions, while standard matrix multiplication requires the inner dimensions to match. They produce entirely different results.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Internal Links -->
+  <div class="internal-links">
+    <h4>Continue Learning</h4>
+    <a href="/">Matrix Calculator &mdash; Multiply, add, transpose, and compute determinants online</a>
+    <a href="/answers/matrix-multiplication-rules.html">Matrix Multiplication Rules &mdash; Quick reference for all properties and dimension rules</a>
+    <a href="/guides/">All Linear Algebra Guides</a>
+  </div>
+
+</main>
+
+<footer>
+  <p>&copy; 2026 <a href="https://ml3x.com">ML3X</a> &mdash; Part of <a href="https://zovo.one/tools">Zovo Tools</a>. Built by <a href="https://zovo.one">Michael Lip</a>.</p>
+</footer>
+
+<script>
+// Matrix Multiplication Calculator
+let stepMode = false;
+let currentStep = 0;
+let steps = [];
+let resultMatrix = [];
+
+function rebuildMatrices() {
+  const ar = +document.getElementById('aRows').value;
+  const ac = +document.getElementById('aCols').value;
+  const br = +document.getElementById('bRows').value;
+  const bc = +document.getElementById('bCols').value;
+
+  buildGrid('matrixAGrid', ar, ac, 'a');
+  buildGrid('matrixBGrid', br, bc, 'b');
+
+  document.getElementById('calcResult').style.display = 'none';
+  document.getElementById('calcError').style.display = 'none';
+  stepMode = false;
+}
+
+function buildGrid(containerId, rows, cols, prefix) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  container.style.gridTemplateColumns = `repeat(${cols}, 56px)`;
+  for (let i = 0; i < rows; i++) {
+    for (let j = 0; j < cols; j++) {
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.id = `${prefix}_${i}_${j}`;
+      input.value = '0';
+      input.setAttribute('aria-label', `${prefix.toUpperCase()} row ${i+1} column ${j+1}`);
+      container.appendChild(input);
+    }
+  }
+}
+
+function getMatrix(prefix, rows, cols) {
+  const m = [];
+  for (let i = 0; i < rows; i++) {
+    m[i] = [];
+    for (let j = 0; j < cols; j++) {
+      const v = parseFloat(document.getElementById(`${prefix}_${i}_${j}`).value);
+      m[i][j] = isNaN(v) ? 0 : v;
+    }
+  }
+  return m;
+}
+
+function multiply(A, B) {
+  const ar = A.length, ac = A[0].length;
+  const br = B.length, bc = B[0].length;
+  if (ac !== br) return null;
+
+  const C = [];
+  steps = [];
+  for (let i = 0; i < ar; i++) {
+    C[i] = [];
+    for (let j = 0; j < bc; j++) {
+      let sum = 0;
+      const parts = [];
+      for (let k = 0; k < ac; k++) {
+        const prod = A[i][k] * B[k][j];
+        parts.push({ a: A[i][k], b: B[k][j], prod: prod, k: k });
+        sum += prod;
+      }
+      C[i][j] = Math.round(sum * 1e10) / 1e10;
+      steps.push({ i, j, parts, result: C[i][j] });
+    }
+  }
+  return C;
+}
+
+function calculate() {
+  stepMode = false;
+  doCalc(false);
+}
+
+function startStepMode() {
+  stepMode = true;
+  currentStep = 0;
+  doCalc(true);
+}
+
+function doCalc(showSteps) {
+  const ar = +document.getElementById('aRows').value;
+  const ac = +document.getElementById('aCols').value;
+  const br = +document.getElementById('bRows').value;
+  const bc = +document.getElementById('bCols').value;
+
+  const errEl = document.getElementById('calcError');
+  const resEl = document.getElementById('calcResult');
+  const stepEl = document.getElementById('stepDetail');
+
+  errEl.style.display = 'none';
+  resEl.style.display = 'none';
+  stepEl.style.display = 'none';
+  clearHighlights();
+
+  if (ac !== br) {
+    errEl.innerHTML = `<strong>Incompatible dimensions!</strong> Matrix A has ${ac} columns but Matrix B has ${br} rows. For multiplication to work, the number of columns in A (${ac}) must equal the number of rows in B (${br}). Try changing A to ${ar}x${br} or B to ${ac}x${bc}.`;
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const A = getMatrix('a', ar, ac);
+  const B = getMatrix('b', br, bc);
+  resultMatrix = multiply(A, B);
+
+  renderResult(resultMatrix, bc);
+  resEl.style.display = 'block';
+
+  if (showSteps) {
+    stepEl.style.display = 'block';
+    showStep(0);
+  }
+}
+
+function renderResult(C, cols) {
+  const grid = document.getElementById('resultGrid');
+  grid.innerHTML = '';
+  grid.style.gridTemplateColumns = `repeat(${cols}, 64px)`;
+  for (let i = 0; i < C.length; i++) {
+    for (let j = 0; j < C[i].length; j++) {
+      const cell = document.createElement('div');
+      cell.className = 'r-cell';
+      cell.id = `rc_${i}_${j}`;
+      cell.textContent = stepMode ? '' : formatNum(C[i][j]);
+      grid.appendChild(cell);
+    }
+  }
+}
+
+function formatNum(n) {
+  if (Number.isInteger(n)) return n.toString();
+  return n.toFixed(2).replace(/\.?0+$/, '');
+}
+
+function showStep(idx) {
+  if (idx < 0 || idx >= steps.length) return;
+  currentStep = idx;
+  const s = steps[idx];
+
+  // Fill in all previous results
+  for (let k = 0; k <= idx; k++) {
+    const prev = steps[k];
+    const rc = document.getElementById(`rc_${prev.i}_${prev.j}`);
+    if (rc) rc.textContent = formatNum(prev.result);
+  }
+
+  // Highlight current
+  const allRC = document.querySelectorAll('.r-cell');
+  allRC.forEach(c => c.classList.remove('current'));
+  const curRC = document.getElementById(`rc_${s.i}_${s.j}`);
+  if (curRC) curRC.classList.add('current');
+
+  // Highlight row in A, col in B
+  clearHighlights();
+  const ac = +document.getElementById('aCols').value;
+  const br = +document.getElementById('bRows').value;
+  const bc = +document.getElementById('bCols').value;
+
+  for (let k = 0; k < ac; k++) {
+    const el = document.getElementById(`a_${s.i}_${k}`);
+    if (el) el.classList.add('hl-row');
+  }
+  for (let k = 0; k < br; k++) {
+    const el = document.getElementById(`b_${k}_${s.j}`);
+    if (el) el.classList.add('hl-col');
+  }
+
+  // Step info
+  document.getElementById('stepInfo').textContent = `Step ${idx + 1} of ${steps.length} — Cell (${s.i + 1}, ${s.j + 1}): Row ${s.i + 1} of A dot Column ${s.j + 1} of B`;
+
+  const formulaParts = s.parts.map(p => `(${formatNum(p.a)} x ${formatNum(p.b)})`).join(' + ');
+  const prodParts = s.parts.map(p => formatNum(p.prod)).join(' + ');
+  document.getElementById('stepFormula').innerHTML = `${formulaParts}<br>= ${prodParts}`;
+  document.getElementById('stepValue').textContent = `= ${formatNum(s.result)}`;
+
+  document.getElementById('btnPrev').disabled = (idx === 0);
+  document.getElementById('btnNext').disabled = (idx === steps.length - 1);
+}
+
+function nextStep() { showStep(currentStep + 1); }
+function prevStep() { showStep(currentStep - 1); }
+
+function clearHighlights() {
+  document.querySelectorAll('.hl-row').forEach(e => e.classList.remove('hl-row'));
+  document.querySelectorAll('.hl-col').forEach(e => e.classList.remove('hl-col'));
+}
+
+function resetCalc() {
+  document.getElementById('aRows').value = '2';
+  document.getElementById('aCols').value = '2';
+  document.getElementById('bRows').value = '2';
+  document.getElementById('bCols').value = '2';
+  rebuildMatrices();
+}
+
+function loadExample(size) {
+  document.getElementById('aRows').value = size;
+  document.getElementById('aCols').value = size;
+  document.getElementById('bRows').value = size;
+  document.getElementById('bCols').value = size;
+  rebuildMatrices();
+
+  if (size === 2) {
+    setVal('a', [[1,2],[3,4]]);
+    setVal('b', [[5,6],[7,8]]);
+  } else if (size === 3) {
+    setVal('a', [[1,2,3],[4,5,6],[7,8,9]]);
+    setVal('b', [[9,8,7],[6,5,4],[3,2,1]]);
+  }
+}
+
+function setVal(prefix, matrix) {
+  for (let i = 0; i < matrix.length; i++) {
+    for (let j = 0; j < matrix[i].length; j++) {
+      const el = document.getElementById(`${prefix}_${i}_${j}`);
+      if (el) el.value = matrix[i][j];
+    }
+  }
+}
+
+function toggleFaq(el) {
+  const answer = el.nextElementSibling;
+  const isOpen = el.classList.contains('open');
+  document.querySelectorAll('.faq-q').forEach(q => q.classList.remove('open'));
+  document.querySelectorAll('.faq-a').forEach(a => a.classList.remove('open'));
+  if (!isOpen) {
+    el.classList.add('open');
+    answer.classList.add('open');
+  }
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', rebuildMatrices);
+</script>
+
+</body>
+</html>

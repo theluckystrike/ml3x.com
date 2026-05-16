@@ -3,69 +3,69 @@
   <url>
     <loc>https://ml3x.com/</loc>
     <lastmod>2026-04-06</lastmod>
-<changefreq>weekly</changefreq>
-<priority>1.0</priority>
-</url>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
   <url>
     <loc>https://ml3x.com/about.html</loc>
     <lastmod>2026-04-06</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.8</priority>
-</url>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
   <url>
     <loc>https://ml3x.com/blog/</loc>
     <lastmod>2026-04-06</lastmod>
-<changefreq>weekly</changefreq>
-<priority>0.7</priority>
-</url>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
   <url>
     <loc>https://ml3x.com/blog/post-1.html</loc>
     <lastmod>2026-04-06</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.6</priority>
-</url>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
   <url>
     <loc>https://ml3x.com/blog/post-2.html</loc>
     <lastmod>2026-04-06</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.6</priority>
-</url>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
   <url>
     <loc>https://ml3x.com/tools/</loc>
     <lastmod>2026-04-10</lastmod>
-<changefreq>weekly</changefreq>
-<priority>0.8</priority>
-</url>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
   <url>
     <loc>https://ml3x.com/tools/matrix-multiplication.html</loc>
     <lastmod>2026-04-10</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
   <url>
     <loc>https://ml3x.com/tools/determinant-calculator.html</loc>
     <lastmod>2026-04-10</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
   <url>
     <loc>https://ml3x.com/tools/inverse-matrix.html</loc>
     <lastmod>2026-04-10</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
   <url>
     <loc>https://ml3x.com/tools/eigenvalue-calculator.html</loc>
     <lastmod>2026-04-10</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
   <url>
     <loc>https://ml3x.com/tools/matrix-transpose.html</loc>
     <lastmod>2026-04-10</lastmod>
-<changefreq>monthly</changefreq>
-<priority>0.7</priority>
-</url>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
   <url>
     <loc>https://ml3x.com/research/matrix-operation-complexity.html</loc>
     <lastmod>2026-04-10</lastmod>
@@ -101,5 +101,11 @@
     <lastmod>2026-04-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://ml3x.com/guides/matrix-multiplication-explained.html</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
 </urlset>
