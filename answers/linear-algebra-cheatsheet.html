@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive Linear Algebra Cheatsheet &mdash; Formulas with Mini-Calculators | ML3X</title>
+<meta name="description" content="Searchable linear algebra formula reference with interactive Try It calculators. Covers determinants, inverses, rank, trace, eigenvalues, norms, and decompositions. Filterable by category.">
+<meta name="keywords" content="linear algebra cheatsheet, matrix formulas, determinant formula, matrix inverse formula, eigenvalue formula, matrix norms, linear algebra reference, matrix operations">
+<link rel="canonical" href="https://ml3x.com/answers/linear-algebra-cheatsheet.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Interactive Linear Algebra Cheatsheet &mdash; Formulas with Mini-Calculators | ML3X">
+<meta property="og:description" content="Searchable linear algebra formula reference with interactive Try It calculators. Determinants, inverses, eigenvalues, norms, decompositions.">
+<meta property="og:url" content="https://ml3x.com/answers/linear-algebra-cheatsheet.html">
+<meta property="og:site_name" content="Zovo Tools">
+<meta property="og:image" content="https://ml3x.com/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Interactive Linear Algebra Cheatsheet &mdash; Formulas with Mini-Calculators | ML3X">
+<meta name="twitter:description" content="Searchable linear algebra reference with interactive mini-calculators for every formula.">
+<meta name="twitter:image" content="https://ml3x.com/assets/og-image.png">
+<link rel="stylesheet" href="/assets/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Interactive Linear Algebra Cheatsheet — Formulas with Mini-Calculators",
+  "description": "Searchable linear algebra formula reference with interactive Try It calculators. Covers determinants, inverses, rank, trace, eigenvalues, norms, and decompositions.",
+  "url": "https://ml3x.com/answers/linear-algebra-cheatsheet.html",
+  "author": {
+    "@type": "Person",
+    "name": "Michael Lip",
+    "url": "https://zovo.one"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "ML3X",
+    "url": "https://ml3x.com"
+  },
+  "datePublished": "2026-05-25",
+  "dateModified": "2026-05-25",
+  "mainEntityOfPage": "https://ml3x.com/answers/linear-algebra-cheatsheet.html"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What are the most important linear algebra formulas to memorize?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The essential formulas are: the 2x2 determinant (ad - bc), the 2x2 inverse formula (swap diagonal, negate off-diagonal, divide by determinant), the characteristic polynomial det(A - lambda*I) = 0 for eigenvalues, the trace equals sum of eigenvalues, the determinant equals product of eigenvalues, and the matrix norm inequality ||AB|| <= ||A|| * ||B||. For applied work, also memorize the least-squares solution x = (A^T A)^(-1) A^T b and the SVD structure A = U Sigma V^T."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do you compute the determinant of a 3x3 matrix?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Use cofactor expansion along the first row: det(A) = a11*(a22*a33 - a23*a32) - a12*(a21*a33 - a23*a31) + a13*(a21*a32 - a22*a31). This is also called Sarrus' rule when written as the sum of products along diagonals minus products along anti-diagonals. For larger matrices, LU decomposition is more efficient: det(A) equals the product of the diagonal entries of U (times -1 for each row swap)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between the Frobenius norm and the spectral norm?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The Frobenius norm ||A||_F is the square root of the sum of squares of all matrix entries: sqrt(sum of a_ij^2). It treats the matrix as a long vector and computes its Euclidean length. The spectral norm ||A||_2 is the largest singular value of A, which equals the maximum factor by which A can stretch any unit vector. The Frobenius norm is easier to compute but the spectral norm is tighter for bounding errors in linear systems. They are related by: ||A||_2 <= ||A||_F <= sqrt(rank(A)) * ||A||_2."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "When is a matrix diagonalizable?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A matrix is diagonalizable if and only if it has n linearly independent eigenvectors (where n is the matrix size). Equivalently, for every eigenvalue, the geometric multiplicity (dimension of eigenspace) equals the algebraic multiplicity (multiplicity as root of characteristic polynomial). All symmetric matrices are diagonalizable (spectral theorem). All matrices with distinct eigenvalues are diagonalizable. A matrix that is NOT diagonalizable is called defective, and its Jordan normal form contains Jordan blocks larger than 1x1."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How is the rank of a matrix related to its other properties?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The rank of an m x n matrix A equals: the number of non-zero singular values (from SVD), the number of non-zero rows in row echelon form, the dimension of the column space (image), the dimension of the row space, and m minus the dimension of the null space (by the rank-nullity theorem). A square matrix is invertible if and only if its rank equals n (full rank). The rank also equals the number of linearly independent columns, which equals the number of linearly independent rows."
+      }
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://ml3x.com/"},{"@type":"ListItem","position":2,"name":"Answers","item":"https://ml3x.com/answers/"},{"@type":"ListItem","position":3,"name":"Linear Algebra Cheatsheet"}]}</script>
+<style>
+  .cs-tabs{display:flex;gap:0;border-bottom:2px solid var(--border,#333);margin-bottom:1.5rem;flex-wrap:wrap;}
+  .cs-tab{padding:0.6rem 1.2rem;cursor:pointer;border:none;background:none;color:var(--text-muted,#888);font-size:0.95rem;font-weight:600;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.2s;}
+  .cs-tab:hover{color:var(--text,#e0e0e0);}
+  .cs-tab.active{color:var(--accent,#EC4899);border-bottom-color:var(--accent,#EC4899);}
+  .cs-card{background:var(--bg-secondary,#1a1a2e);border:1px solid var(--border,#333);border-radius:10px;padding:1.2rem 1.5rem;margin-bottom:1rem;transition:border-color 0.2s;}
+  .cs-card:hover{border-color:var(--accent,#EC4899);}
+  .cs-card h3{margin:0 0 0.5rem 0;font-size:1.05rem;}
+  .cs-formula{font-family:monospace;font-size:1rem;background:rgba(0,0,0,0.3);padding:0.6rem 1rem;border-radius:6px;margin:0.5rem 0;display:inline-block;}
+  .cs-desc{color:var(--text-muted,#aaa);font-size:0.9rem;line-height:1.5;margin:0.5rem 0;}
+  .cs-try{display:none;margin-top:0.8rem;padding-top:0.8rem;border-top:1px solid var(--border,#333);}
+  .cs-try.open{display:block;}
+  .cs-try-btn{padding:4px 12px;font-size:0.82rem;background:var(--accent,#EC4899);color:#fff;border:none;border-radius:4px;cursor:pointer;margin-top:0.4rem;}
+  .cs-try input{width:50px;padding:4px;text-align:center;border:1px solid var(--border,#444);background:var(--bg-secondary,#111);color:var(--text,#e0e0e0);border-radius:3px;font-size:0.9rem;margin:2px;}
+  .cs-try .result{font-family:monospace;color:var(--accent,#EC4899);margin-top:0.5rem;font-size:0.95rem;}
+  .cs-search{width:100%;max-width:400px;padding:0.6rem 1rem;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:8px;font-size:1rem;margin-bottom:1.5rem;}
+  .cs-search::placeholder{color:var(--text-muted,#666);}
+  .cs-count{font-size:0.85rem;color:var(--text-muted,#888);margin-bottom:1rem;}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a href="/" class="site-logo">ML3X</a>
+  <nav class="site-nav">
+    <a href="/">Calculator</a>
+    <a href="/tools/">Tools</a>
+    <a href="/guides/">Guides</a>
+    <a href="/answers/">Answers</a>
+    <a href="/blog/">Blog</a>
+      <div class="nav-right">
+      <a href="https://zovo.one/pricing?utm_source=ml3x.com&amp;utm_medium=satellite&amp;utm_campaign=nav-link" class="nav-pro" target="_blank">Go Pro &#10022;</a>
+      <a href="https://zovo.one/tools" class="nav-zovo">Zovo Tools</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="hero">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a> &raquo; <a href="/answers/">Answers</a> &raquo; <span>Linear Algebra Cheatsheet</span>
+    </nav>
+    <h1>Interactive Linear Algebra Cheatsheet</h1>
+    <p>Searchable reference of key linear algebra formulas. Each formula has a "Try It" mini-calculator so you can plug in your own numbers and see the result instantly. Filter by category or search by name.</p>
+  </div>
+
+  <section style="max-width:860px;margin:2rem auto;padding:0 1rem;">
+    <input type="text" class="cs-search" id="search" placeholder="Search formulas (e.g. determinant, inverse, SVD...)" oninput="filterCards()">
+    <div class="cs-tabs" id="tabs"></div>
+    <div class="cs-count" id="count"></div>
+    <div id="cards"></div>
+  </section>
+
+  <div class="last-updated"><time datetime="2026-05-25">Last updated: May 25, 2026</time></div>
+
+  <!-- Expert Content -->
+  <section style="max-width:720px;margin:2rem auto;line-height:1.7;padding:0 1rem;">
+    <h2>Why a Linear Algebra Cheatsheet Matters</h2>
+    <p>Linear algebra is the mathematical language of data, computation, and physical systems. Every machine learning model, every 3D graphics engine, every signal processing pipeline, and every quantum mechanical calculation is built on matrix operations. The formulas on this cheatsheet are not abstract curiosities but the daily working tools of engineers, data scientists, physicists, and computer scientists. Having them in a searchable, interactive reference eliminates the friction of looking up formulas in textbooks or scattered Wikipedia articles.</p>
+
+    <p>This cheatsheet is organized into five categories that mirror the structure of a standard linear algebra course. The Basics section covers fundamental scalar quantities derived from matrices: the trace (sum of diagonal entries), the determinant (a signed volume scaling factor), and the rank (the number of independent dimensions in the output). The Operations section covers matrix arithmetic: addition, multiplication, transposition, and inversion. The Decompositions section covers the three most important factorizations: LU, QR, and SVD. The Vector Spaces section covers subspaces associated with a matrix: column space, null space, and their relationships via the rank-nullity theorem. The Norms section covers different ways to measure the size of matrices and vectors.</p>
+
+    <h2>Formulas in Context: When Each Formula Matters</h2>
+    <h3>Determinant and Invertibility</h3>
+    <p>The determinant is the single most diagnostic number you can compute from a square matrix. If det(A) = 0, the matrix is singular: it has no inverse, its columns are linearly dependent, its rank is less than n, and the system Ax = b either has no solution or infinitely many solutions. If det(A) is non-zero, the matrix is invertible and Ax = b has exactly one solution for every b. The magnitude of the determinant measures how the matrix scales volumes: a 3&times;3 matrix with det(A) = 2 doubles the volume of any region it transforms. A negative determinant means the transformation includes a reflection (it reverses orientation).</p>
+
+    <h3>Eigenvalues and the Characteristic Polynomial</h3>
+    <p>The characteristic polynomial det(A - &lambda;I) = 0 is the bridge between a matrix and its eigenvalues. For a 2&times;2 matrix, this gives a quadratic whose coefficients are the trace (sum of eigenvalues) and determinant (product of eigenvalues). For a 3&times;3 matrix, it gives a cubic whose coefficients involve the trace, the sum of 2&times;2 principal minors, and the determinant. These relationships provide powerful consistency checks: if you compute eigenvalues &lambda;<sub>1</sub> and &lambda;<sub>2</sub> of a 2&times;2 matrix, their sum must equal the trace and their product must equal the determinant.</p>
+
+    <h3>Matrix Norms and Condition Numbers</h3>
+    <p>Norms quantify how large a matrix or vector is. The vector 2-norm (Euclidean length) and the matrix Frobenius norm (square root of the sum of squared entries) are the most commonly used because they are easy to compute and have nice mathematical properties. The matrix spectral norm (largest singular value) is harder to compute but more meaningful: it measures the maximum stretching factor of the linear transformation. The condition number cond(A) = &sigma;<sub>max</sub>/&sigma;<sub>min</sub> measures how sensitive the solution of Ax = b is to perturbations. A condition number near 1 means the system is well-conditioned (small input changes produce small output changes). A condition number of 10<sup>k</sup> means you lose about k digits of accuracy when solving the system numerically.</p>
+
+    <h3>The Rank-Nullity Theorem</h3>
+    <p>The rank-nullity theorem states that for an m&times;n matrix A: rank(A) + nullity(A) = n, where nullity is the dimension of the null space (the set of solutions to Ax = 0). This is one of the most fundamental results in linear algebra because it connects the dimension of what a matrix "can reach" (the column space, with dimension = rank) to the dimension of what it "collapses to zero" (the null space, with dimension = nullity). If a 5&times;5 matrix has rank 3, then its null space has dimension 2, meaning there is a 2-dimensional subspace of vectors that the matrix maps to the zero vector.</p>
+
+    <h2>Computational Notes</h2>
+    <p>The mini-calculators on this page implement each formula directly in JavaScript for 2&times;2 and 3&times;3 matrices. For determinants, the 2&times;2 formula ad - bc and the 3&times;3 cofactor expansion are used. For matrix inverse, the adjugate method (transpose of cofactor matrix divided by determinant) is implemented. For norms, the Frobenius norm sums the squares of all entries, and the 1-norm and infinity-norm scan columns and rows respectively. All computations run entirely in your browser with no server round trips, no dependencies, and no tracking.</p>
+
+    <p>For matrices larger than 3&times;3, use the main <a href="/">ML3X calculator</a> which supports matrices up to 5&times;5, or for production-scale computation, use NumPy (Python), MATLAB, or Julia. The formulas on this page apply to matrices of all sizes, but the analytical closed-form expressions (like the quadratic formula for 2&times;2 eigenvalues) are specific to small matrices. For large matrices, iterative algorithms like the QR algorithm (eigenvalues), Gaussian elimination with pivoting (LU), and the Golub-Kahan bidiagonalization (SVD) are used.</p>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="faq-section" style="max-width:720px;margin:2rem auto;">
+    <h2>Frequently Asked Questions</h2>
+    <details>
+      <summary>What are the most important linear algebra formulas to memorize?</summary>
+      <p>The essential formulas are: the 2&times;2 determinant (ad - bc), the 2&times;2 inverse formula (swap diagonal, negate off-diagonal, divide by determinant), the characteristic polynomial det(A - &lambda;I) = 0, the trace equals sum of eigenvalues, the determinant equals product of eigenvalues, and ||AB|| &le; ||A|| &middot; ||B||. For applied work, also memorize x = (A<sup>T</sup>A)<sup>-1</sup>A<sup>T</sup>b and A = U&Sigma;V<sup>T</sup>.</p>
+    </details>
+    <details>
+      <summary>How do you compute the determinant of a 3&times;3 matrix?</summary>
+      <p>Use cofactor expansion along the first row: det(A) = a<sub>11</sub>(a<sub>22</sub>a<sub>33</sub> - a<sub>23</sub>a<sub>32</sub>) - a<sub>12</sub>(a<sub>21</sub>a<sub>33</sub> - a<sub>23</sub>a<sub>31</sub>) + a<sub>13</sub>(a<sub>21</sub>a<sub>32</sub> - a<sub>22</sub>a<sub>31</sub>). For larger matrices, LU decomposition is more efficient: det(A) equals the product of the diagonal entries of U.</p>
+    </details>
+    <details>
+      <summary>What is the difference between the Frobenius norm and the spectral norm?</summary>
+      <p>The Frobenius norm ||A||<sub>F</sub> is the square root of the sum of squares of all entries. The spectral norm ||A||<sub>2</sub> is the largest singular value of A. The Frobenius norm is easier to compute but the spectral norm is tighter for error bounds. They satisfy ||A||<sub>2</sub> &le; ||A||<sub>F</sub> &le; &radic;rank(A) &middot; ||A||<sub>2</sub>.</p>
+    </details>
+    <details>
+      <summary>When is a matrix diagonalizable?</summary>
+      <p>A matrix is diagonalizable if and only if it has n linearly independent eigenvectors. Equivalently, for every eigenvalue the geometric multiplicity equals the algebraic multiplicity. All symmetric matrices and all matrices with distinct eigenvalues are diagonalizable. A non-diagonalizable matrix is called defective.</p>
+    </details>
+    <details>
+      <summary>How is the rank of a matrix related to its other properties?</summary>
+      <p>The rank equals the number of non-zero singular values, the number of linearly independent columns (or rows), the dimension of the column space, and n minus the dimension of the null space. A square matrix is invertible if and only if it has full rank. The rank-nullity theorem states rank(A) + nullity(A) = n (number of columns).</p>
+    </details>
+  </section>
+
+  <section style="max-width:720px;margin:2rem auto;padding:0 1rem;">
+    <h2>Related Tools</h2>
+    <ul>
+      <li><a href="/tools/eigenvector-step-solver.html">Eigenvector Step Solver</a> &mdash; step-by-step eigenvalue and eigenvector computation with visualization</li>
+      <li><a href="/tools/matrix-decomposition.html">Matrix Decomposition Calculator</a> &mdash; LU, QR, and SVD decomposition</li>
+      <li><a href="/tools/eigenvalue-calculator.html">Eigenvalue Calculator</a> &mdash; eigenvalues via characteristic polynomial</li>
+      <li><a href="/tools/determinant-calculator.html">Determinant Calculator</a> &mdash; determinants for matrices up to 5&times;5</li>
+    </ul>
+  </section>
+
+  <section style="max-width:720px;margin:2rem auto;padding:0 1rem;">
+    <p style="font-size:0.9rem;color:var(--text-muted);">Built by <a href="https://zovo.one">Michael Lip</a>. Try the <a href="/">ML3X Matrix Calculator</a> for interactive step-by-step solutions.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">Zovo Tools</div>
+        <div class="footer-tagline">Free developer tools by a solo dev. No tracking.</div>
+        <a href="https://zovo.one/pricing?utm_source=ml3x.com&utm_medium=satellite&utm_campaign=footer-link" class="footer-cta">Zovo Lifetime &mdash; $99 once, free forever &rarr;</a>
+        <div class="footer-copy">&copy; 2026 <a href="https://zovo.one">Zovo</a> &middot; 47/500 founding spots</div>
+    </div>
+</footer>
+
+<nav class="zovo-network" aria-label="Zovo Tools Network">
+    <div class="zovo-network-inner">
+        <h3 class="zovo-network-title">Explore More Tools</h3>
+        <div class="zovo-network-links">
+            <a href="https://abwex.com">ABWex &mdash; A/B Testing</a>
+            <a href="https://claudflow.com">ClaudFlow &mdash; Workflows</a>
+            <a href="https://claudhq.com">ClaudHQ &mdash; AI Code Tools &amp; Fixes</a>
+            <a href="https://claudkit.com">ClaudKit &mdash; API</a>
+            <a href="https://enhio.com">Enhio &mdash; Text Tools</a>
+            <a href="https://epochpilot.com">EpochPilot &mdash; Timestamps</a>
+            <a href="https://gen8x.com">Gen8X &mdash; Color Tools</a>
+            <a href="https://gpt0x.com">GPT0X &mdash; AI Models</a>
+            <a href="https://heytensor.com">HeyTensor &mdash; ML Tools</a>
+            <a href="https://invokebot.com">InvokeBot &mdash; Webhooks</a>
+            <a href="https://kappafy.com">Kappafy &mdash; JSON</a>
+            <a href="https://kappakit.com">KappaKit &mdash; Dev Toolkit</a>
+            <a href="https://kickllm.com">KickLLM &mdash; LLM Costs</a>
+            <a href="https://krzen.com">Krzen &mdash; Image Tools</a>
+            <a href="https://lochbot.com">LochBot &mdash; Security</a>
+            <a href="https://lockml.com">LockML &mdash; ML Compare</a>
+        </div>
+    </div>
+</nav>
+
+<script>
+(function(){
+  const EPS=1e-10;
+  function fmt(x){if(Math.abs(x)<EPS)return'0';if(Math.abs(x-Math.round(x))<EPS)return String(Math.round(x));return x.toFixed(4).replace(/0+$/,'').replace(/\.$/,'');}
+
+  function inp(id,v){return'<input type="number" id="'+id+'" value="'+v+'" class="cs-try" style="display:inline;">';}
+  function grid2(prefix,vals){
+    let h='<div style="display:inline-grid;grid-template-columns:1fr 1fr;gap:3px;vertical-align:middle;">';
+    for(let i=0;i<2;i++)for(let j=0;j<2;j++) h+='<input type="number" id="'+prefix+i+j+'" value="'+(vals?vals[i][j]:0)+'" class="cs-try" style="display:inline;">';
+    return h+'</div>';
+  }
+  function grid3(prefix,vals){
+    let h='<div style="display:inline-grid;grid-template-columns:1fr 1fr 1fr;gap:3px;vertical-align:middle;">';
+    for(let i=0;i<3;i++)for(let j=0;j<3;j++) h+='<input type="number" id="'+prefix+i+j+'" value="'+(vals?vals[i][j]:0)+'" class="cs-try" style="display:inline;">';
+    return h+'</div>';
+  }
+  function getMat2(p){const m=[];for(let i=0;i<2;i++){const r=[];for(let j=0;j<2;j++)r.push(parseFloat(document.getElementById(p+i+j).value)||0);m.push(r);}return m;}
+  function getMat3(p){const m=[];for(let i=0;i<3;i++){const r=[];for(let j=0;j<3;j++)r.push(parseFloat(document.getElementById(p+i+j).value)||0);m.push(r);}return m;}
+
+  const formulas=[
+    // === BASICS ===
+    {cat:'Basics',name:'Trace (2x2)',formula:'tr(A) = a + d',
+      desc:'The trace of a square matrix is the sum of its diagonal entries. The trace equals the sum of eigenvalues and is invariant under cyclic permutations: tr(ABC) = tr(CAB) = tr(BCA).',
+      tryHtml:function(id){return grid2('tr2_',[[1,2],[3,4]])+'<br><button class="cs-try-btn" onclick="window._cs.calcTrace2(\''+id+'\')">Compute</button><div class="result" id="res_'+id+'"></div>';},
+      calc:function(id){const m=getMat2('tr2_');document.getElementById('res_'+id).textContent='tr(A) = '+fmt(m[0][0]+m[1][1]);}
+    },
+    {cat:'Basics',name:'Trace (3x3)',formula:'tr(A) = a\u2081\u2081 + a\u2082\u2082 + a\u2083\u2083',
+      desc:'For a 3x3 matrix, the trace is the sum of the three diagonal entries. It equals the sum of the three eigenvalues and is used as a coefficient of the characteristic polynomial.',
+      tryHtml:function(id){return grid3('tr3_',[[2,0,1],[0,3,0],[1,0,2]])+'<br><button class="cs-try-btn" onclick="window._cs.calcTrace3(\''+id+'\')">Compute</button><div class="result" id="res_'+id+'"></div>';},
+      calc:function(id){const m=getMat3('tr3_');document.getElementById('res_'+id).textContent='tr(A) = '+fmt(m[0][0]+m[1][1]+m[2][2]);}
+    },
+    {cat:'Basics',name:'Determinant (2x2)',formula:'det(A) = ad - bc',
+      desc:'The determinant of a 2x2 matrix [[a,b],[c,d]] measures the signed area scaling factor of the linear transformation. det(A) = 0 means the matrix is singular (no inverse). The determinant equals the product of eigenvalues.',
+      tryHtml:function(id){return grid2('d2_',[[4,3],[2,1]])+'<br><button class="cs-try-btn" onclick="window._cs.calcDet2(\''+id+'\')">Compute</button><div class="result" id="res_'+id+'"></div>';},
+      calc:function(id){const m=getMat2('d2_');document.getElementById('res_'+id).textContent='det(A) = '+fmt(m[0][0]*m[1][1]-m[0][1]*m[1][0]);}
+    },
+    {cat:'Basics',name:'Determinant (3x3)',formula:'det(A) = a(ei-fh) - b(di-fg) + c(dh-eg)',
+      desc:'Cofactor expansion along the first row. The 3x3 determinant measures signed volume scaling. It equals the product of all three eigenvalues and appears as the constant term of the characteristic polynomial.',
+      tryHtml:function(id){return grid3('d3_',[[1,2,3],[4,5,6],[7,8,0]])+'<br><button class="cs-try-btn" onclick="window._cs.calcDet3(\''+id+'\')">Compute</button><div class="result" id="res_'+id+'"></div>';},
+      calc:function(id){const m=getMat3('d3_');const d=m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])-m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])+m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);document.getElementById('res_'+id).textContent='det(A) = '+fmt(d);}
+    },
+    {cat:'Basics',name:'Rank (via Determinant)',formula:'rank = n if det \u2260 0, else < n',
+      desc:'For a square matrix, if the determinant is non-zero, the rank equals n (full rank). Otherwise, the rank is strictly less than n. For non-square matrices, the rank equals the number of non-zero singular values from SVD.',
+      tryHtml:function(id){return grid2('rk_',[[1,2],[2,4]])+'<br><button class="cs-try-btn" onclick="window._cs.calcRank(\''+id+'\')">Compute</button><div class="result" id="res_'+id+'"></div>';},
+      calc:function(id){const m=getMat2('rk_');const d=m[0][0]*m[1][1]-m[0][1]*m[1][0];document.getElementById('res_'+id).textContent='det = '+fmt(d)+', rank = '+(Math.abs(d)>EPS?'2 (full rank)':'< 2 (singular)');}
+    },
+
+    // === OPERATIONS ===
+    {cat:'Operations',name:'Matrix Inverse (2x2)',formula:'A\u207b\u00b9 = (1/det) \u00b7 [[d,-b],[-c,a]]',
+      desc:'The 2x2 inverse swaps the diagonal entries, negates the off-diagonal entries, and divides by the determinant. Only exists when det(A) != 0. The inverse has the property that AA^(-1) = A^(-1)A = I (identity matrix).',
+      tryHtml:function(id){return grid2('inv_',[[4,7],[2,6]])+'<br><button class="cs-try-btn" onclick="window._cs.calcInv2(\''+id+'\')">Compute</button><div class="result" id="res_'+id+'"></div>';},
+      calc:function(id){const m=getMat2('inv_');const d=m[0][0]*m[1][1]-m[0][1]*m[1][0];if(Math.abs(d)<EPS){document.getElementById('res_'+id).textContent='det = 0, no inverse exists';return;}const inv=[[m[1][1]/d,-m[0][1]/d],[-m[1][0]/d,m[0][0]/d]];document.getElementById('res_'+id).textContent='A\u207b\u00b9 = [['+fmt(inv[0][0])+', '+fmt(inv[0][1])+'], ['+fmt(inv[1][0])+', '+fmt(inv[1][1])+']]';}
+    },
+    {cat:'Operations',name:'Transpose',formula:'(A\u1d40)\u1d62\u2c7c = A\u2c7c\u1d62',
+      desc:'The transpose flips a matrix over its diagonal: rows become columns and columns become rows. For symmetric matrices, A = A^T. The transpose satisfies (AB)^T = B^T A^T (reversal rule) and det(A^T) = det(A).',
+      tryHtml:function(id){return grid2('tp_',[[1,2],[3,4]])+'<br><button class="cs-try-btn" onclick="window._cs.calcTrans(\''+id+'\')">Compute</button><div class="result" id="res_'+id+'"></div>';},
+      calc:function(id){const m=getMat2('tp_');document.getElementById('res_'+id).textContent='A\u1d40 = [['+fmt(m[0][0])+', '+fmt(m[1][0])+'], ['+fmt(m[0][1])+', '+fmt(m[1][1])+']]';}
+    },
+    {cat:'Operations',name:'Matrix Multiplication Rule',formula:'(AB)\u1d62\u2c7c = \u03a3\u2096 A\u1d62\u2096 B\u2096\u2c7c',
+      desc:'Each element (i,j) of the product AB is the dot product of row i of A with column j of B. Requires cols(A) = rows(B). Matrix multiplication is associative and distributive but NOT commutative: AB != BA in general.',
+      tryHtml:function(id){return'A: '+grid2('mma_',[[1,2],[3,4]])+' B: '+grid2('mmb_',[[5,6],[7,8]])+'<br><button class="cs-try-btn" onclick="window._cs.calcMul(\''+id+'\')">Multiply</button><div class="result" id="res_'+id+'"></div>';},
+      calc:function(id){const a=getMat2('mma_'),b=getMat2('mmb_');const c=[[a[0][0]*b[0][0]+a[0][1]*b[1][0],a[0][0]*b[0][1]+a[0][1]*b[1][1]],[a[1][0]*b[0][0]+a[1][1]*b[1][0],a[1][0]*b[0][1]+a[1][1]*b[1][1]]];document.getElementById('res_'+id).textContent='AB = [['+c[0].map(fmt).join(', ')+'], ['+c[1].map(fmt).join(', ')+']]';}
+    },
+    {cat:'Operations',name:'Matrix Power (Diagonalization)',formula:'A\u1d4f = PD\u1d4fP\u207b\u00b9',
+      desc:'If A = PDP^(-1) where D is diagonal, then A^k = PD^kP^(-1). D^k simply raises each diagonal entry to the kth power. This makes computing high powers of a matrix trivially fast once diagonalized.',
+      tryHtml:function(id){return grid2('pw_',[[2,1],[0,3]])+' k = <input type="number" id="pw_k" value="3" class="cs-try" style="display:inline;width:40px;"><br><button class="cs-try-btn" onclick="window._cs.calcPow(\''+id+'\')">Compute A^k</button><div class="result" id="res_'+id+'"></div>';},
+      calc:function(id){const m=getMat2('pw_');const k=parseInt(document.getElementById('pw_k').value)||1;let r=[[1,0],[0,1]];const a=[...m.map(x=>[...x])];for(let i=0;i<k;i++){const n=[[r[0][0]*a[0][0]+r[0][1]*a[1][0],r[0][0]*a[0][1]+r[0][1]*a[1][1]],[r[1][0]*a[0][0]+r[1][1]*a[1][0],r[1][0]*a[0][1]+r[1][1]*a[1][1]]];r=n;}document.getElementById('res_'+id).textContent='A^'+k+' = [['+r[0].map(fmt).join(', ')+'], ['+r[1].map(fmt).join(', ')+']]';}
+    },
+
+    // === DECOMPOSITIONS ===
+    {cat:'Decompositions',name:'LU Decomposition',formula:'PA = LU',
+      desc:'Factors a square matrix into lower triangular L and upper triangular U with permutation P. Used for solving linear systems, computing determinants (det = product of U diagonal), and inverses. Costs O(n^3/3) operations.',
+      tryHtml:function(id){return'Use the full <a href="/tools/matrix-decomposition.html" style="color:var(--accent);">LU Decomposition Calculator</a> for step-by-step results with partial pivoting.';},
+      calc:function(){}
+    },
+    {cat:'Decompositions',name:'QR Decomposition',formula:'A = QR',
+      desc:'Factors matrix into orthogonal Q (columns are orthonormal) and upper triangular R. Gram-Schmidt process constructs Q column by column. Used for eigenvalue computation (QR algorithm), least-squares, and stable linear system solving.',
+      tryHtml:function(id){return'Use the full <a href="/tools/matrix-decomposition.html" style="color:var(--accent);">QR Decomposition Calculator</a> for step-by-step Gram-Schmidt orthogonalization.';},
+      calc:function(){}
+    },
+    {cat:'Decompositions',name:'SVD',formula:'A = U\u03a3V\u1d40',
+      desc:'Any matrix = orthogonal U times diagonal Sigma times orthogonal V^T. Singular values on the diagonal of Sigma reveal rank, condition number, and best low-rank approximation. Foundation of PCA, image compression, and recommender systems.',
+      tryHtml:function(id){return'Use the full <a href="/tools/matrix-decomposition.html" style="color:var(--accent);">SVD Calculator</a> for step-by-step singular value computation.';},
+      calc:function(){}
+    },
+    {cat:'Decompositions',name:'Eigendecomposition',formula:'A = PDP\u207b\u00b9',
+      desc:'If A has n linearly independent eigenvectors, it can be diagonalized as A = PDP^(-1) where P columns are eigenvectors and D is diagonal with eigenvalues. The spectral theorem guarantees this for symmetric matrices with orthogonal P.',
+      tryHtml:function(id){return'Use the <a href="/tools/eigenvector-step-solver.html" style="color:var(--accent);">Eigenvector Step Solver</a> for step-by-step eigenvalue and eigenvector computation.';},
+      calc:function(){}
+    },
+
+    // === VECTOR SPACES ===
+    {cat:'Vector Spaces',name:'Rank-Nullity Theorem',formula:'rank(A) + nullity(A) = n',
+      desc:'For an m x n matrix, the dimension of the column space (rank) plus the dimension of the null space (nullity) equals n (number of columns). This is the fundamental theorem connecting what a matrix reaches to what it collapses.',
+      tryHtml:function(id){return grid2('rn_',[[1,2],[2,4]])+'<br><button class="cs-try-btn" onclick="window._cs.calcRN(\''+id+'\')">Compute</button><div class="result" id="res_'+id+'"></div>';},
+      calc:function(id){const m=getMat2('rn_');const d=m[0][0]*m[1][1]-m[0][1]*m[1][0];const rank=Math.abs(d)>EPS?2:(Math.abs(m[0][0])>EPS||Math.abs(m[0][1])>EPS||Math.abs(m[1][0])>EPS||Math.abs(m[1][1])>EPS?1:0);document.getElementById('res_'+id).textContent='rank = '+rank+', nullity = '+(2-rank)+', rank + nullity = 2 = n';}
+    },
+    {cat:'Vector Spaces',name:'Characteristic Polynomial (2x2)',formula:'\u03bb\u00b2 - tr(A)\u03bb + det(A) = 0',
+      desc:'The eigenvalues of a 2x2 matrix are the roots of this quadratic. The trace gives the sum of eigenvalues and the determinant gives the product. Solve with the quadratic formula: lambda = (tr +/- sqrt(tr^2 - 4*det)) / 2.',
+      tryHtml:function(id){return grid2('cp_',[[4,1],[2,3]])+'<br><button class="cs-try-btn" onclick="window._cs.calcCharPoly(\''+id+'\')">Compute</button><div class="result" id="res_'+id+'"></div>';},
+      calc:function(id){const m=getMat2('cp_');const tr=m[0][0]+m[1][1],det=m[0][0]*m[1][1]-m[0][1]*m[1][0];const disc=tr*tr-4*det;let res='\u03bb\u00b2 - '+fmt(tr)+'\u03bb + '+fmt(det)+' = 0\n';if(disc>=0){const s=Math.sqrt(disc);res+='\u03bb\u2081 = '+fmt((tr+s)/2)+', \u03bb\u2082 = '+fmt((tr-s)/2);}else{const s=Math.sqrt(-disc);res+='\u03bb = '+fmt(tr/2)+' \u00b1 '+fmt(s/2)+'i (complex)';}document.getElementById('res_'+id).textContent=res;}
+    },
+    {cat:'Vector Spaces',name:'Least Squares Solution',formula:'x = (A\u1d40A)\u207b\u00b9A\u1d40b',
+      desc:'When Ax = b has no exact solution (overdetermined system), the least-squares solution minimizes ||Ax - b||^2. The normal equations A^T A x = A^T b give the optimal x. In practice, QR decomposition is preferred for numerical stability.',
+      tryHtml:function(id){return'For interactive least-squares solving, use the <a href="/tools/matrix-decomposition.html" style="color:var(--accent);">QR decomposition tool</a>.';},
+      calc:function(){}
+    },
+
+    // === NORMS ===
+    {cat:'Norms',name:'Vector 2-Norm (Euclidean)',formula:'||v||\u2082 = \u221a(v\u2081\u00b2 + v\u2082\u00b2 + ... + v\u2099\u00b2)',
+      desc:'The standard Euclidean length of a vector. Used in normalization, distance computation, and as the basis for the Frobenius matrix norm. The unit sphere under this norm is the familiar round sphere.',
+      tryHtml:function(id){return'v = [<input type="number" id="vn_0" value="3" class="cs-try" style="display:inline;">, <input type="number" id="vn_1" value="4" class="cs-try" style="display:inline;">]<br><button class="cs-try-btn" onclick="window._cs.calcVNorm(\''+id+'\')">Compute</button><div class="result" id="res_'+id+'"></div>';},
+      calc:function(id){const a=parseFloat(document.getElementById('vn_0').value)||0,b=parseFloat(document.getElementById('vn_1').value)||0;document.getElementById('res_'+id).textContent='||v||\u2082 = \u221a('+fmt(a)+'\u00b2 + '+fmt(b)+'\u00b2) = '+fmt(Math.sqrt(a*a+b*b));}
+    },
+    {cat:'Norms',name:'Frobenius Norm',formula:'||A||\u1da0 = \u221a(\u03a3 a\u1d62\u2c7c\u00b2)',
+      desc:'Square root of the sum of squares of all matrix entries. Treats the matrix as a long vector. Equals sqrt(tr(A^T A)) and also equals sqrt(sum of squared singular values). Easy to compute but not submultiplicative in the tightest sense.',
+      tryHtml:function(id){return grid2('fn_',[[1,2],[3,4]])+'<br><button class="cs-try-btn" onclick="window._cs.calcFrob(\''+id+'\')">Compute</button><div class="result" id="res_'+id+'"></div>';},
+      calc:function(id){const m=getMat2('fn_');let s=0;for(let i=0;i<2;i++)for(let j=0;j<2;j++)s+=m[i][j]*m[i][j];document.getElementById('res_'+id).textContent='||A||\u1da0 = \u221a('+fmt(s)+') = '+fmt(Math.sqrt(s));}
+    },
+    {cat:'Norms',name:'Matrix 1-Norm (Column Sum)',formula:'||A||\u2081 = max column sum of |a\u1d62\u2c7c|',
+      desc:'The maximum absolute column sum. Compute the sum of absolute values in each column and take the largest. This is the operator norm induced by the vector 1-norm.',
+      tryHtml:function(id){return grid2('n1_',[[1,-2],[3,4]])+'<br><button class="cs-try-btn" onclick="window._cs.calcNorm1(\''+id+'\')">Compute</button><div class="result" id="res_'+id+'"></div>';},
+      calc:function(id){const m=getMat2('n1_');const c0=Math.abs(m[0][0])+Math.abs(m[1][0]),c1=Math.abs(m[0][1])+Math.abs(m[1][1]);document.getElementById('res_'+id).textContent='Col sums: '+fmt(c0)+', '+fmt(c1)+' \u2192 ||A||\u2081 = '+fmt(Math.max(c0,c1));}
+    },
+    {cat:'Norms',name:'Matrix Infinity-Norm (Row Sum)',formula:'||A||\u221e = max row sum of |a\u1d62\u2c7c|',
+      desc:'The maximum absolute row sum. Compute the sum of absolute values in each row and take the largest. This is the operator norm induced by the vector infinity-norm (max-norm).',
+      tryHtml:function(id){return grid2('ni_',[[1,-2],[3,4]])+'<br><button class="cs-try-btn" onclick="window._cs.calcNormInf(\''+id+'\')">Compute</button><div class="result" id="res_'+id+'"></div>';},
+      calc:function(id){const m=getMat2('ni_');const r0=Math.abs(m[0][0])+Math.abs(m[0][1]),r1=Math.abs(m[1][0])+Math.abs(m[1][1]);document.getElementById('res_'+id).textContent='Row sums: '+fmt(r0)+', '+fmt(r1)+' \u2192 ||A||\u221e = '+fmt(Math.max(r0,r1));}
+    },
+    {cat:'Norms',name:'Condition Number',formula:'\u03ba(A) = ||A|| \u00b7 ||A\u207b\u00b9|| = \u03c3\u2098\u2090\u2093/\u03c3\u2098\u1d62\u2099',
+      desc:'Measures sensitivity of Ax = b to perturbations. kappa near 1 means well-conditioned. kappa = 10^k means you lose ~k digits of accuracy. For the 2-norm, kappa equals the ratio of the largest to smallest singular value. Singular matrices have kappa = infinity.',
+      tryHtml:function(id){return grid2('cn_',[[1,0],[0,2]])+'<br><button class="cs-try-btn" onclick="window._cs.calcCond(\''+id+'\')">Compute</button><div class="result" id="res_'+id+'"></div>';},
+      calc:function(id){const m=getMat2('cn_');const d=m[0][0]*m[1][1]-m[0][1]*m[1][0];if(Math.abs(d)<EPS){document.getElementById('res_'+id).textContent='\u03ba = \u221e (singular matrix)';return;}const inv=[[m[1][1]/d,-m[0][1]/d],[-m[1][0]/d,m[0][0]/d]];let na=0,ni=0;for(let i=0;i<2;i++)for(let j=0;j<2;j++){na+=m[i][j]*m[i][j];ni+=inv[i][j]*inv[i][j];}document.getElementById('res_'+id).textContent='\u03ba\u1da0(A) = ||A||\u1da0 \u00b7 ||A\u207b\u00b9||\u1da0 = '+fmt(Math.sqrt(na))+' \u00d7 '+fmt(Math.sqrt(ni))+' = '+fmt(Math.sqrt(na)*Math.sqrt(ni));}
+    }
+  ];
+
+  // Expose calculator functions
+  window._cs={};
+  formulas.forEach((f,i)=>{
+    if(f.calc){
+      const fnName=f.name.replace(/[^a-zA-Z0-9]/g,'');
+      window._cs['calc_'+i]=function(){f.calc('card_'+i);};
+    }
+  });
+  // Named shortcuts
+  window._cs.calcTrace2=function(id){formulas[0].calc(id);};
+  window._cs.calcTrace3=function(id){formulas[1].calc(id);};
+  window._cs.calcDet2=function(id){formulas[2].calc(id);};
+  window._cs.calcDet3=function(id){formulas[3].calc(id);};
+  window._cs.calcRank=function(id){formulas[4].calc(id);};
+  window._cs.calcInv2=function(id){formulas[5].calc(id);};
+  window._cs.calcTrans=function(id){formulas[6].calc(id);};
+  window._cs.calcMul=function(id){formulas[7].calc(id);};
+  window._cs.calcPow=function(id){formulas[8].calc(id);};
+  window._cs.calcRN=function(id){formulas[13].calc(id);};
+  window._cs.calcCharPoly=function(id){formulas[14].calc(id);};
+  window._cs.calcVNorm=function(id){formulas[16].calc(id);};
+  window._cs.calcFrob=function(id){formulas[17].calc(id);};
+  window._cs.calcNorm1=function(id){formulas[18].calc(id);};
+  window._cs.calcNormInf=function(id){formulas[19].calc(id);};
+  window._cs.calcCond=function(id){formulas[20].calc(id);};
+
+  const cats=['All','Basics','Operations','Decompositions','Vector Spaces','Norms'];
+  let activeCat='All';
+
+  function renderTabs(){
+    const t=document.getElementById('tabs');
+    t.innerHTML=cats.map(c=>'<button class="cs-tab'+(c===activeCat?' active':'')+'" onclick="window._cs.setCat(\''+c+'\')">'+c+'</button>').join('');
+  }
+
+  window._cs.setCat=function(c){activeCat=c;renderTabs();renderCards();};
+
+  function renderCards(){
+    const q=document.getElementById('search').value.toLowerCase();
+    const container=document.getElementById('cards');
+    let html='';
+    let count=0;
+    formulas.forEach((f,i)=>{
+      const matchCat=(activeCat==='All'||f.cat===activeCat);
+      const matchSearch=!q||f.name.toLowerCase().includes(q)||f.formula.toLowerCase().includes(q)||f.desc.toLowerCase().includes(q)||f.cat.toLowerCase().includes(q);
+      if(!matchCat||!matchSearch)return;
+      count++;
+      const id='card_'+i;
+      html+='<div class="cs-card" id="wrap_'+id+'">';
+      html+='<div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:0.5rem;">';
+      html+='<h3>'+f.name+'<span style="font-size:0.75rem;color:var(--text-muted,#666);margin-left:0.5rem;font-weight:normal;">'+f.cat+'</span></h3>';
+      if(f.tryHtml) html+='<button class="cs-try-btn" onclick="window._cs.toggle(\''+id+'\')" id="tbtn_'+id+'">Try It</button>';
+      html+='</div>';
+      html+='<div class="cs-formula">'+f.formula+'</div>';
+      html+='<div class="cs-desc">'+f.desc+'</div>';
+      if(f.tryHtml){
+        html+='<div class="cs-try" id="try_'+id+'">'+f.tryHtml(id)+'</div>';
+      }
+      html+='</div>';
+    });
+    container.innerHTML=html;
+    document.getElementById('count').textContent=count+' formula'+(count!==1?'s':'')+' shown';
+  }
+
+  window._cs.toggle=function(id){
+    const el=document.getElementById('try_'+id);
+    if(el) el.classList.toggle('open');
+  };
+
+  function filterCards(){renderCards();}
+  window.filterCards=filterCards;
+
+  renderTabs();
+  renderCards();
+})();
+</script>
+</body>
+</html>

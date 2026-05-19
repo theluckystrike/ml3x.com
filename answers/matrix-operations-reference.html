@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matrix Operations Reference &mdash; Interactive Cheatsheet with Visual Examples | ML3X</title>
+<meta name="description" content="Interactive matrix operations cheatsheet covering 20+ operations: addition, multiplication, transpose, inverse, determinant, eigenvalues, decompositions. Each entry has formula, visual example, and a try-it mini-calculator.">
+<meta name="keywords" content="matrix operations cheatsheet, matrix reference, matrix formulas, matrix properties, matrix decomposition, linear algebra reference, matrix calculator, special matrices">
+<link rel="canonical" href="https://ml3x.com/answers/matrix-operations-reference.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Matrix Operations Reference &mdash; Interactive Cheatsheet with Visual Examples | ML3X">
+<meta property="og:description" content="Interactive matrix operations cheatsheet with 20+ operations, visual examples, searchable categories, and try-it mini-calculators for every operation.">
+<meta property="og:url" content="https://ml3x.com/answers/matrix-operations-reference.html">
+<meta property="og:site_name" content="Zovo Tools">
+<meta property="og:image" content="https://ml3x.com/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Matrix Operations Reference &mdash; Interactive Cheatsheet with Visual Examples | ML3X">
+<meta name="twitter:description" content="Interactive matrix operations cheatsheet with 20+ operations, visual examples, searchable categories, and try-it mini-calculators for every operation.">
+<meta name="twitter:image" content="https://ml3x.com/assets/og-image.png">
+<link rel="stylesheet" href="/assets/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Matrix Operations Reference — Interactive Cheatsheet with Visual Examples",
+  "url": "https://ml3x.com/answers/matrix-operations-reference.html",
+  "description": "Interactive matrix operations cheatsheet covering 20+ operations: addition, multiplication, transpose, inverse, determinant, eigenvalues, decompositions. Each entry has formula, visual example, and a try-it mini-calculator.",
+  "author": {
+    "@type": "Person",
+    "name": "Michael Lip",
+    "url": "https://zovo.one"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "ML3X",
+    "url": "https://ml3x.com"
+  },
+  "datePublished": "2026-05-25",
+  "dateModified": "2026-05-25"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What are the most important matrix operations in linear algebra?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The most important matrix operations are addition, scalar multiplication, matrix multiplication, transpose, inverse, and determinant. Addition and scalar multiplication are element-wise operations. Matrix multiplication combines rows of the first matrix with columns of the second using dot products, and is not commutative (AB does not generally equal BA). The transpose flips rows and columns. The inverse of a square matrix A is the matrix A-inverse such that A times A-inverse equals the identity matrix. The determinant is a scalar that indicates whether a matrix is invertible (nonzero determinant) and measures the volume scaling factor of the linear transformation. Beyond these basics, eigenvalue decomposition, singular value decomposition (SVD), LU decomposition, and QR decomposition are essential for solving systems of equations, dimensionality reduction, and numerical stability."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between element-wise and matrix multiplication?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Element-wise multiplication (also called the Hadamard product) multiplies corresponding entries of two matrices of the same size: C(i,j) = A(i,j) * B(i,j). Matrix multiplication is fundamentally different: for an m-by-n matrix A and an n-by-p matrix B, the product C = AB is an m-by-p matrix where C(i,j) = sum of A(i,k) * B(k,j) for k from 1 to n. Matrix multiplication requires the inner dimensions to match (columns of A = rows of B), is not commutative, and produces a matrix of potentially different dimensions. Element-wise multiplication is commutative and requires identical dimensions. In deep learning, element-wise multiplication is used in gating mechanisms (like LSTMs and attention), while standard matrix multiplication is used in fully connected layers and linear transformations."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "When is a matrix invertible and how do you compute the inverse?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A square matrix A is invertible (nonsingular) if and only if its determinant is nonzero. Equivalently, A is invertible when its columns (or rows) are linearly independent, when the only solution to Ax = 0 is x = 0, when all eigenvalues are nonzero, and when rank(A) equals the number of rows. For a 2x2 matrix [[a,b],[c,d]], the inverse is (1/det) * [[d,-b],[-c,a]] where det = ad - bc. For larger matrices, the inverse can be computed using Gauss-Jordan elimination (augment A with the identity and row-reduce), LU decomposition, or the adjugate formula A-inverse = (1/det(A)) * adj(A). In practice, computing the explicit inverse is usually avoided in favor of solving the system Ax = b directly using LU or QR decomposition, which is more numerically stable and computationally efficient."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What are eigenvalues and eigenvectors used for?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "An eigenvector v of a matrix A is a nonzero vector that satisfies Av = lambda * v, where lambda is the corresponding eigenvalue. In other words, the matrix transformation only scales the eigenvector without changing its direction. Eigenvalues and eigenvectors are used extensively: in Principal Component Analysis (PCA), the eigenvectors of the covariance matrix define the principal components and the eigenvalues measure the variance along each component. In Google's PageRank, the ranking vector is the dominant eigenvector of the web link matrix. In physics, eigenvectors represent fundamental modes of vibration in mechanical systems and quantum states in quantum mechanics. In stability analysis, eigenvalues determine whether a dynamical system is stable (all eigenvalues have negative real parts) or unstable. The eigendecomposition A = V * diag(lambda) * V-inverse enables efficient computation of matrix powers and the matrix exponential."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the difference between LU, QR, and SVD decomposition?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "LU decomposition factors a square matrix A into a lower triangular matrix L and an upper triangular matrix U: A = LU (with possible row permutation P, giving PA = LU). It is the fastest decomposition for solving Ax = b and computing determinants. QR decomposition factors any m-by-n matrix A into an orthogonal matrix Q and an upper triangular matrix R: A = QR. It is more numerically stable than LU and is the standard method for solving least-squares problems. Singular Value Decomposition (SVD) factors any m-by-n matrix A into U * Sigma * V-transpose, where U and V are orthogonal and Sigma is diagonal with non-negative singular values. SVD is the most general and powerful decomposition: it reveals the rank, the range, the null space, the condition number, and the best low-rank approximation of any matrix. SVD is the foundation of PCA, latent semantic analysis, image compression, and pseudoinverse computation."
+      }
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://ml3x.com/"},{"@type":"ListItem","position":2,"name":"Answers","item":"https://ml3x.com/answers/"},{"@type":"ListItem","position":3,"name":"Matrix Operations Reference"}]}</script>
+</head>
+<body>
+<header class="site-header">
+  <a href="/" class="site-logo">ML3X</a>
+  <nav class="site-nav">
+    <a href="/">Calculator</a>
+    <a href="/tools/">Tools</a>
+    <a href="/guides/">Guides</a>
+    <a href="/answers/">Answers</a>
+    <a href="/blog/">Blog</a>
+      <div class="nav-right">
+      <a href="https://zovo.one/pricing?utm_source=ml3x.com&amp;utm_medium=satellite&amp;utm_campaign=nav-link" class="nav-pro" target="_blank">Go Pro &#10022;</a>
+      <a href="https://zovo.one/tools" class="nav-zovo">Zovo Tools</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="hero">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a> &raquo; <a href="/answers/">Answers</a> &raquo; <span>Matrix Operations Reference</span>
+    </nav>
+    <h1>Matrix Operations Reference &mdash; Interactive Cheatsheet</h1>
+    <p>A comprehensive reference of 20+ matrix operations organized by category. Each operation includes the formula, a visual example with small matrices, and a "Try It" mini-calculator. Search by name or filter by category to quickly find any operation.</p>
+  </div>
+
+  <!-- Search & Filter Controls -->
+  <section style="max-width:900px;margin:2rem auto;padding:0 1rem;">
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center;margin-bottom:1.5rem;">
+      <input type="text" id="search-input" placeholder="Search operations..." oninput="filterOps()" style="flex:1;min-width:200px;padding:0.6rem 1rem;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:8px;font-size:1rem;">
+      <div id="cat-buttons" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+    </div>
+    <div style="margin-bottom:1rem;color:var(--text-muted,#999);font-size:0.9rem;">
+      <span id="result-count">24</span> operations shown &middot; Click any card to expand the visual example and mini-calculator
+    </div>
+    <div id="ops-container"></div>
+  </section>
+
+  <div class="last-updated"><time datetime="2026-05-25">Last updated: May 25, 2026</time></div>
+
+  <!-- Expert Content -->
+  <section style="max-width:720px;margin:2rem auto;line-height:1.7;padding:0 1rem;">
+    <h2>Understanding Matrix Operations: A Complete Guide</h2>
+    <p>Matrix operations form the computational backbone of linear algebra, and linear algebra is the mathematical language of modern science, engineering, and machine learning. Every neural network forward pass is a sequence of matrix multiplications and element-wise nonlinearities. Every least-squares regression reduces to solving a matrix equation. Every principal component analysis hinges on eigenvalue decomposition. Mastering matrix operations is not merely academic; it is a practical prerequisite for working effectively with data, models, and simulations.</p>
+
+    <p>Matrices encode linear transformations: rotations, reflections, scalings, shears, and projections. A 2&times;2 matrix acting on a 2D vector produces another 2D vector, and the matrix completely specifies how the entire plane is warped. The determinant measures how areas (or volumes in higher dimensions) scale under the transformation. If the determinant is zero, the transformation collapses the space into a lower dimension, and the matrix is singular (non-invertible). If the determinant is negative, the transformation includes a reflection that reverses orientation.</p>
+
+    <h2>Basic Operations: Addition, Scaling, and Multiplication</h2>
+    <p>Matrix addition and scalar multiplication are straightforward element-wise operations. Given matrices A and B of the same dimensions m&times;n, their sum C = A + B has entries C(i,j) = A(i,j) + B(i,j). Scalar multiplication scales every entry: (cA)(i,j) = c &middot; A(i,j). These operations satisfy the familiar commutative and associative laws: A + B = B + A, and c(A + B) = cA + cB.</p>
+
+    <p>Matrix multiplication is far more interesting and subtle. The product AB requires the number of columns of A to equal the number of rows of B. If A is m&times;n and B is n&times;p, then AB is m&times;p with entries (AB)(i,j) = sum over k of A(i,k)B(k,j). This is the dot product of row i of A with column j of B. Matrix multiplication is associative, A(BC) = (AB)C, and distributive, A(B+C) = AB + AC, but crucially not commutative: AB does not generally equal BA, even when both products are defined. This non-commutativity reflects the fact that the order of geometric transformations matters: rotating then scaling is different from scaling then rotating.</p>
+
+    <h2>The Transpose and Its Properties</h2>
+    <p>The transpose of a matrix A, written A^T, flips the matrix across its main diagonal: (A^T)(i,j) = A(j,i). Rows become columns and columns become rows. The transpose satisfies several important identities: (A^T)^T = A, (A+B)^T = A^T + B^T, (cA)^T = cA^T, and the critical reversal law (AB)^T = B^T A^T. A matrix that equals its own transpose (A = A^T) is called symmetric. Symmetric matrices arise naturally as covariance matrices, Hessians (second-derivative matrices), and adjacency matrices of undirected graphs. They have the special property that all their eigenvalues are real, and their eigenvectors can be chosen to be orthogonal.</p>
+
+    <p>The conjugate transpose (or Hermitian transpose), written A*, generalizes the transpose to complex matrices by also taking the complex conjugate of each entry. A matrix equal to its conjugate transpose is Hermitian, and Hermitian matrices are the complex analog of symmetric matrices. In quantum mechanics, observable quantities correspond to Hermitian operators, guaranteeing real eigenvalues (measurement outcomes).</p>
+
+    <h2>Determinant, Trace, and Rank</h2>
+    <p>The determinant of a square matrix is a scalar that encodes several key properties. For a 2&times;2 matrix [[a,b],[c,d]], det = ad - bc. For 3&times;3 and larger, the determinant is computed by cofactor expansion or, more efficiently, by LU decomposition (the determinant equals the product of the diagonal entries of U, times the sign of the permutation). The determinant is zero if and only if the matrix is singular. The absolute value of the determinant gives the factor by which the linear transformation scales volumes. The determinant is multiplicative: det(AB) = det(A) det(B). And det(A^T) = det(A).</p>
+
+    <p>The trace of a square matrix is the sum of its diagonal entries: tr(A) = A(1,1) + A(2,2) + ... + A(n,n). The trace equals the sum of the eigenvalues, and the determinant equals the product of the eigenvalues. The trace is invariant under cyclic permutations: tr(ABC) = tr(CAB) = tr(BCA). The rank of a matrix is the number of linearly independent rows (or equivalently columns), which equals the number of nonzero singular values. A matrix is full rank when its rank equals the smaller of its dimensions.</p>
+
+    <h2>Matrix Decompositions</h2>
+    <p>Matrix decompositions (factorizations) are the workhorses of numerical linear algebra. LU decomposition factors A = LU where L is lower triangular and U is upper triangular; it is the basis of Gaussian elimination and is the fastest way to solve Ax = b for a single system. With partial pivoting (PA = LU), it is numerically stable for most practical matrices.</p>
+
+    <p>QR decomposition factors A = QR where Q is orthogonal (Q^T Q = I) and R is upper triangular. Because orthogonal transformations preserve norms and angles, QR decomposition is more numerically stable than LU for ill-conditioned problems. It is the standard method for solving least-squares problems (minimize ||Ax - b||) and for computing eigenvalues via the QR algorithm.</p>
+
+    <p>Singular Value Decomposition (SVD) is the most powerful and general decomposition. Any m&times;n matrix A can be written as A = U &Sigma; V^T, where U is m&times;m orthogonal, V is n&times;n orthogonal, and &Sigma; is m&times;n diagonal with non-negative singular values &sigma;1 &ge; &sigma;2 &ge; ... &ge; 0. The singular values reveal the rank (number of nonzero &sigma;'s), the condition number (&sigma;1/&sigma;_min), and the best low-rank approximation (truncate to the k largest singular values). SVD underlies PCA, latent semantic analysis, recommender systems, image compression, and the pseudoinverse.</p>
+
+    <h2>Special Matrices and Their Properties</h2>
+    <p>Several matrix types appear repeatedly across applications. The identity matrix I has ones on the diagonal and zeros elsewhere; it is the multiplicative identity (AI = IA = A). Diagonal matrices have nonzero entries only on the main diagonal; they are trivially invertible (invert each diagonal entry) and their eigenvalues are the diagonal entries. Triangular matrices (upper or lower) are square matrices with zeros above or below the diagonal; they arise in LU decomposition and are easy to solve via forward or back substitution.</p>
+
+    <p>Orthogonal matrices satisfy Q^T Q = QQ^T = I, meaning their rows and columns are orthonormal vectors. Orthogonal transformations preserve lengths and angles (they are rotations and reflections). Their determinant is &plusmn;1. Positive definite matrices are symmetric matrices where all eigenvalues are positive, equivalently where x^T A x > 0 for all nonzero vectors x. They arise as covariance matrices, Hessians of convex functions, and kernel matrices. The Cholesky decomposition A = LL^T exists if and only if A is symmetric positive definite, and it is twice as efficient as LU decomposition.</p>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="faq-section" style="max-width:720px;margin:2rem auto;">
+    <h2>Frequently Asked Questions</h2>
+    <details>
+      <summary>What are the most important matrix operations in linear algebra?</summary>
+      <p>The core operations are addition, scalar multiplication, matrix multiplication, transpose, inverse, and determinant. Matrix multiplication uses dot products of rows and columns and is not commutative. The inverse reverses a transformation, and the determinant indicates invertibility and volume scaling. For advanced work, eigendecomposition, SVD, LU, and QR decomposition are essential.</p>
+    </details>
+    <details>
+      <summary>What is the difference between element-wise and matrix multiplication?</summary>
+      <p>Element-wise (Hadamard) multiplication multiplies corresponding entries of same-sized matrices: C(i,j) = A(i,j)B(i,j). Matrix multiplication computes C(i,j) as the dot product of row i of A with column j of B, requires matching inner dimensions, and is not commutative. Element-wise is used in gating mechanisms (LSTMs); matrix multiplication in linear layers.</p>
+    </details>
+    <details>
+      <summary>When is a matrix invertible and how do you compute the inverse?</summary>
+      <p>A square matrix is invertible if and only if its determinant is nonzero (equivalently: columns are linearly independent, rank equals size, all eigenvalues are nonzero). For 2&times;2: swap diagonals, negate off-diagonals, divide by det. For larger matrices, use Gauss-Jordan elimination or LU decomposition. In practice, solving Ax = b directly is preferred over computing the explicit inverse.</p>
+    </details>
+    <details>
+      <summary>What are eigenvalues and eigenvectors used for?</summary>
+      <p>Eigenvectors are directions that a matrix only scales (not rotates): Av = &lambda;v. Eigenvalues &lambda; are the scaling factors. PCA uses eigenvectors of the covariance matrix. Google PageRank uses the dominant eigenvector of the link matrix. Stability analysis checks whether eigenvalues have negative real parts. Eigendecomposition enables efficient matrix powers and exponentials.</p>
+    </details>
+    <details>
+      <summary>What is the difference between LU, QR, and SVD decomposition?</summary>
+      <p>LU factors A = LU (lower &times; upper triangular) for fast linear system solving. QR factors A = QR (orthogonal &times; upper triangular) for more stable least-squares. SVD factors A = U&Sigma;V^T for any matrix, revealing rank, condition number, and best low-rank approximation. SVD is the most general; LU is the fastest for square systems; QR is the standard for least-squares.</p>
+    </details>
+  </section>
+
+  <section style="max-width:720px;margin:2rem auto;padding:0 1rem;">
+    <h2>Related Tools</h2>
+    <ul>
+      <li><a href="/tools/matrix-multiplication.html">Matrix Multiplication Calculator</a> &mdash; step-by-step matrix product with dimension checking</li>
+      <li><a href="/tools/determinant-calculator.html">Determinant Calculator</a> &mdash; cofactor expansion and LU-based determinant</li>
+      <li><a href="/tools/eigenvector-step-solver.html">Eigenvector Step Solver</a> &mdash; characteristic polynomial and null space computation</li>
+      <li><a href="/guides/numerical-stability-guide.html">Numerical Stability Guide</a> &mdash; condition numbers and floating-point precision analysis</li>
+    </ul>
+  </section>
+
+  <section style="max-width:720px;margin:2rem auto;padding:0 1rem;">
+    <p style="font-size:0.9rem;color:var(--text-muted);">Built by <a href="https://zovo.one">Michael Lip</a>. Try the <a href="/">ML3X Matrix Calculator</a> for interactive step-by-step solutions.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">Zovo Tools</div>
+        <div class="footer-tagline">Free developer tools by a solo dev. No tracking.</div>
+        <a href="https://zovo.one/pricing?utm_source=ml3x.com&utm_medium=satellite&utm_campaign=footer-link" class="footer-cta">Zovo Lifetime &mdash; $99 once, free forever &rarr;</a>
+        <div class="footer-copy">&copy; 2026 <a href="https://zovo.one">Zovo</a> &middot; 47/500 founding spots</div>
+    </div>
+</footer>
+
+<nav class="zovo-network" aria-label="Zovo Tools Network">
+    <div class="zovo-network-inner">
+        <h3 class="zovo-network-title">Explore More Tools</h3>
+        <div class="zovo-network-links">
+            <a href="https://abwex.com">ABWex &mdash; A/B Testing</a>
+            <a href="https://claudflow.com">ClaudFlow &mdash; Workflows</a>
+            <a href="https://claudhq.com">ClaudHQ &mdash; AI Code Tools &amp; Fixes</a>
+            <a href="https://claudkit.com">ClaudKit &mdash; API</a>
+            <a href="https://enhio.com">Enhio &mdash; Text Tools</a>
+            <a href="https://epochpilot.com">EpochPilot &mdash; Timestamps</a>
+            <a href="https://gen8x.com">Gen8X &mdash; Color Tools</a>
+            <a href="https://gpt0x.com">GPT0X &mdash; AI Models</a>
+            <a href="https://heytensor.com">HeyTensor &mdash; ML Tools</a>
+            <a href="https://invokebot.com">InvokeBot &mdash; Webhooks</a>
+            <a href="https://kappafy.com">Kappafy &mdash; JSON</a>
+            <a href="https://kappakit.com">KappaKit &mdash; Dev Toolkit</a>
+            <a href="https://kickllm.com">KickLLM &mdash; LLM Costs</a>
+            <a href="https://krzen.com">Krzen &mdash; Image Tools</a>
+            <a href="https://lochbot.com">LochBot &mdash; Security</a>
+            <a href="https://lockml.com">LockML &mdash; ML Compare</a>
+        </div>
+    </div>
+</nav>
+
+<script>
+(function(){
+  const CATEGORIES = {
+    'basic': {label:'Basic Ops', color:'#EC4899'},
+    'properties': {label:'Properties', color:'#3B82F6'},
+    'special': {label:'Special Matrices', color:'#10B981'},
+    'decompositions': {label:'Decompositions', color:'#F59E0B'},
+    'advanced': {label:'Advanced', color:'#8B5CF6'}
+  };
+
+  const OPS = [
+    {name:'Matrix Addition', cat:'basic', formula:'C(i,j) = A(i,j) + B(i,j)', desc:'Add corresponding entries of two matrices of the same dimensions.',
+      exA:[[1,2],[3,4]], exB:[[5,6],[7,8]], exR:[[6,8],[10,12]], exLabel:'A + B',
+      calc:function(a,b){return a.map((r,i)=>r.map((v,j)=>v+b[i][j]));}},
+    {name:'Matrix Subtraction', cat:'basic', formula:'C(i,j) = A(i,j) - B(i,j)', desc:'Subtract corresponding entries of two same-dimension matrices.',
+      exA:[[5,6],[7,8]], exB:[[1,2],[3,4]], exR:[[4,4],[4,4]], exLabel:'A - B',
+      calc:function(a,b){return a.map((r,i)=>r.map((v,j)=>v-b[i][j]));}},
+    {name:'Scalar Multiplication', cat:'basic', formula:'(cA)(i,j) = c \u00b7 A(i,j)', desc:'Multiply every entry by a scalar constant c.',
+      exA:[[1,2],[3,4]], exB:null, exR:[[3,6],[9,12]], exLabel:'3 \u00d7 A', scalar:3,
+      calc:function(a,b,c){return a.map(r=>r.map(v=>v*(c||2)));}},
+    {name:'Matrix Multiplication', cat:'basic', formula:'C(i,j) = \u03a3 A(i,k)\u00b7B(k,j)', desc:'Dot product of row i of A with column j of B. Requires cols(A) = rows(B).',
+      exA:[[1,2],[3,4]], exB:[[5,6],[7,8]], exR:[[19,22],[43,50]], exLabel:'A \u00d7 B',
+      calc:function(a,b){var m=a.length,n=b[0].length,p=b.length,c=[];for(var i=0;i<m;i++){c[i]=[];for(var j=0;j<n;j++){var s=0;for(var k=0;k<p;k++)s+=a[i][k]*b[k][j];c[i][j]=s;}}return c;}},
+    {name:'Hadamard Product', cat:'basic', formula:'C(i,j) = A(i,j) \u00b7 B(i,j)', desc:'Element-wise multiplication. Both matrices must have the same dimensions.',
+      exA:[[1,2],[3,4]], exB:[[5,6],[7,8]], exR:[[5,12],[21,32]], exLabel:'A \u2299 B',
+      calc:function(a,b){return a.map((r,i)=>r.map((v,j)=>v*b[i][j]));}},
+    {name:'Transpose', cat:'properties', formula:'B(i,j) = A(j,i)', desc:'Flip rows and columns. An m\u00d7n matrix becomes n\u00d7m.',
+      exA:[[1,2,3],[4,5,6]], exB:null, exR:[[1,4],[2,5],[3,6]], exLabel:'A\u1d40',
+      calc:function(a){var r=[];for(var j=0;j<a[0].length;j++){r[j]=[];for(var i=0;i<a.length;i++)r[j][i]=a[i][j];}return r;}},
+    {name:'Trace', cat:'properties', formula:'tr(A) = \u03a3 A(i,i)', desc:'Sum of diagonal entries. Only defined for square matrices. Equals sum of eigenvalues.',
+      exA:[[1,2],[3,4]], exB:null, exR:'5', exLabel:'tr(A) = 1 + 4 = 5', isScalar:true,
+      calc:function(a){var s=0;for(var i=0;i<Math.min(a.length,a[0].length);i++)s+=a[i][i];return s;}},
+    {name:'Determinant (2\u00d72)', cat:'properties', formula:'det = ad - bc', desc:'For [[a,b],[c,d]], the determinant is ad - bc. Zero means singular (non-invertible).',
+      exA:[[3,7],[1,5]], exB:null, exR:'8', exLabel:'det = 3\u00d75 - 7\u00d71 = 8', isScalar:true,
+      calc:function(a){if(a.length===2&&a[0].length===2)return a[0][0]*a[1][1]-a[0][1]*a[1][0];return'N/A (need 2\u00d72)';}},
+    {name:'Determinant (3\u00d73)', cat:'properties', formula:'Sarrus or cofactor expansion', desc:'Expand along first row: a(ei-fh) - b(di-fg) + c(dh-eg) for [[a,b,c],[d,e,f],[g,h,i]].',
+      exA:[[1,2,3],[4,5,6],[7,8,0]], exB:null, exR:'27', exLabel:'det = 1(0-48) - 2(0-42) + 3(32-35) = 27', isScalar:true,
+      calc:function(a){if(a.length!==3||a[0].length!==3)return'N/A';var m=a;return m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])-m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])+m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);}},
+    {name:'2\u00d72 Inverse', cat:'properties', formula:'A\u207b\u00b9 = (1/det) [[d,-b],[-c,a]]', desc:'Swap diagonal, negate off-diagonal, divide by determinant. Only if det \u2260 0.',
+      exA:[[4,7],[2,6]], exB:null, exR:[[0.6,-0.7],[-0.2,0.4]], exLabel:'A\u207b\u00b9 (det=10)',
+      calc:function(a){if(a.length!==2||a[0].length!==2)return'N/A';var d=a[0][0]*a[1][1]-a[0][1]*a[1][0];if(Math.abs(d)<1e-10)return'Singular';var id=1/d;return[[a[1][1]*id,-a[0][1]*id],[-a[1][0]*id,a[0][0]*id]];}},
+    {name:'Matrix Power', cat:'basic', formula:'A\u00b2 = A \u00d7 A', desc:'Multiply the matrix by itself. A\u00b2 = AA, A\u00b3 = AAA. Only for square matrices.',
+      exA:[[1,1],[0,1]], exB:null, exR:[[1,2],[0,1]], exLabel:'A\u00b2',
+      calc:function(a){if(a.length!==a[0].length)return'N/A';var n=a.length,c=[];for(var i=0;i<n;i++){c[i]=[];for(var j=0;j<n;j++){var s=0;for(var k=0;k<n;k++)s+=a[i][k]*a[k][j];c[i][j]=s;}}return c;}},
+    {name:'Kronecker Product', cat:'advanced', formula:'A\u2297B: replace each a(i,j) with a(i,j)\u00b7B', desc:'For m\u00d7n A and p\u00d7q B, result is mp\u00d7nq. Used in quantum computing and signal processing.',
+      exA:[[1,2],[3,4]], exB:[[0,5],[6,7]], exR:[[0,5,0,10],[6,7,12,14],[0,15,0,20],[18,21,24,28]], exLabel:'A \u2297 B',
+      calc:function(a,b){if(!b)return'Need B';var m=a.length,n=a[0].length,p=b.length,q=b[0].length,r=[];for(var i=0;i<m*p;i++){r[i]=[];for(var j=0;j<n*q;j++){r[i][j]=a[Math.floor(i/p)][Math.floor(j/q)]*b[i%p][j%q];}}return r;}},
+    {name:'Identity Matrix', cat:'special', formula:'I(i,j) = 1 if i=j, else 0', desc:'The multiplicative identity: AI = IA = A. Diagonal of ones, zeros elsewhere.',
+      exA:null, exB:null, exR:[[1,0,0],[0,1,0],[0,0,1]], exLabel:'I\u2083 (3\u00d73 identity)', noCalc:true},
+    {name:'Zero Matrix', cat:'special', formula:'O(i,j) = 0 for all i,j', desc:'The additive identity: A + O = A. All entries are zero.',
+      exA:null, exB:null, exR:[[0,0],[0,0]], exLabel:'O\u2082\u2082 (2\u00d72 zero matrix)', noCalc:true},
+    {name:'Diagonal Matrix', cat:'special', formula:'D(i,j) = d(i) if i=j, else 0', desc:'Nonzero entries only on the main diagonal. Eigenvalues are the diagonal entries.',
+      exA:null, exB:null, exR:[[3,0,0],[0,7,0],[0,0,2]], exLabel:'diag(3, 7, 2)', noCalc:true},
+    {name:'Symmetric Matrix', cat:'special', formula:'A = A\u1d40, i.e. A(i,j) = A(j,i)', desc:'Equal to its transpose. Real eigenvalues, orthogonal eigenvectors. Covariance matrices are symmetric.',
+      exA:null, exB:null, exR:[[2,1,3],[1,5,4],[3,4,6]], exLabel:'Symmetric: A = A\u1d40', noCalc:true},
+    {name:'Orthogonal Matrix', cat:'special', formula:'Q\u1d40Q = QQ\u1d40 = I', desc:'Columns and rows are orthonormal. Preserves lengths and angles. det = \u00b11.',
+      exA:null, exB:null, exR:[[0,-1],[1,0]], exLabel:'90\u00b0 rotation (det=1)', noCalc:true},
+    {name:'Positive Definite', cat:'special', formula:'x\u1d40Ax > 0 for all x \u2260 0', desc:'Symmetric with all positive eigenvalues. Covariance matrices are positive semi-definite. Admits Cholesky.',
+      exA:null, exB:null, exR:[[2,1],[1,3]], exLabel:'PD: eigs = 1.38, 3.62', noCalc:true},
+    {name:'LU Decomposition', cat:'decompositions', formula:'A = LU (L lower, U upper triangular)', desc:'Gaussian elimination in matrix form. Fast for solving Ax = b. O(n\u00b3/3) for n\u00d7n.',
+      exA:[[2,1],[6,4]], exB:null, exR:'L=[[1,0],[3,1]], U=[[2,1],[0,1]]', exLabel:'A = LU', isScalar:true, noCalc:true},
+    {name:'QR Decomposition', cat:'decompositions', formula:'A = QR (Q orthogonal, R upper triangular)', desc:'More stable than LU. Used for least-squares and eigenvalue computation (QR algorithm).',
+      exA:null, exB:null, exR:'Q orthogonal, R upper triangular', exLabel:'A = QR', isScalar:true, noCalc:true},
+    {name:'SVD', cat:'decompositions', formula:'A = U\u03a3V\u1d40', desc:'Most general decomposition. Reveals rank, condition number, best low-rank approximation. Foundation of PCA.',
+      exA:null, exB:null, exR:'U,V orthogonal, \u03a3 diagonal (singular values)', exLabel:'A = U\u03a3V\u1d40', isScalar:true, noCalc:true},
+    {name:'Cholesky', cat:'decompositions', formula:'A = LL\u1d40 (L lower triangular)', desc:'Only for symmetric positive definite matrices. Twice as fast as LU. Used in Gaussian processes.',
+      exA:null, exB:null, exR:'L lower triangular, A = LL\u1d40', exLabel:'Cholesky of SPD matrix', isScalar:true, noCalc:true},
+    {name:'Eigendecomposition', cat:'decompositions', formula:'A = V\u039bV\u207b\u00b9', desc:'Factor into eigenvectors V and diagonal eigenvalues \u039b. Enables matrix powers: A\u207f = V\u039b\u207fV\u207b\u00b9.',
+      exA:null, exB:null, exR:'V eigenvectors, \u039b diagonal eigenvalues', exLabel:'A = V\u039bV\u207b\u00b9', isScalar:true, noCalc:true},
+    {name:'Rank', cat:'advanced', formula:'rank(A) = # linearly independent rows/cols', desc:'Equals number of nonzero singular values. Full rank means invertible (for square) or max possible rank.',
+      exA:[[1,2],[2,4]], exB:null, exR:'1', exLabel:'rank = 1 (row 2 = 2 \u00d7 row 1)', isScalar:true,
+      calc:function(a){if(a.length===2&&a[0].length===2){var d=a[0][0]*a[1][1]-a[0][1]*a[1][0];return Math.abs(d)<1e-10?1:2;}return'Use SVD';}},
+  ];
+
+  let activeCat = 'all';
+
+  function init(){
+    // Build category buttons
+    const btnC = document.getElementById('cat-buttons');
+    let bh = '<button onclick="setCat(\'all\')" id="cat-all" style="padding:4px 12px;border:1px solid var(--border,#444);background:var(--accent,#EC4899);color:#fff;border-radius:6px;cursor:pointer;font-size:0.85rem;font-weight:600;">All</button>';
+    for(const[key,val] of Object.entries(CATEGORIES)){
+      bh += '<button onclick="setCat(\''+key+'\')" id="cat-'+key+'" style="padding:4px 12px;border:1px solid '+val.color+';background:var(--bg-secondary,#1a1a2e);color:'+val.color+';border-radius:6px;cursor:pointer;font-size:0.85rem;font-weight:600;">'+val.label+'</button>';
+    }
+    btnC.innerHTML = bh;
+    renderOps();
+  }
+
+  function setCat(c){
+    activeCat = c;
+    // Update button styles
+    document.getElementById('cat-all').style.background = c==='all'?'var(--accent,#EC4899)':'var(--bg-secondary,#1a1a2e)';
+    document.getElementById('cat-all').style.color = c==='all'?'#fff':'var(--text,#e0e0e0)';
+    for(const key of Object.keys(CATEGORIES)){
+      const btn = document.getElementById('cat-'+key);
+      btn.style.background = c===key?CATEGORIES[key].color:'var(--bg-secondary,#1a1a2e)';
+      btn.style.color = c===key?'#fff':CATEGORIES[key].color;
+    }
+    renderOps();
+  }
+  window.setCat = setCat;
+
+  function filterOps(){renderOps();}
+  window.filterOps = filterOps;
+
+  function matToHtml(m, accent){
+    if(typeof m === 'string' || typeof m === 'number') return '<span style="font-family:monospace;font-size:1.1rem;color:'+accent+';">'+m+'</span>';
+    if(!Array.isArray(m)) return '';
+    let h = '<table style="border-collapse:collapse;display:inline-table;margin:4px;">';
+    for(const row of m){
+      h += '<tr>';
+      for(const v of row){
+        h += '<td style="padding:4px 10px;text-align:center;font-family:monospace;font-size:1rem;border:1px solid var(--border,#333);color:'+accent+';">'+fmt(v)+'</td>';
+      }
+      h += '</tr>';
+    }
+    h += '</table>';
+    return h;
+  }
+
+  function fmt(x){
+    if(typeof x==='string')return x;
+    if(Math.abs(x)<1e-10)return'0';
+    if(Math.abs(x-Math.round(x))<1e-8)return String(Math.round(x));
+    return x.toFixed(4).replace(/0+$/,'').replace(/\.$/,'');
+  }
+
+  function renderOps(){
+    const query = (document.getElementById('search-input').value||'').toLowerCase();
+    const container = document.getElementById('ops-container');
+    let html = '';
+    let count = 0;
+
+    for(let idx=0; idx<OPS.length; idx++){
+      const op = OPS[idx];
+      if(activeCat !== 'all' && op.cat !== activeCat) continue;
+      if(query && op.name.toLowerCase().indexOf(query)===-1 && op.desc.toLowerCase().indexOf(query)===-1 && op.formula.toLowerCase().indexOf(query)===-1) continue;
+      count++;
+      const catInfo = CATEGORIES[op.cat];
+      html += '<div style="background:var(--bg-secondary,#1a1a2e);border:1px solid var(--border,#333);border-left:4px solid '+catInfo.color+';border-radius:10px;padding:1.2rem;margin-bottom:1rem;cursor:pointer;" onclick="toggleCard('+idx+')">';
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">';
+      html += '<div><span style="font-weight:700;font-size:1.05rem;">'+op.name+'</span> <span style="font-size:0.8rem;color:'+catInfo.color+';background:rgba(255,255,255,0.05);padding:2px 8px;border-radius:4px;margin-left:6px;">'+catInfo.label+'</span></div>';
+      html += '<span id="arrow-'+idx+'" style="font-size:1.2rem;color:var(--text-muted,#999);">&#9660;</span>';
+      html += '</div>';
+      html += '<div style="font-family:monospace;color:var(--accent,#EC4899);margin:0.5rem 0;font-size:0.95rem;">'+op.formula+'</div>';
+      html += '<div style="color:var(--text-muted,#ccc);font-size:0.9rem;">'+op.desc+'</div>';
+
+      // Expandable detail
+      html += '<div id="detail-'+idx+'" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border,#333);">';
+
+      // Visual example
+      if(op.exA || op.exR){
+        html += '<div style="margin-bottom:1rem;"><strong style="color:var(--text,#e0e0e0);">Visual Example: '+op.exLabel+'</strong><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:0.5rem;">';
+        if(op.exA) html += matToHtml(op.exA, '#EC4899');
+        if(op.exB){html += '<span style="font-size:1.5rem;color:var(--text-muted,#888);">&times;</span>'; html += matToHtml(op.exB, '#3B82F6');}
+        else if(op.exA && !op.isScalar) html += '<span style="font-size:1.5rem;color:var(--text-muted,#888);">&rarr;</span>';
+        if(op.exA && !op.isScalar) html += '<span style="font-size:1.5rem;color:var(--text-muted,#888);">=</span>';
+        html += matToHtml(op.exR, '#10B981');
+        html += '</div></div>';
+      }
+
+      // Try It mini-calculator
+      if(!op.noCalc && op.calc){
+        html += '<div style="margin-top:1rem;"><strong style="color:var(--text,#e0e0e0);">Try It</strong>';
+        html += '<div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-start;margin-top:0.5rem;">';
+        html += '<div><label style="font-size:0.85rem;color:var(--text-muted,#999);">Matrix A (rows on lines, spaces between entries):</label><br><textarea id="tryA-'+idx+'" rows="2" cols="16" style="font-family:monospace;padding:6px;border:1px solid var(--border,#444);background:var(--bg,#0d0d1a);color:var(--text,#e0e0e0);border-radius:4px;font-size:0.9rem;">'+(op.exA?op.exA.map(r=>r.join(' ')).join('\n'):'1 0\n0 1')+'</textarea></div>';
+        if(op.exB !== undefined && op.exB !== null){
+          html += '<div><label style="font-size:0.85rem;color:var(--text-muted,#999);">Matrix B:</label><br><textarea id="tryB-'+idx+'" rows="2" cols="16" style="font-family:monospace;padding:6px;border:1px solid var(--border,#444);background:var(--bg,#0d0d1a);color:var(--text,#e0e0e0);border-radius:4px;font-size:0.9rem;">'+(op.exB?op.exB.map(r=>r.join(' ')).join('\n'):'1 0\n0 1')+'</textarea></div>';
+        }
+        if(op.scalar !== undefined){
+          html += '<div><label style="font-size:0.85rem;color:var(--text-muted,#999);">Scalar c:</label><br><input type="number" id="tryC-'+idx+'" value="'+op.scalar+'" style="width:60px;padding:6px;border:1px solid var(--border,#444);background:var(--bg,#0d0d1a);color:var(--text,#e0e0e0);border-radius:4px;font-family:monospace;font-size:0.9rem;"></div>';
+        }
+        html += '</div>';
+        html += '<button onclick="tryCalc('+idx+');event.stopPropagation();" style="margin-top:0.5rem;padding:6px 16px;background:var(--accent,#EC4899);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;font-size:0.9rem;">Calculate</button>';
+        html += '<div id="tryR-'+idx+'" style="margin-top:0.5rem;min-height:1.5rem;"></div>';
+        html += '</div>';
+      }
+
+      html += '</div></div>';
+    }
+
+    container.innerHTML = html;
+    document.getElementById('result-count').textContent = count;
+  }
+
+  function parseMat(s){
+    return s.trim().split('\n').map(function(line){return line.trim().split(/\s+/).map(Number);});
+  }
+
+  function toggleCard(idx){
+    var el = document.getElementById('detail-'+idx);
+    var arrow = document.getElementById('arrow-'+idx);
+    if(el.style.display==='none'){el.style.display='block';arrow.innerHTML='&#9650;';}
+    else{el.style.display='none';arrow.innerHTML='&#9660;';}
+  }
+  window.toggleCard = toggleCard;
+
+  function tryCalc(idx){
+    var op = OPS[idx];
+    var aEl = document.getElementById('tryA-'+idx);
+    var bEl = document.getElementById('tryB-'+idx);
+    var cEl = document.getElementById('tryC-'+idx);
+    var a = aEl ? parseMat(aEl.value) : null;
+    var b = bEl ? parseMat(bEl.value) : null;
+    var c = cEl ? parseFloat(cEl.value) : undefined;
+    try {
+      var result = op.calc(a, b, c);
+      var rEl = document.getElementById('tryR-'+idx);
+      if(typeof result === 'string' || typeof result === 'number'){
+        rEl.innerHTML = '<span style="color:#10B981;font-family:monospace;font-weight:600;">Result: '+result+'</span>';
+      } else if(Array.isArray(result)){
+        rEl.innerHTML = '<span style="color:#10B981;font-weight:600;">Result:</span><br>'+matToHtml(result,'#10B981');
+      } else {
+        rEl.innerHTML = '<span style="color:#F59E0B;">Could not compute.</span>';
+      }
+    } catch(e){
+      document.getElementById('tryR-'+idx).innerHTML = '<span style="color:#EF4444;">Error: '+e.message+'</span>';
+    }
+  }
+  window.tryCalc = tryCalc;
+
+  init();
+})();
+</script>
+</body>
+</html>

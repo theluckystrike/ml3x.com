@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PCA Visualizer &mdash; Interactive Principal Component Analysis with Dimension Reduction | ML3X</title>
+<meta name="description" content="Interactive PCA visualizer: enter 2D data points, compute covariance matrix, eigenvalues, eigenvectors, and project data onto principal components. Explained variance ratio charts and dimension reduction demo.">
+<meta name="keywords" content="PCA visualizer, principal component analysis, dimension reduction, covariance matrix, eigenvalues eigenvectors, explained variance, data projection, PCA interactive tool">
+<link rel="canonical" href="https://ml3x.com/research/pca-explained.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PCA Visualizer &mdash; Interactive Principal Component Analysis with Dimension Reduction | ML3X">
+<meta property="og:description" content="Interactive PCA visualizer: compute covariance matrix, eigenvalues, eigenvectors, and project data onto principal components with explained variance charts.">
+<meta property="og:url" content="https://ml3x.com/research/pca-explained.html">
+<meta property="og:site_name" content="Zovo Tools">
+<meta property="og:image" content="https://ml3x.com/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="PCA Visualizer &mdash; Interactive Principal Component Analysis with Dimension Reduction | ML3X">
+<meta name="twitter:description" content="Interactive PCA visualizer: compute covariance matrix, eigenvalues, eigenvectors, and project data onto principal components.">
+<meta name="twitter:image" content="https://ml3x.com/assets/og-image.png">
+<link rel="stylesheet" href="/assets/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "PCA Visualizer — Interactive Principal Component Analysis with Dimension Reduction",
+  "url": "https://ml3x.com/research/pca-explained.html",
+  "description": "Interactive PCA visualizer: enter 2D data points, compute covariance matrix, eigenvalues, eigenvectors, and project data onto principal components. Explained variance ratio charts and dimension reduction demo.",
+  "author": {
+    "@type": "Person",
+    "name": "Michael Lip",
+    "url": "https://zovo.one"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "ML3X",
+    "url": "https://ml3x.com"
+  },
+  "datePublished": "2026-05-25",
+  "dateModified": "2026-05-25",
+  "mainEntityOfPage": "https://ml3x.com/research/pca-explained.html"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is Principal Component Analysis (PCA) and why is it used?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Principal Component Analysis (PCA) is an unsupervised linear dimensionality reduction technique that transforms data into a new coordinate system where the axes (principal components) are ordered by the amount of variance they capture. PCA is used to reduce the number of features in a dataset while retaining the maximum amount of information. It works by computing the eigenvectors and eigenvalues of the covariance matrix: the eigenvector with the largest eigenvalue points in the direction of greatest variance, the second eigenvector captures the most remaining variance orthogonal to the first, and so on. Common applications include data visualization, noise reduction, feature extraction, and preprocessing for machine learning models that struggle with high-dimensional input."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does PCA compute principal components from the covariance matrix?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PCA follows a precise sequence of linear algebra steps. First, center the data by subtracting the mean of each feature. Then compute the covariance matrix C = (1/(n-1)) * X^T * X, where X is the centered data matrix. Next, find the eigenvalues and eigenvectors of C by solving det(C - lambda*I) = 0 for the eigenvalues and (C - lambda*I)v = 0 for the eigenvectors. Sort the eigenvectors by their corresponding eigenvalues in descending order. These sorted eigenvectors are the principal components. To project data onto k dimensions, multiply the centered data by the matrix formed from the top k eigenvectors. The eigenvalues tell you how much variance each component captures."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does the explained variance ratio tell you in PCA?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The explained variance ratio for each principal component is the fraction of total variance captured by that component: lambda_i / sum(all lambda). For example, if the first eigenvalue is 4.5 and the second is 0.5, PC1 captures 90% of the variance and PC2 captures 10%. The cumulative explained variance shows how much total variance is retained as you add more components. A common heuristic is to keep enough components to retain 95% of the variance. If the first two components already capture 98%, you can safely reduce a 50-dimensional dataset to 2 dimensions with minimal information loss. The explained variance ratio is the primary metric for deciding how many components to keep."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can PCA be applied to non-linear data?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Standard PCA is a linear method: it finds linear combinations of the original features. For data with non-linear relationships (like a spiral or concentric circles), linear PCA fails to capture the underlying structure because the directions of maximum variance do not align with the meaningful patterns. Kernel PCA addresses this by first mapping data into a higher-dimensional feature space using a kernel function (such as RBF, polynomial, or sigmoid) and then performing PCA in that space. The kernel trick avoids explicitly computing the high-dimensional mapping. Other non-linear alternatives include t-SNE, UMAP, and autoencoders. However, linear PCA remains the default starting point because it is fast, deterministic, and interpretable."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why must data be centered (mean-subtracted) before performing PCA?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Centering ensures that PCA finds directions of maximum variance rather than directions influenced by the mean. Without centering, the first principal component would point roughly toward the mean of the data from the origin, capturing the offset rather than the spread. Mathematically, the covariance matrix is defined in terms of deviations from the mean: Cov(X,Y) = E[(X - mu_X)(Y - mu_Y)]. If you skip centering and compute X^T * X directly, you get a matrix that mixes the mean and variance, producing misleading eigenvectors. Centering is always required. Standardization (dividing by standard deviation after centering) is additionally recommended when features have different units or vastly different scales, so that no single feature dominates the variance."
+      }
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://ml3x.com/"},{"@type":"ListItem","position":2,"name":"Research","item":"https://ml3x.com/research/"},{"@type":"ListItem","position":3,"name":"PCA Visualizer"}]}</script>
+</head>
+<body>
+<header class="site-header">
+  <a href="/" class="site-logo">ML3X</a>
+  <nav class="site-nav">
+    <a href="/">Calculator</a>
+    <a href="/tools/">Tools</a>
+    <a href="/guides/">Guides</a>
+    <a href="/answers/">Answers</a>
+    <a href="/blog/">Blog</a>
+      <div class="nav-right">
+      <a href="https://zovo.one/pricing?utm_source=ml3x.com&amp;utm_medium=satellite&amp;utm_campaign=nav-link" class="nav-pro" target="_blank">Go Pro &#10022;</a>
+      <a href="https://zovo.one/tools" class="nav-zovo">Zovo Tools</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="hero">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a> &raquo; <a href="/research/">Research</a> &raquo; <span>PCA Visualizer</span>
+    </nav>
+    <h1>PCA Visualizer &mdash; Interactive Principal Component Analysis</h1>
+    <p>Click on the scatter canvas to add 2D data points (or enter them manually). This tool computes the covariance matrix, eigenvalues, and eigenvectors, draws principal components as arrows on the scatter plot, projects data onto PC1 and PC2, and shows explained variance ratio bar and cumulative variance charts. Reconstruct data from fewer dimensions to see information loss in real time.</p>
+  </div>
+
+  <!-- Tool Controls -->
+  <section style="max-width:900px;margin:2rem auto;padding:0 1rem;">
+    <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;">
+      <button id="btn-load-example" onclick="loadExample()" style="padding:0.4rem 1.2rem;border:1px solid var(--border,#444);background:var(--accent,#EC4899);color:#fff;border-radius:6px;cursor:pointer;font-weight:600;">Load Example</button>
+      <button onclick="loadCluster()" style="padding:0.4rem 1rem;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:6px;cursor:pointer;">Clustered Data</button>
+      <button onclick="loadCorrelated()" style="padding:0.4rem 1rem;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:6px;cursor:pointer;">Correlated Data</button>
+      <button onclick="loadCircular()" style="padding:0.4rem 1rem;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:6px;cursor:pointer;">Circular Data</button>
+      <button onclick="clearAll()" style="padding:0.4rem 1rem;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:6px;cursor:pointer;">Clear</button>
+      <label style="font-size:0.85rem;color:var(--text-muted,#999);">Points: <span id="point-count">0</span></label>
+    </div>
+
+    <!-- Canvas for data input -->
+    <div style="display:flex;gap:2rem;flex-wrap:wrap;justify-content:center;margin-bottom:1.5rem;">
+      <div>
+        <h3 style="text-align:center;margin-bottom:0.5rem;font-size:0.95rem;">Click to Add Points (or drag)</h3>
+        <canvas id="scatter-canvas" width="460" height="460" style="background:var(--bg-secondary,#111);border-radius:10px;border:1px solid var(--border,#333);cursor:crosshair;"></canvas>
+      </div>
+      <div style="min-width:260px;">
+        <h3 style="margin-bottom:0.5rem;font-size:0.95rem;">Data Points Table</h3>
+        <div id="data-table" style="max-height:420px;overflow-y:auto;background:var(--bg-secondary,#1a1a2e);border:1px solid var(--border,#333);border-radius:8px;padding:0.5rem;font-family:monospace;font-size:0.85rem;"></div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-bottom:2rem;">
+      <button onclick="runPCA()" style="padding:0.7rem 2.5rem;font-size:1rem;background:var(--accent,#EC4899);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;">Run PCA Analysis</button>
+    </div>
+
+    <div id="output" style="display:none;">
+      <!-- Step-by-step computation -->
+      <div id="steps-output" style="background:var(--bg-secondary,#1a1a2e);border:1px solid var(--border,#333);border-radius:10px;padding:1.5rem;margin-bottom:2rem;line-height:1.8;font-family:monospace;font-size:0.92rem;white-space:pre-wrap;overflow-x:auto;"></div>
+
+      <!-- Visualization row -->
+      <div style="display:flex;gap:2rem;flex-wrap:wrap;justify-content:center;margin-bottom:2rem;">
+        <div>
+          <h3 style="text-align:center;margin-bottom:0.5rem;">Principal Components on Scatter</h3>
+          <div id="pca-viz"></div>
+        </div>
+        <div>
+          <h3 style="text-align:center;margin-bottom:0.5rem;">Projected onto PC1</h3>
+          <div id="proj-viz"></div>
+        </div>
+      </div>
+
+      <!-- Variance charts row -->
+      <div style="display:flex;gap:2rem;flex-wrap:wrap;justify-content:center;margin-bottom:2rem;">
+        <div>
+          <h3 style="text-align:center;margin-bottom:0.5rem;">Explained Variance Ratio</h3>
+          <div id="var-bar"></div>
+        </div>
+        <div>
+          <h3 style="text-align:center;margin-bottom:0.5rem;">Cumulative Variance</h3>
+          <div id="var-cumul"></div>
+        </div>
+      </div>
+
+      <!-- Reconstruction -->
+      <div style="margin-bottom:2rem;">
+        <h3 style="text-align:center;margin-bottom:0.5rem;">Reconstruction from PC1 Only</h3>
+        <div id="recon-viz" style="display:flex;justify-content:center;"></div>
+        <p style="text-align:center;font-size:0.85rem;color:var(--text-muted,#999);margin-top:0.5rem;">Gray = original points. Pink = reconstructed from 1 principal component. Lines show reconstruction error.</p>
+      </div>
+
+      <div id="summary-box" style="background:var(--bg-secondary,#1a1a2e);border:1px solid var(--border,#333);border-radius:10px;padding:1.5rem;margin-bottom:2rem;"></div>
+    </div>
+  </section>
+
+  <div class="last-updated"><time datetime="2026-05-25">Last updated: May 25, 2026</time></div>
+
+  <!-- Expert Content -->
+  <section style="max-width:720px;margin:2rem auto;line-height:1.7;padding:0 1rem;">
+    <h2>What Is Principal Component Analysis?</h2>
+    <p>Principal Component Analysis (PCA) is a foundational technique in statistics and machine learning that transforms a dataset into a new coordinate system aligned with the directions of maximum variance. The first axis, called the first principal component (PC1), points in the direction where the data varies the most. The second principal component (PC2) captures the most remaining variance while being orthogonal to PC1. Each subsequent component follows the same pattern: maximize residual variance subject to orthogonality constraints. The result is an ordered set of axes that provide a natural ranking of which dimensions carry the most information.</p>
+
+    <p>PCA is fundamentally an eigenvalue decomposition of the data's covariance matrix. Given n data points in d dimensions, you first center the data by subtracting the mean of each feature. Then you compute the d-by-d covariance matrix C, where C[i][j] measures the linear co-variation between features i and j. The eigenvectors of C are the principal component directions, and the eigenvalues quantify how much variance each direction captures. Because C is symmetric and positive semi-definite, its eigenvalues are always real and non-negative, and its eigenvectors are orthogonal. This mathematical guarantee is what makes PCA so elegant and reliable.</p>
+
+    <h2>How the Covariance Matrix Encodes Data Structure</h2>
+    <p>The covariance matrix is the central object in PCA. For two-dimensional data, the covariance matrix is a 2-by-2 symmetric matrix with variances on the diagonal and covariance off the diagonal. The diagonal entries Var(x) and Var(y) tell you how much each feature varies independently. The off-diagonal entry Cov(x,y) tells you how the features vary together: positive covariance means they tend to increase together, negative means one increases when the other decreases, and zero means they are linearly uncorrelated.</p>
+
+    <p>The shape of the covariance matrix determines the shape of the data cloud. If the covariance is zero, the data forms an axis-aligned ellipse (or circle if variances are equal). If the covariance is non-zero, the data cloud is tilted, forming an ellipse whose major and minor axes are exactly the eigenvectors of the covariance matrix. The eigenvalues are the variances along those axes. This is why PCA finds the natural axes of the data: it diagonalizes the covariance matrix, rotating the coordinate system to align with the principal axes of the data ellipse.</p>
+
+    <h2>Step-by-Step PCA Computation</h2>
+    <p>The algorithm implemented in this visualizer follows the standard analytical PCA procedure. First, compute the mean of each feature across all data points. Subtract these means from every data point to produce the centered data matrix X. Then compute the covariance matrix C = (1/(n-1)) X^T X, where n is the number of data points and the (n-1) denominator gives the unbiased sample covariance (Bessel's correction).</p>
+
+    <p>Next, find the eigenvalues of C by solving the characteristic polynomial det(C - lambda I) = 0. For a 2-by-2 matrix, this is a quadratic equation solvable by the quadratic formula. For each eigenvalue, find the corresponding eigenvector by solving (C - lambda I)v = 0 through Gaussian elimination. Normalize each eigenvector to unit length. Sort the eigenpairs by eigenvalue in descending order. The sorted eigenvectors form the principal component matrix W, and the sorted eigenvalues give the explained variance of each component.</p>
+
+    <p>To project the data onto k principal components, compute Y = X W_k, where W_k contains the top k eigenvectors as columns. To reconstruct the data from k components, compute X_reconstructed = Y W_k^T + mean. The reconstruction error (the difference between original and reconstructed data) equals the variance captured by the discarded components. This is why PCA is an optimal linear dimensionality reduction: no other linear projection of the same rank captures more variance.</p>
+
+    <h2>Explained Variance and Choosing the Number of Components</h2>
+    <p>The explained variance ratio for each principal component is lambda_i / sum(lambda_j). This ratio tells you the fraction of total information captured by each component. The cumulative explained variance, obtained by summing ratios from PC1 through PCk, tells you how much information is retained if you keep the first k components. In practice, you choose k so the cumulative variance exceeds a threshold, commonly 90% or 95%. The "elbow" in the scree plot (eigenvalues plotted in descending order) often provides a visual cutoff: components before the elbow capture meaningful structure, while components after it capture noise.</p>
+
+    <p>For the 2D data in this visualizer, there are exactly two principal components. PC1 captures the majority of variance for correlated data (because the data stretches more in one direction), while PC2 captures the remainder. When you project the data onto PC1 only, you reduce from 2D to 1D. The reconstruction from PC1 places all points back onto the line defined by PC1, showing exactly what information is lost: the spread perpendicular to PC1. For circular or uncorrelated data where both eigenvalues are similar, PC1 does not dominate, and reducing to 1D loses significant information.</p>
+
+    <h2>PCA in Machine Learning and Data Science</h2>
+    <p>In machine learning, PCA serves multiple purposes. As a preprocessing step, it reduces the dimensionality of feature vectors before feeding them to classifiers or regressors, combating the curse of dimensionality. High-dimensional datasets often contain redundant or correlated features; PCA decorrelates them and ranks them by importance. Training a model on PCA-reduced features is faster and often yields better generalization because noise dimensions are discarded.</p>
+
+    <p>In computer vision, Eigenfaces use PCA on a dataset of face images: each image is treated as a high-dimensional vector (one dimension per pixel), and PCA finds the directions of maximum variation across faces. The top principal components (eigenfaces) capture the most discriminative facial features. A new face can be recognized by projecting it onto the eigenface basis and comparing coordinates. In natural language processing, Latent Semantic Analysis (LSA) applies a closely related technique (SVD, which generalizes PCA) to term-document matrices to discover latent topics. In genomics, PCA on gene expression data reveals population structure and identifies the genes that contribute most to variation between samples.</p>
+
+    <p>PCA also plays a critical role in anomaly detection. Points that project far from the mean in the principal component space, especially along low-variance components, are potential outliers. The Mahalanobis distance, which accounts for the covariance structure, is equivalent to measuring distance in the PCA coordinate system scaled by eigenvalues. Financial risk management uses PCA on asset return covariance matrices to identify the dominant risk factors driving a portfolio, and the first few principal components typically correspond to market-wide, sector, and style risk factors.</p>
+
+    <h2>Limitations and Alternatives</h2>
+    <p>PCA assumes that the directions of maximum variance are the most informative directions. This is not always true. If the meaningful structure in the data is non-linear (a spiral, a manifold, concentric rings), PCA will fail to capture it because it only finds linear projections. Kernel PCA extends PCA to non-linear settings by implicitly mapping data to a higher-dimensional space via a kernel function. Other non-linear dimensionality reduction methods include t-SNE (which preserves local neighborhood structure for visualization), UMAP (which preserves both local and global structure), and autoencoders (neural networks that learn non-linear encodings). However, PCA remains the default starting point because it is fast, deterministic, parameter-free (aside from the number of components), and its results are fully interpretable.</p>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="faq-section" style="max-width:720px;margin:2rem auto;">
+    <h2>Frequently Asked Questions</h2>
+    <details>
+      <summary>What is Principal Component Analysis (PCA) and why is it used?</summary>
+      <p>PCA is an unsupervised linear dimensionality reduction technique that transforms data into a new coordinate system where the axes (principal components) are ordered by variance captured. It is used to reduce features while retaining maximum information. Common applications include visualization, noise reduction, feature extraction, and preprocessing for machine learning.</p>
+    </details>
+    <details>
+      <summary>How does PCA compute principal components from the covariance matrix?</summary>
+      <p>Center the data by subtracting feature means. Compute the covariance matrix C = (1/(n-1)) X^T X. Find eigenvalues and eigenvectors of C. Sort eigenvectors by eigenvalue descending. These sorted eigenvectors are the principal components. Project data by multiplying the centered data by the top k eigenvectors.</p>
+    </details>
+    <details>
+      <summary>What does the explained variance ratio tell you in PCA?</summary>
+      <p>The explained variance ratio for each component is lambda_i / sum(lambda). It tells you the fraction of total variance (information) captured by that component. The cumulative variance shows total retention as you add components. A common rule keeps enough components for 95% cumulative variance.</p>
+    </details>
+    <details>
+      <summary>Can PCA be applied to non-linear data?</summary>
+      <p>Standard PCA is linear and fails on non-linear structures (spirals, manifolds). Kernel PCA maps data to higher dimensions via a kernel function before applying PCA. Other alternatives include t-SNE, UMAP, and autoencoders. Linear PCA remains the default starting point for its speed and interpretability.</p>
+    </details>
+    <details>
+      <summary>Why must data be centered (mean-subtracted) before performing PCA?</summary>
+      <p>Centering ensures PCA finds directions of maximum variance rather than directions biased by the mean offset. Without centering, the first principal component would point toward the mean from the origin. The covariance matrix is defined in terms of deviations from the mean, so centering is mathematically required for correct results.</p>
+    </details>
+  </section>
+
+  <section style="max-width:720px;margin:2rem auto;padding:0 1rem;">
+    <h2>Related Tools</h2>
+    <ul>
+      <li><a href="/tools/eigenvector-step-solver.html">Eigenvector Step Solver</a> &mdash; compute eigenvectors step by step for 2&times;2 and 3&times;3 matrices</li>
+      <li><a href="/tools/eigenvalue-calculator.html">Eigenvalue Calculator</a> &mdash; compute eigenvalues for matrices up to 5&times;5</li>
+      <li><a href="/tools/matrix-decomposition.html">Matrix Decomposition Calculator</a> &mdash; LU, QR, and SVD decomposition with animated steps</li>
+      <li><a href="/research/matrix-operation-complexity.html">Matrix Operation Complexity</a> &mdash; algorithmic complexity of common matrix operations</li>
+    </ul>
+  </section>
+
+  <section style="max-width:720px;margin:2rem auto;padding:0 1rem;">
+    <p style="font-size:0.9rem;color:var(--text-muted);">Built by <a href="https://zovo.one">Michael Lip</a>. Try the <a href="/">ML3X Matrix Calculator</a> for interactive step-by-step solutions.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">Zovo Tools</div>
+        <div class="footer-tagline">Free developer tools by a solo dev. No tracking.</div>
+        <a href="https://zovo.one/pricing?utm_source=ml3x.com&utm_medium=satellite&utm_campaign=footer-link" class="footer-cta">Zovo Lifetime &mdash; $99 once, free forever &rarr;</a>
+        <div class="footer-copy">&copy; 2026 <a href="https://zovo.one">Zovo</a> &middot; 47/500 founding spots</div>
+    </div>
+</footer>
+
+<nav class="zovo-network" aria-label="Zovo Tools Network">
+    <div class="zovo-network-inner">
+        <h3 class="zovo-network-title">Explore More Tools</h3>
+        <div class="zovo-network-links">
+            <a href="https://abwex.com">ABWex &mdash; A/B Testing</a>
+            <a href="https://claudflow.com">ClaudFlow &mdash; Workflows</a>
+            <a href="https://claudhq.com">ClaudHQ &mdash; AI Code Tools &amp; Fixes</a>
+            <a href="https://claudkit.com">ClaudKit &mdash; API</a>
+            <a href="https://enhio.com">Enhio &mdash; Text Tools</a>
+            <a href="https://epochpilot.com">EpochPilot &mdash; Timestamps</a>
+            <a href="https://gen8x.com">Gen8X &mdash; Color Tools</a>
+            <a href="https://gpt0x.com">GPT0X &mdash; AI Models</a>
+            <a href="https://heytensor.com">HeyTensor &mdash; ML Tools</a>
+            <a href="https://invokebot.com">InvokeBot &mdash; Webhooks</a>
+            <a href="https://kappafy.com">Kappafy &mdash; JSON</a>
+            <a href="https://kappakit.com">KappaKit &mdash; Dev Toolkit</a>
+            <a href="https://kickllm.com">KickLLM &mdash; LLM Costs</a>
+            <a href="https://krzen.com">Krzen &mdash; Image Tools</a>
+            <a href="https://lochbot.com">LochBot &mdash; Security</a>
+            <a href="https://lockml.com">LockML &mdash; ML Compare</a>
+        </div>
+    </div>
+</nav>
+
+<script>
+(function(){
+  const EPS=1e-10;
+  let dataPoints=[];
+  const canvas=document.getElementById('scatter-canvas');
+  const ctx=canvas.getContext('2d');
+  const W=460,H=460;
+  const PAD=40;
+  let dataRange={xMin:-5,xMax:5,yMin:-5,yMax:5};
+
+  function updateRange(){
+    if(dataPoints.length===0){dataRange={xMin:-5,xMax:5,yMin:-5,yMax:5};return;}
+    let xMin=Infinity,xMax=-Infinity,yMin=Infinity,yMax=-Infinity;
+    for(const p of dataPoints){xMin=Math.min(xMin,p[0]);xMax=Math.max(xMax,p[0]);yMin=Math.min(yMin,p[1]);yMax=Math.max(yMax,p[1]);}
+    const xPad=(xMax-xMin)*0.2||2;const yPad=(yMax-yMin)*0.2||2;
+    dataRange={xMin:xMin-xPad,xMax:xMax+xPad,yMin:yMin-yPad,yMax:yMax+yPad};
+  }
+
+  function toCanvas(x,y){
+    const cx=PAD+(x-dataRange.xMin)/(dataRange.xMax-dataRange.xMin)*(W-2*PAD);
+    const cy=(H-PAD)-(y-dataRange.yMin)/(dataRange.yMax-dataRange.yMin)*(H-2*PAD);
+    return [cx,cy];
+  }
+  function fromCanvas(cx,cy){
+    const x=dataRange.xMin+(cx-PAD)/(W-2*PAD)*(dataRange.xMax-dataRange.xMin);
+    const y=dataRange.yMin+((H-PAD)-cy)/(H-2*PAD)*(dataRange.yMax-dataRange.yMin);
+    return [Math.round(x*100)/100,Math.round(y*100)/100];
+  }
+
+  function drawScatter(pcs,mean){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle='#111';ctx.fillRect(0,0,W,H);
+    // Grid
+    ctx.strokeStyle='#333';ctx.lineWidth=0.5;
+    const xStep=Math.pow(10,Math.floor(Math.log10((dataRange.xMax-dataRange.xMin)/5)));
+    const yStep=Math.pow(10,Math.floor(Math.log10((dataRange.yMax-dataRange.yMin)/5)));
+    for(let x=Math.ceil(dataRange.xMin/xStep)*xStep;x<=dataRange.xMax;x+=xStep){
+      const[cx]=toCanvas(x,0);ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,H);ctx.stroke();
+    }
+    for(let y=Math.ceil(dataRange.yMin/yStep)*yStep;y<=dataRange.yMax;y+=yStep){
+      const[,cy]=toCanvas(0,y);ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(W,cy);ctx.stroke();
+    }
+    // Axes
+    ctx.strokeStyle='#666';ctx.lineWidth=1.5;
+    const[ax0,ay0]=toCanvas(dataRange.xMin,0),axE=toCanvas(dataRange.xMax,0);
+    ctx.beginPath();ctx.moveTo(ax0,ay0);ctx.lineTo(axE[0],axE[1]);ctx.stroke();
+    const[bx0,by0]=toCanvas(0,dataRange.yMin),bxE=toCanvas(0,dataRange.yMax);
+    ctx.beginPath();ctx.moveTo(bx0,by0);ctx.lineTo(bxE[0],bxE[1]);ctx.stroke();
+    // Axis labels
+    ctx.fillStyle='#888';ctx.font='12px sans-serif';
+    ctx.fillText('x',W-15,ay0-8);ctx.fillText('y',bx0+8,15);
+    // Data points
+    for(const p of dataPoints){
+      const[cx,cy]=toCanvas(p[0],p[1]);
+      ctx.beginPath();ctx.arc(cx,cy,4,0,Math.PI*2);ctx.fillStyle='#EC4899';ctx.fill();
+    }
+    // PCA arrows
+    if(pcs&&mean){
+      const colors=['#3B82F6','#10B981'];
+      for(let i=0;i<pcs.length;i++){
+        const ev=pcs[i];
+        const scale=Math.sqrt(ev.eigenvalue)*2;
+        const dx=ev.vector[0]*scale,dy=ev.vector[1]*scale;
+        const[cx1,cy1]=toCanvas(mean[0],mean[1]);
+        const[cx2,cy2]=toCanvas(mean[0]+dx,mean[1]+dy);
+        ctx.strokeStyle=colors[i];ctx.lineWidth=3;
+        ctx.beginPath();ctx.moveTo(cx1,cy1);ctx.lineTo(cx2,cy2);ctx.stroke();
+        // Arrowhead
+        const angle=Math.atan2(cy2-cy1,cx2-cx1);
+        ctx.beginPath();ctx.moveTo(cx2,cy2);
+        ctx.lineTo(cx2-12*Math.cos(angle-0.3),cy2-12*Math.sin(angle-0.3));
+        ctx.lineTo(cx2-12*Math.cos(angle+0.3),cy2-12*Math.sin(angle+0.3));
+        ctx.closePath();ctx.fillStyle=colors[i];ctx.fill();
+        // Label
+        ctx.fillStyle=colors[i];ctx.font='bold 13px sans-serif';
+        ctx.fillText('PC'+(i+1)+' ('+fmt(ev.ratio*100)+'%)',cx2+8,cy2-(i===0?8:-16));
+        // Opposite direction
+        const[cx3,cy3]=toCanvas(mean[0]-dx,mean[1]-dy);
+        ctx.strokeStyle=colors[i];ctx.lineWidth=2;ctx.setLineDash([6,4]);
+        ctx.beginPath();ctx.moveTo(cx1,cy1);ctx.lineTo(cx3,cy3);ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      // Mean marker
+      const[mcx,mcy]=toCanvas(mean[0],mean[1]);
+      ctx.beginPath();ctx.arc(mcx,mcy,6,0,Math.PI*2);ctx.strokeStyle='#F59E0B';ctx.lineWidth=2;ctx.stroke();
+      ctx.fillStyle='#F59E0B';ctx.font='11px sans-serif';ctx.fillText('mean',mcx+10,mcy-4);
+    }
+  }
+
+  function updateTable(){
+    const el=document.getElementById('data-table');
+    if(dataPoints.length===0){el.innerHTML='<p style="color:var(--text-muted,#999);padding:0.5rem;">Click on the canvas to add points.</p>';return;}
+    let h='<table style="width:100%;border-collapse:collapse;"><tr style="border-bottom:1px solid var(--border,#333);"><th style="text-align:left;padding:4px;">#</th><th style="padding:4px;">x</th><th style="padding:4px;">y</th><th style="padding:4px;"></th></tr>';
+    for(let i=0;i<dataPoints.length;i++){
+      h+='<tr style="border-bottom:1px solid var(--border,#222);"><td style="padding:4px;">'+(i+1)+'</td><td style="padding:4px;">'+dataPoints[i][0]+'</td><td style="padding:4px;">'+dataPoints[i][1]+'</td><td style="padding:4px;"><button onclick="removePoint('+i+')" style="background:none;border:none;color:#f66;cursor:pointer;font-size:0.8rem;">x</button></td></tr>';
+    }
+    h+='</table>';
+    el.innerHTML=h;
+    document.getElementById('point-count').textContent=dataPoints.length;
+  }
+
+  canvas.addEventListener('click',function(e){
+    const rect=canvas.getBoundingClientRect();
+    const cx=e.clientX-rect.left;const cy=e.clientY-rect.top;
+    const[x,y]=fromCanvas(cx,cy);
+    dataPoints.push([x,y]);
+    updateRange();drawScatter();updateTable();
+  });
+
+  function removePoint(i){dataPoints.splice(i,1);updateRange();drawScatter();updateTable();}
+  window.removePoint=removePoint;
+
+  function loadExample(){
+    dataPoints=[[1,2],[2,3],[3,5],[4,4],[5,6],[2,1],[3,3],[4,5],[5,7],[1,1],[3,4],[4,6],[6,8],[2,2],[5,5]];
+    updateRange();drawScatter();updateTable();
+  }
+  window.loadExample=loadExample;
+
+  function loadCluster(){
+    dataPoints=[];
+    const centers=[[-2,-2],[3,3],[3,-2]];
+    for(const c of centers){for(let i=0;i<8;i++){dataPoints.push([c[0]+(Math.random()-0.5)*2,c[1]+(Math.random()-0.5)*2]);}}
+    dataPoints=dataPoints.map(p=>[Math.round(p[0]*100)/100,Math.round(p[1]*100)/100]);
+    updateRange();drawScatter();updateTable();
+  }
+  window.loadCluster=loadCluster;
+
+  function loadCorrelated(){
+    dataPoints=[];
+    for(let i=0;i<20;i++){const x=-4+i*0.4+((Math.random()-0.5)*0.8);const y=x*1.5+1+(Math.random()-0.5)*1.2;dataPoints.push([Math.round(x*100)/100,Math.round(y*100)/100]);}
+    updateRange();drawScatter();updateTable();
+  }
+  window.loadCorrelated=loadCorrelated;
+
+  function loadCircular(){
+    dataPoints=[];
+    for(let i=0;i<24;i++){const a=i*Math.PI*2/24;const r=3+(Math.random()-0.5)*0.8;dataPoints.push([Math.round(r*Math.cos(a)*100)/100,Math.round(r*Math.sin(a)*100)/100]);}
+    updateRange();drawScatter();updateTable();
+  }
+  window.loadCircular=loadCircular;
+
+  function clearAll(){dataPoints=[];updateRange();drawScatter();updateTable();document.getElementById('output').style.display='none';}
+  window.clearAll=clearAll;
+
+  function fmt(x){if(Math.abs(x)<EPS)return'0';if(Math.abs(x-Math.round(x))<EPS)return String(Math.round(x));return x.toFixed(4).replace(/0+$/,'').replace(/\.$/,'');}
+
+  function mean(arr){return arr.reduce((s,v)=>s+v,0)/arr.length;}
+
+  function runPCA(){
+    if(dataPoints.length<3){alert('Add at least 3 data points to run PCA.');return;}
+    const n=dataPoints.length;
+    const steps=[];
+    steps.push('=== STEP 1: Compute Mean ===');
+    const mx=mean(dataPoints.map(p=>p[0]));
+    const my=mean(dataPoints.map(p=>p[1]));
+    steps.push('n = '+n+' data points');
+    steps.push('Mean x = '+fmt(mx));
+    steps.push('Mean y = '+fmt(my));
+    steps.push('');
+
+    steps.push('=== STEP 2: Center the Data ===');
+    const centered=dataPoints.map(p=>[p[0]-mx,p[1]-my]);
+    steps.push('Centered data = original - mean for each feature');
+    if(n<=10){for(let i=0;i<n;i++) steps.push('  ('+fmt(dataPoints[i][0])+', '+fmt(dataPoints[i][1])+') -> ('+fmt(centered[i][0])+', '+fmt(centered[i][1])+')');}
+    else{for(let i=0;i<5;i++) steps.push('  ('+fmt(dataPoints[i][0])+', '+fmt(dataPoints[i][1])+') -> ('+fmt(centered[i][0])+', '+fmt(centered[i][1])+')');steps.push('  ... ('+(n-5)+' more points)');}
+    steps.push('');
+
+    steps.push('=== STEP 3: Covariance Matrix ===');
+    let cxx=0,cxy=0,cyy=0;
+    for(const p of centered){cxx+=p[0]*p[0];cxy+=p[0]*p[1];cyy+=p[1]*p[1];}
+    cxx/=(n-1);cxy/=(n-1);cyy/=(n-1);
+    steps.push('C = (1/(n-1)) * X_centered^T * X_centered');
+    steps.push('C = [['+fmt(cxx)+', '+fmt(cxy)+'],');
+    steps.push('     ['+fmt(cxy)+', '+fmt(cyy)+']]');
+    steps.push('');
+    steps.push('Var(x) = '+fmt(cxx));
+    steps.push('Var(y) = '+fmt(cyy));
+    steps.push('Cov(x,y) = '+fmt(cxy));
+    steps.push('');
+
+    steps.push('=== STEP 4: Eigenvalues (Characteristic Polynomial) ===');
+    const tr=cxx+cyy;
+    const det=cxx*cyy-cxy*cxy;
+    steps.push('Trace = '+fmt(cxx)+' + '+fmt(cyy)+' = '+fmt(tr));
+    steps.push('Determinant = '+fmt(cxx)+'*'+fmt(cyy)+' - '+fmt(cxy)+'^2 = '+fmt(det));
+    steps.push('Characteristic polynomial: lambda^2 - '+fmt(tr)+'*lambda + '+fmt(det)+' = 0');
+    const disc=tr*tr-4*det;
+    steps.push('Discriminant = '+fmt(tr)+'^2 - 4*'+fmt(det)+' = '+fmt(disc));
+    const sqrtDisc=Math.sqrt(Math.max(0,disc));
+    const lam1=(tr+sqrtDisc)/2;
+    const lam2=(tr-sqrtDisc)/2;
+    steps.push('');
+    steps.push('lambda_1 = ('+fmt(tr)+' + sqrt('+fmt(disc)+')) / 2 = '+fmt(lam1));
+    steps.push('lambda_2 = ('+fmt(tr)+' - sqrt('+fmt(disc)+')) / 2 = '+fmt(lam2));
+    steps.push('');
+
+    steps.push('=== STEP 5: Eigenvectors ===');
+    function eigvec(lam,label){
+      const a=cxx-lam,b=cxy,c=cxy,d=cyy-lam;
+      steps.push('--- For '+label+' = '+fmt(lam)+' ---');
+      steps.push('  (C - '+fmt(lam)+'I) = [['+fmt(a)+', '+fmt(b)+'], ['+fmt(c)+', '+fmt(d)+']]');
+      let v;
+      if(Math.abs(a)>EPS){v=[-b/a,1];steps.push('  From row 1: x = '+fmt(-b/a)+' * y');steps.push('  Eigenvector = ['+fmt(v[0])+', '+fmt(v[1])+']');}
+      else if(Math.abs(b)>EPS){v=[1,0];steps.push('  Row 1 gives b*y = 0 => y = 0');steps.push('  Eigenvector = [1, 0]');}
+      else{v=[1,0];steps.push('  Zero matrix => any vector is an eigenvector');steps.push('  Eigenvector = [1, 0]');}
+      const len=Math.sqrt(v[0]*v[0]+v[1]*v[1]);
+      v=[v[0]/len,v[1]/len];
+      steps.push('  Normalized: ['+fmt(v[0])+', '+fmt(v[1])+']');
+      return v;
+    }
+    const v1=eigvec(lam1,'lambda_1');
+    const v2=eigvec(lam2,'lambda_2');
+    steps.push('');
+
+    const totalVar=lam1+lam2;
+    const r1=totalVar>EPS?lam1/totalVar:0.5;
+    const r2=totalVar>EPS?lam2/totalVar:0.5;
+    steps.push('=== STEP 6: Explained Variance ===');
+    steps.push('Total variance = '+fmt(lam1)+' + '+fmt(lam2)+' = '+fmt(totalVar));
+    steps.push('PC1 explained variance ratio = '+fmt(lam1)+' / '+fmt(totalVar)+' = '+fmt(r1*100)+'%');
+    steps.push('PC2 explained variance ratio = '+fmt(lam2)+' / '+fmt(totalVar)+' = '+fmt(r2*100)+'%');
+    steps.push('Cumulative: PC1 = '+fmt(r1*100)+'%, PC1+PC2 = 100%');
+
+    document.getElementById('output').style.display='block';
+    document.getElementById('steps-output').textContent=steps.join('\n');
+
+    const pcs=[{vector:v1,eigenvalue:lam1,ratio:r1},{vector:v2,eigenvalue:lam2,ratio:r2}];
+    const dataMean=[mx,my];
+
+    // Redraw scatter with PCA arrows
+    drawScatter(pcs,dataMean);
+
+    // PCA scatter SVG
+    drawPCAScatterSVG(pcs,dataMean,centered);
+    // Projection viz
+    drawProjection(pcs,dataMean,centered);
+    // Variance bar chart
+    drawVarianceBar(pcs);
+    // Cumulative variance
+    drawCumulativeVariance(pcs);
+    // Reconstruction
+    drawReconstruction(pcs,dataMean,centered);
+    // Summary
+    drawSummary(pcs,dataMean,n);
+  }
+  window.runPCA=runPCA;
+
+  function drawPCAScatterSVG(pcs,mean,centered){
+    const SW=460,SH=460;
+    let maxR=1;
+    for(const p of centered){maxR=Math.max(maxR,Math.abs(p[0]),Math.abs(p[1]));}
+    for(const pc of pcs){const s=Math.sqrt(pc.eigenvalue)*2;maxR=Math.max(maxR,Math.abs(pc.vector[0]*s),Math.abs(pc.vector[1]*s));}
+    maxR*=1.3;
+    const scale=(SW/2-PAD)/maxR;
+    const cx=SW/2,cy=SH/2;
+
+    let svg='<svg viewBox="0 0 '+SW+' '+SH+'" width="'+SW+'" height="'+SH+'" style="max-width:100%;background:var(--bg-secondary,#111);border-radius:10px;border:1px solid var(--border,#333);">';
+    svg+='<line x1="0" y1="'+cy+'" x2="'+SW+'" y2="'+cy+'" stroke="#666" stroke-width="1.5"/>';
+    svg+='<line x1="'+cx+'" y1="0" x2="'+cx+'" y2="'+SH+'" stroke="#666" stroke-width="1.5"/>';
+    svg+='<text x="'+(SW-15)+'" y="'+(cy-8)+'" fill="#888" font-size="12">x</text>';
+    svg+='<text x="'+(cx+8)+'" y="15" fill="#888" font-size="12">y</text>';
+
+    // Data points (centered)
+    for(const p of centered){
+      const px=cx+p[0]*scale,py=cy-p[1]*scale;
+      svg+='<circle cx="'+px+'" cy="'+py+'" r="4" fill="#EC4899" opacity="0.7"/>';
+    }
+
+    // PC arrows
+    const colors=['#3B82F6','#10B981'];
+    svg+='<defs>';
+    colors.forEach((c,i)=>{svg+='<marker id="pcA'+i+'" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="'+c+'"/></marker>';});
+    svg+='</defs>';
+
+    for(let i=0;i<pcs.length;i++){
+      const s=Math.sqrt(pcs[i].eigenvalue)*2;
+      const dx=pcs[i].vector[0]*s*scale,dy=pcs[i].vector[1]*s*scale;
+      svg+='<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+dx)+'" y2="'+(cy-dy)+'" stroke="'+colors[i]+'" stroke-width="3" marker-end="url(#pcA'+i+')"/>';
+      svg+='<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx-dx)+'" y2="'+(cy+dy)+'" stroke="'+colors[i]+'" stroke-width="2" stroke-dasharray="6,4" opacity="0.5"/>';
+      svg+='<text x="'+(cx+dx+8)+'" y="'+(cy-dy-6)+'" fill="'+colors[i]+'" font-size="12" font-weight="bold">PC'+(i+1)+' ('+fmt(pcs[i].ratio*100)+'%)</text>';
+    }
+
+    svg+='</svg>';
+    document.getElementById('pca-viz').innerHTML=svg;
+  }
+
+  function drawProjection(pcs,dataMean,centered){
+    const SW=460,SH=200;
+    const pc1=pcs[0].vector;
+    const projections=centered.map(p=>p[0]*pc1[0]+p[1]*pc1[1]);
+    let maxP=Math.max(1,...projections.map(Math.abs))*1.3;
+    const scale=(SW/2-PAD)/maxP;
+    const cx=SW/2,cy=SH/2;
+
+    let svg='<svg viewBox="0 0 '+SW+' '+SH+'" width="'+SW+'" height="'+SH+'" style="max-width:100%;background:var(--bg-secondary,#111);border-radius:10px;border:1px solid var(--border,#333);">';
+    svg+='<line x1="'+PAD+'" y1="'+cy+'" x2="'+(SW-PAD)+'" y2="'+cy+'" stroke="#666" stroke-width="2"/>';
+    svg+='<text x="'+(SW-30)+'" y="'+(cy-10)+'" fill="#888" font-size="11">PC1</text>';
+
+    // Tick marks
+    const step=Math.pow(10,Math.floor(Math.log10(maxP)));
+    for(let t=-Math.floor(maxP/step)*step;t<=maxP;t+=step){
+      const px=cx+t*scale;
+      svg+='<line x1="'+px+'" y1="'+(cy-5)+'" x2="'+px+'" y2="'+(cy+5)+'" stroke="#666" stroke-width="1"/>';
+      svg+='<text x="'+px+'" y="'+(cy+20)+'" fill="#888" font-size="10" text-anchor="middle">'+fmt(t)+'</text>';
+    }
+
+    // Projected points
+    for(let i=0;i<projections.length;i++){
+      const px=cx+projections[i]*scale;
+      const jitter=(Math.random()-0.5)*16;
+      svg+='<circle cx="'+px+'" cy="'+(cy+jitter)+'" r="5" fill="#EC4899" opacity="0.8"/>';
+    }
+
+    svg+='<text x="'+(SW/2)+'" y="25" fill="#ccc" font-size="12" text-anchor="middle">Data projected onto PC1 (1D reduction)</text>';
+    svg+='</svg>';
+    document.getElementById('proj-viz').innerHTML=svg;
+  }
+
+  function drawVarianceBar(pcs){
+    const SW=300,SH=200;
+    const barW=80,gap=40;
+    const maxH=SH-70;
+    let svg='<svg viewBox="0 0 '+SW+' '+SH+'" width="'+SW+'" height="'+SH+'" style="max-width:100%;background:var(--bg-secondary,#111);border-radius:10px;border:1px solid var(--border,#333);">';
+    const colors=['#3B82F6','#10B981'];
+    const baseline=SH-35;
+    for(let i=0;i<pcs.length;i++){
+      const h=pcs[i].ratio*maxH;
+      const x=SW/2-barW-gap/2+i*(barW+gap);
+      svg+='<rect x="'+x+'" y="'+(baseline-h)+'" width="'+barW+'" height="'+h+'" fill="'+colors[i]+'" rx="4" opacity="0.85"/>';
+      svg+='<text x="'+(x+barW/2)+'" y="'+(baseline-h-8)+'" fill="'+colors[i]+'" font-size="13" font-weight="bold" text-anchor="middle">'+fmt(pcs[i].ratio*100)+'%</text>';
+      svg+='<text x="'+(x+barW/2)+'" y="'+(baseline+18)+'" fill="#ccc" font-size="12" text-anchor="middle">PC'+(i+1)+'</text>';
+    }
+    svg+='<line x1="30" y1="'+baseline+'" x2="'+(SW-30)+'" y2="'+baseline+'" stroke="#666" stroke-width="1"/>';
+    svg+='</svg>';
+    document.getElementById('var-bar').innerHTML=svg;
+  }
+
+  function drawCumulativeVariance(pcs){
+    const SW=300,SH=200;
+    const baseline=SH-35;
+    const maxH=SH-70;
+    const cumul=[pcs[0].ratio,pcs[0].ratio+pcs[1].ratio];
+    let svg='<svg viewBox="0 0 '+SW+' '+SH+'" width="'+SW+'" height="'+SH+'" style="max-width:100%;background:var(--bg-secondary,#111);border-radius:10px;border:1px solid var(--border,#333);">';
+    // Axes
+    svg+='<line x1="50" y1="'+(baseline)+'" x2="'+(SW-30)+'" y2="'+(baseline)+'" stroke="#666" stroke-width="1"/>';
+    svg+='<line x1="50" y1="20" x2="50" y2="'+(baseline)+'" stroke="#666" stroke-width="1"/>';
+    // 95% threshold line
+    const th95y=baseline-0.95*maxH;
+    svg+='<line x1="50" y1="'+th95y+'" x2="'+(SW-30)+'" y2="'+th95y+'" stroke="#F59E0B" stroke-width="1" stroke-dasharray="6,4"/>';
+    svg+='<text x="'+(SW-28)+'" y="'+(th95y+4)+'" fill="#F59E0B" font-size="10">95%</text>';
+    // Y labels
+    for(let p=0;p<=100;p+=25){
+      const y=baseline-p/100*maxH;
+      svg+='<text x="45" y="'+(y+4)+'" fill="#888" font-size="10" text-anchor="end">'+p+'%</text>';
+      svg+='<line x1="47" y1="'+y+'" x2="50" y2="'+y+'" stroke="#666" stroke-width="1"/>';
+    }
+    // Plot
+    const x0=90,x1=SW/2,x2=SW-60;
+    const y0=baseline;
+    const y1=baseline-cumul[0]*maxH;
+    const y2=baseline-cumul[1]*maxH;
+    svg+='<polyline points="'+x0+','+y0+' '+x1+','+y1+' '+x2+','+y2+'" fill="none" stroke="#EC4899" stroke-width="2.5"/>';
+    svg+='<circle cx="'+x1+'" cy="'+y1+'" r="5" fill="#3B82F6"/>';
+    svg+='<circle cx="'+x2+'" cy="'+y2+'" r="5" fill="#10B981"/>';
+    svg+='<text x="'+x1+'" y="'+(y1-10)+'" fill="#3B82F6" font-size="11" text-anchor="middle">'+fmt(cumul[0]*100)+'%</text>';
+    svg+='<text x="'+x2+'" y="'+(y2-10)+'" fill="#10B981" font-size="11" text-anchor="middle">100%</text>';
+    svg+='<text x="'+x1+'" y="'+(baseline+18)+'" fill="#ccc" font-size="11" text-anchor="middle">PC1</text>';
+    svg+='<text x="'+x2+'" y="'+(baseline+18)+'" fill="#ccc" font-size="11" text-anchor="middle">PC1+2</text>';
+    svg+='</svg>';
+    document.getElementById('var-cumul').innerHTML=svg;
+  }
+
+  function drawReconstruction(pcs,dataMean,centered){
+    const SW=460,SH=460;
+    const pc1=pcs[0].vector;
+    let maxR=1;
+    for(const p of centered)maxR=Math.max(maxR,Math.abs(p[0]),Math.abs(p[1]));
+    maxR*=1.3;
+    const scale=(SW/2-PAD)/maxR;
+    const cx=SW/2,cy=SH/2;
+
+    let svg='<svg viewBox="0 0 '+SW+' '+SH+'" width="'+SW+'" height="'+SH+'" style="max-width:100%;background:var(--bg-secondary,#111);border-radius:10px;border:1px solid var(--border,#333);">';
+    svg+='<line x1="0" y1="'+cy+'" x2="'+SW+'" y2="'+cy+'" stroke="#666" stroke-width="1.5"/>';
+    svg+='<line x1="'+cx+'" y1="0" x2="'+cx+'" y2="'+SH+'" stroke="#666" stroke-width="1.5"/>';
+
+    // PC1 line
+    const lineLen=maxR*1.5;
+    const lx1=cx+pc1[0]*lineLen*scale,ly1=cy-pc1[1]*lineLen*scale;
+    const lx2=cx-pc1[0]*lineLen*scale,ly2=cy+pc1[1]*lineLen*scale;
+    svg+='<line x1="'+lx1+'" y1="'+ly1+'" x2="'+lx2+'" y2="'+ly2+'" stroke="#3B82F6" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>';
+
+    for(const p of centered){
+      const proj=p[0]*pc1[0]+p[1]*pc1[1];
+      const rx=proj*pc1[0],ry=proj*pc1[1];
+      const opx=cx+p[0]*scale,opy=cy-p[1]*scale;
+      const rpx=cx+rx*scale,rpy=cy-ry*scale;
+      // Error line
+      svg+='<line x1="'+opx+'" y1="'+opy+'" x2="'+rpx+'" y2="'+rpy+'" stroke="#F59E0B" stroke-width="1" opacity="0.5"/>';
+      // Original
+      svg+='<circle cx="'+opx+'" cy="'+opy+'" r="4" fill="#888" opacity="0.6"/>';
+      // Reconstructed
+      svg+='<circle cx="'+rpx+'" cy="'+rpy+'" r="4" fill="#EC4899" opacity="0.9"/>';
+    }
+
+    svg+='<text x="15" y="20" fill="#888" font-size="11">Gray = original (centered)</text>';
+    svg+='<text x="15" y="36" fill="#EC4899" font-size="11">Pink = reconstructed from PC1</text>';
+    svg+='<text x="15" y="52" fill="#F59E0B" font-size="11">Yellow = reconstruction error</text>';
+    svg+='</svg>';
+    document.getElementById('recon-viz').innerHTML=svg;
+  }
+
+  function drawSummary(pcs,dataMean,n){
+    let h='<h3 style="margin-top:0;">PCA Summary</h3>';
+    h+='<table style="width:100%;border-collapse:collapse;">';
+    h+='<tr style="border-bottom:1px solid var(--border,#333);"><th style="text-align:left;padding:8px;">Component</th><th style="padding:8px;">Eigenvector</th><th style="padding:8px;">Eigenvalue</th><th style="padding:8px;">Variance %</th></tr>';
+    for(let i=0;i<pcs.length;i++){
+      h+='<tr style="border-bottom:1px solid var(--border,#222);"><td style="padding:8px;font-weight:bold;">PC'+(i+1)+'</td><td style="padding:8px;font-family:monospace;">['+fmt(pcs[i].vector[0])+', '+fmt(pcs[i].vector[1])+']</td><td style="padding:8px;font-family:monospace;">'+fmt(pcs[i].eigenvalue)+'</td><td style="padding:8px;font-family:monospace;">'+fmt(pcs[i].ratio*100)+'%</td></tr>';
+    }
+    h+='</table>';
+    h+='<p style="margin-top:1rem;font-size:0.9rem;color:var(--text-muted,#999);">Data mean: ('+fmt(dataMean[0])+', '+fmt(dataMean[1])+') | n = '+n+' points | Total variance = '+fmt(pcs[0].eigenvalue+pcs[1].eigenvalue)+'</p>';
+    document.getElementById('summary-box').innerHTML=h;
+  }
+
+  // Init
+  drawScatter();
+  updateTable();
+})();
+</script>
+</body>
+</html>

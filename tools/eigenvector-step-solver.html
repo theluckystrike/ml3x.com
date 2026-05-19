@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Step-by-Step Eigenvector Solver &mdash; Visualize Eigenvalues &amp; Eigenvectors | ML3X</title>
+<meta name="description" content="Step-by-step eigenvector solver for 2x2 and 3x3 matrices. Compute eigenvalues via the characteristic polynomial, find eigenvectors, and visualize how matrices transform vectors vs eigenvectors.">
+<meta name="keywords" content="eigenvector solver, eigenvector calculator, step by step eigenvector, eigenvalue computation, characteristic polynomial, matrix transformation visualization, eigenvector visualization">
+<link rel="canonical" href="https://ml3x.com/tools/eigenvector-step-solver.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Step-by-Step Eigenvector Solver &mdash; Visualize Eigenvalues &amp; Eigenvectors | ML3X">
+<meta property="og:description" content="Step-by-step eigenvector solver for 2x2 and 3x3 matrices. Compute eigenvalues via the characteristic polynomial, find eigenvectors, and visualize transformations.">
+<meta property="og:url" content="https://ml3x.com/tools/eigenvector-step-solver.html">
+<meta property="og:site_name" content="Zovo Tools">
+<meta property="og:image" content="https://ml3x.com/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Step-by-Step Eigenvector Solver &mdash; Visualize Eigenvalues &amp; Eigenvectors | ML3X">
+<meta name="twitter:description" content="Step-by-step eigenvector solver for 2x2 and 3x3 matrices. Compute eigenvalues, find eigenvectors, and visualize matrix transformations.">
+<meta name="twitter:image" content="https://ml3x.com/assets/og-image.png">
+<link rel="stylesheet" href="/assets/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Step-by-Step Eigenvector Solver — ML3X",
+  "url": "https://ml3x.com/tools/eigenvector-step-solver.html",
+  "description": "Step-by-step eigenvector solver for 2x2 and 3x3 matrices. Compute eigenvalues via the characteristic polynomial, find eigenvectors, and visualize how matrices transform vectors vs eigenvectors.",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Michael Lip",
+    "url": "https://zovo.one"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "ML3X",
+    "url": "https://ml3x.com"
+  },
+  "datePublished": "2026-05-25",
+  "dateModified": "2026-05-25",
+  "featureList": ["2x2 and 3x3 eigenvector computation", "Characteristic polynomial derivation", "Step-by-step null space reduction", "SVG eigenvector visualization", "Matrix transformation comparison"]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the difference between an eigenvalue and an eigenvector?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "An eigenvalue is a scalar lambda that tells you by how much a matrix stretches or compresses a particular direction. An eigenvector is the non-zero vector that defines that direction. Together, they satisfy the equation Av = lambda*v. The eigenvalue is the 'how much' and the eigenvector is the 'which direction.' Every eigenvalue has at least one eigenvector, and the set of all eigenvectors for a given eigenvalue forms a subspace called the eigenspace."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do you find eigenvectors after computing eigenvalues?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For each eigenvalue lambda, form the matrix (A - lambda*I) and solve the homogeneous system (A - lambda*I)v = 0 using Gaussian elimination (row reduction). The non-trivial solutions to this system are the eigenvectors corresponding to that eigenvalue. For a 2x2 matrix, this typically reduces to a single equation relating the two components of v, giving you a one-parameter family of eigenvectors."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can a matrix have repeated eigenvalues with different eigenvectors?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. When an eigenvalue has algebraic multiplicity greater than 1 (it appears as a repeated root of the characteristic polynomial), it may have multiple linearly independent eigenvectors. The number of independent eigenvectors is the geometric multiplicity, which is always between 1 and the algebraic multiplicity. If geometric multiplicity equals algebraic multiplicity for all eigenvalues, the matrix is diagonalizable. The identity matrix, for example, has eigenvalue 1 with multiplicity n and n independent eigenvectors."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why do eigenvectors not change direction when multiplied by their matrix?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "By definition, an eigenvector v of matrix A satisfies Av = lambda*v. This means multiplying A by v produces the same vector v scaled by lambda. Geometrically, while most vectors get rotated and stretched into a completely different direction by the matrix transformation, eigenvectors only get scaled along their original line. If lambda is negative, the eigenvector is flipped to the opposite direction but stays on the same line through the origin."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does the visualization of eigenvectors on a coordinate plane show?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The visualization shows two things: first, the original eigenvectors as arrows from the origin, and second, how the matrix transforms arbitrary vectors compared to eigenvectors. An arbitrary vector gets both rotated and scaled, landing at a new angle. An eigenvector, after transformation, lands on the same line it started on, just stretched by its eigenvalue. The before-and-after comparison makes it visually clear why eigenvectors are special directions of the transformation."
+      }
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://ml3x.com/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://ml3x.com/tools/"},{"@type":"ListItem","position":3,"name":"Eigenvector Step Solver"}]}</script>
+</head>
+<body>
+<header class="site-header">
+  <a href="/" class="site-logo">ML3X</a>
+  <nav class="site-nav">
+    <a href="/">Calculator</a>
+    <a href="/tools/">Tools</a>
+    <a href="/guides/">Guides</a>
+    <a href="/answers/">Answers</a>
+    <a href="/blog/">Blog</a>
+      <div class="nav-right">
+      <a href="https://zovo.one/pricing?utm_source=ml3x.com&amp;utm_medium=satellite&amp;utm_campaign=nav-link" class="nav-pro" target="_blank">Go Pro &#10022;</a>
+      <a href="https://zovo.one/tools" class="nav-zovo">Zovo Tools</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="hero">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a> &raquo; <a href="/tools/">Tools</a> &raquo; <span>Eigenvector Step Solver</span>
+    </nav>
+    <h1>Step-by-Step Eigenvector Solver</h1>
+    <p>Enter a 2&times;2 or 3&times;3 matrix. This solver computes eigenvalues via the characteristic polynomial, finds eigenvectors by null space reduction, and visualizes how the matrix transforms eigenvectors versus arbitrary vectors on a coordinate plane.</p>
+  </div>
+
+  <!-- Tool Controls -->
+  <section style="max-width:800px;margin:2rem auto;padding:0 1rem;">
+    <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;">
+      <label><strong>Matrix Size:</strong></label>
+      <button id="btn-2x2" onclick="setSize(2)" style="padding:0.4rem 1.2rem;border:1px solid var(--border,#444);background:var(--accent,#EC4899);color:#fff;border-radius:6px;cursor:pointer;font-weight:600;">2&times;2</button>
+      <button id="btn-3x3" onclick="setSize(3)" style="padding:0.4rem 1.2rem;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:6px;cursor:pointer;font-weight:600;">3&times;3</button>
+      <button onclick="loadExample()" style="padding:0.4rem 1rem;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:6px;cursor:pointer;">Load Example</button>
+      <button onclick="randomMatrix()" style="padding:0.4rem 1rem;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:6px;cursor:pointer;">Random</button>
+      <button onclick="clearAll()" style="padding:0.4rem 1rem;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:6px;cursor:pointer;">Clear</button>
+    </div>
+
+    <div id="matrix-input" style="display:flex;justify-content:center;margin-bottom:1.5rem;"></div>
+
+    <div style="text-align:center;margin-bottom:2rem;">
+      <button onclick="solve()" style="padding:0.7rem 2.5rem;font-size:1rem;background:var(--accent,#EC4899);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;">Solve Eigenvectors</button>
+    </div>
+
+    <div id="output" style="display:none;">
+      <div id="steps-output" style="background:var(--bg-secondary,#1a1a2e);border:1px solid var(--border,#333);border-radius:10px;padding:1.5rem;margin-bottom:2rem;line-height:1.8;font-family:monospace;font-size:0.92rem;white-space:pre-wrap;overflow-x:auto;"></div>
+      <h3 style="text-align:center;margin-bottom:1rem;">Eigenvector Visualization</h3>
+      <div id="viz-container" style="display:flex;justify-content:center;margin-bottom:2rem;"></div>
+      <div id="summary-box" style="background:var(--bg-secondary,#1a1a2e);border:1px solid var(--border,#333);border-radius:10px;padding:1.5rem;margin-bottom:2rem;"></div>
+    </div>
+  </section>
+
+  <div class="last-updated"><time datetime="2026-05-25">Last updated: May 25, 2026</time></div>
+
+  <!-- Expert Content -->
+  <section style="max-width:720px;margin:2rem auto;line-height:1.7;padding:0 1rem;">
+    <h2>Understanding Eigenvectors: The Geometric Perspective</h2>
+    <p>Eigenvectors are the special directions of a linear transformation where the matrix acts as pure scaling. When you multiply a matrix A by an arbitrary vector v, the result Av is generally a completely different vector: different length, different direction. But for eigenvectors, the output Av points in the exact same direction as the input v (or the exact opposite direction if the eigenvalue is negative). The matrix equation Av = &lambda;v captures this precisely: the matrix A acting on eigenvector v produces the same vector scaled by the eigenvalue &lambda;.</p>
+
+    <p>This geometric interpretation has profound consequences. Consider a 2&times;2 matrix acting on the plane. Every vector in the plane gets transformed, but there are typically two special lines through the origin (the eigenspaces) where vectors simply stretch or compress without rotating. The eigenvalues tell you the stretch factor along each line. A matrix with eigenvalues 3 and 0.5 stretches vectors along one eigenvector direction by a factor of 3 while compressing vectors along the other eigenvector direction by half. Understanding these special directions gives you complete insight into what the transformation does geometrically.</p>
+
+    <h2>How This Solver Works: The Characteristic Polynomial Method</h2>
+    <p>The solver follows the standard analytical approach taught in linear algebra courses. The process has two phases: first find the eigenvalues, then find the eigenvectors for each eigenvalue.</p>
+
+    <h3>Phase 1: Finding Eigenvalues</h3>
+    <p>The fundamental eigenvalue equation Av = &lambda;v rearranges to (A - &lambda;I)v = 0. For this homogeneous system to have a non-trivial solution (v &ne; 0), the coefficient matrix (A - &lambda;I) must be singular, meaning its determinant must equal zero. Computing det(A - &lambda;I) = 0 produces the characteristic polynomial, a polynomial in &lambda; whose roots are the eigenvalues.</p>
+
+    <p>For a 2&times;2 matrix [[a, b], [c, d]], the characteristic polynomial is &lambda;&sup2; - (a+d)&lambda; + (ad - bc) = 0, a quadratic equation solvable by the quadratic formula. The coefficient (a+d) is the trace and (ad - bc) is the determinant. For 3&times;3 matrices, the characteristic polynomial is a cubic: &lambda;&sup3; - tr(A)&lambda;&sup2; + (sum of 2&times;2 cofactors)&lambda; - det(A) = 0. The solver displays every coefficient derivation step by step.</p>
+
+    <h3>Phase 2: Finding Eigenvectors via Null Space Computation</h3>
+    <p>Once each eigenvalue &lambda;<sub>i</sub> is known, the corresponding eigenvectors are found by solving the system (A - &lambda;<sub>i</sub>I)v = 0. This is a null space computation: we need to find all vectors in the kernel of the matrix (A - &lambda;<sub>i</sub>I). The solver performs Gaussian elimination (row reduction) on this matrix, identifying free variables and expressing the solution in parametric form. The resulting non-zero vectors are the eigenvectors.</p>
+
+    <p>For a 2&times;2 matrix, the null space computation typically reduces to one equation in two unknowns, yielding a one-dimensional eigenspace (a line through the origin). For 3&times;3 matrices with a repeated eigenvalue, the eigenspace might be two-dimensional (a plane), which the solver handles by identifying two linearly independent eigenvectors spanning that plane.</p>
+
+    <h2>The Visualization: Before and After Transformation</h2>
+    <p>The SVG visualization rendered by this tool shows the eigenvectors as colored arrows from the origin on a standard coordinate plane. It also shows how the matrix transforms a few sample vectors: each original vector is drawn in gray, and its transformed image Av is drawn in a contrasting color with a dashed line. For eigenvectors, the transformation produces a vector on the same line, visually demonstrating why eigenvectors are special. For non-eigenvectors, the transformation rotates the vector to a different angle, making the distinction immediately obvious.</p>
+
+    <p>The visualization uses different colors for each eigenvalue's eigenvectors. If the eigenvalues are real and distinct, you see two (or three) clearly separated directions. If the matrix has a negative eigenvalue, the eigenvector's image points in the opposite direction, shown as an arrow flipping across the origin. If the matrix has complex eigenvalues (which occurs when the discriminant of the characteristic polynomial is negative for 2&times;2 matrices), no real eigenvectors exist and the visualization explains that the transformation is a rotation-scaling with no invariant real directions.</p>
+
+    <h2>Applications of Eigenvectors in Practice</h2>
+    <p>Eigenvectors appear throughout science, engineering, and data analysis. In structural engineering, the eigenvectors of a stiffness matrix are the natural vibration modes of a structure, and the eigenvalues are the squared natural frequencies. A bridge or building resonates at these frequencies, and knowing them is critical for avoiding catastrophic resonance during earthquakes or wind loading.</p>
+
+    <p>In machine learning, Principal Component Analysis (PCA) relies entirely on eigenvectors. The covariance matrix of a dataset is symmetric and positive semi-definite, guaranteeing real non-negative eigenvalues and orthogonal eigenvectors. The eigenvector with the largest eigenvalue points in the direction of maximum variance in the data. By projecting data onto the top k eigenvectors, PCA reduces dimensionality while preserving as much information as possible. The eigenvalues quantify exactly how much variance each principal component captures.</p>
+
+    <p>Google's PageRank algorithm computes the dominant eigenvector (eigenvector corresponding to the largest eigenvalue) of a modified adjacency matrix of the web. Each component of this eigenvector gives the importance score of a web page. In quantum mechanics, the eigenvalues of a Hermitian operator are the possible measurement outcomes, and the eigenvectors are the corresponding quantum states. The spectral theorem guarantees that these eigenvectors form a complete orthonormal basis for the state space.</p>
+
+    <h2>Numerical Considerations</h2>
+    <p>This solver computes eigenvalues analytically using closed-form formulas (quadratic formula for 2&times;2, Cardano's formula for 3&times;3) rather than iterative numerical methods. This means the results are exact for integer and simple rational matrices. For matrices with irrational eigenvalues, the solver displays decimal approximations rounded to four significant digits. Numerical eigenvalue algorithms like the QR algorithm, used by NumPy and MATLAB for large matrices, are iterative and introduce floating-point rounding errors, but they scale to matrices of arbitrary size. The analytical approach used here is limited to 3&times;3 but produces cleaner step-by-step displays for educational purposes.</p>
+
+    <p>A common pitfall when computing eigenvectors by hand is dividing by zero during row reduction when the matrix has a zero pivot. The solver handles this by swapping rows during Gaussian elimination. Another issue is eigenvalue multiplicity: if an eigenvalue is repeated, the eigenspace may have dimension greater than 1, requiring careful null space analysis to find all independent eigenvectors. The solver explicitly checks for this and reports the algebraic and geometric multiplicities when they differ.</p>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="faq-section" style="max-width:720px;margin:2rem auto;">
+    <h2>Frequently Asked Questions</h2>
+    <details>
+      <summary>What is the difference between an eigenvalue and an eigenvector?</summary>
+      <p>An eigenvalue is a scalar &lambda; that tells you by how much a matrix stretches or compresses a particular direction. An eigenvector is the non-zero vector that defines that direction. Together, they satisfy Av = &lambda;v. The eigenvalue is the "how much" and the eigenvector is the "which direction." Every eigenvalue has at least one eigenvector, and the set of all eigenvectors for a given eigenvalue forms a subspace called the eigenspace.</p>
+    </details>
+    <details>
+      <summary>How do you find eigenvectors after computing eigenvalues?</summary>
+      <p>For each eigenvalue &lambda;, form the matrix (A - &lambda;I) and solve the homogeneous system (A - &lambda;I)v = 0 using Gaussian elimination (row reduction). The non-trivial solutions to this system are the eigenvectors corresponding to that eigenvalue. For a 2&times;2 matrix, this typically reduces to a single equation relating the two components of v, giving you a one-parameter family of eigenvectors.</p>
+    </details>
+    <details>
+      <summary>Can a matrix have repeated eigenvalues with different eigenvectors?</summary>
+      <p>Yes. When an eigenvalue has algebraic multiplicity greater than 1 (it appears as a repeated root of the characteristic polynomial), it may have multiple linearly independent eigenvectors. The number of independent eigenvectors is the geometric multiplicity, which is always between 1 and the algebraic multiplicity. If geometric multiplicity equals algebraic multiplicity for all eigenvalues, the matrix is diagonalizable.</p>
+    </details>
+    <details>
+      <summary>Why do eigenvectors not change direction when multiplied by their matrix?</summary>
+      <p>By definition, an eigenvector v of matrix A satisfies Av = &lambda;v. This means multiplying A by v produces the same vector v scaled by &lambda;. Geometrically, while most vectors get rotated and stretched into a completely different direction, eigenvectors only get scaled along their original line. If &lambda; is negative, the eigenvector flips but stays on the same line through the origin.</p>
+    </details>
+    <details>
+      <summary>What does the visualization of eigenvectors on a coordinate plane show?</summary>
+      <p>The visualization shows the original eigenvectors as arrows from the origin, and how the matrix transforms arbitrary vectors compared to eigenvectors. An arbitrary vector gets both rotated and scaled, landing at a new angle. An eigenvector, after transformation, lands on the same line it started on, just stretched by its eigenvalue. The before-and-after comparison makes it visually clear why eigenvectors are special directions.</p>
+    </details>
+  </section>
+
+  <section style="max-width:720px;margin:2rem auto;padding:0 1rem;">
+    <h2>Related Tools</h2>
+    <ul>
+      <li><a href="/tools/eigenvalue-calculator.html">Eigenvalue Calculator</a> &mdash; compute eigenvalues for matrices up to 5&times;5</li>
+      <li><a href="/tools/matrix-decomposition.html">Matrix Decomposition Calculator</a> &mdash; LU, QR, and SVD decomposition with animated steps</li>
+      <li><a href="/tools/determinant-calculator.html">Determinant Calculator</a> &mdash; det(A) equals the product of eigenvalues</li>
+      <li><a href="/answers/linear-algebra-cheatsheet.html">Linear Algebra Cheatsheet</a> &mdash; searchable formula reference with mini-calculators</li>
+    </ul>
+  </section>
+
+  <section style="max-width:720px;margin:2rem auto;padding:0 1rem;">
+    <p style="font-size:0.9rem;color:var(--text-muted);">Built by <a href="https://zovo.one">Michael Lip</a>. Try the <a href="/">ML3X Matrix Calculator</a> for interactive step-by-step solutions.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">Zovo Tools</div>
+        <div class="footer-tagline">Free developer tools by a solo dev. No tracking.</div>
+        <a href="https://zovo.one/pricing?utm_source=ml3x.com&utm_medium=satellite&utm_campaign=footer-link" class="footer-cta">Zovo Lifetime &mdash; $99 once, free forever &rarr;</a>
+        <div class="footer-copy">&copy; 2026 <a href="https://zovo.one">Zovo</a> &middot; 47/500 founding spots</div>
+    </div>
+</footer>
+
+<nav class="zovo-network" aria-label="Zovo Tools Network">
+    <div class="zovo-network-inner">
+        <h3 class="zovo-network-title">Explore More Tools</h3>
+        <div class="zovo-network-links">
+            <a href="https://abwex.com">ABWex &mdash; A/B Testing</a>
+            <a href="https://claudflow.com">ClaudFlow &mdash; Workflows</a>
+            <a href="https://claudhq.com">ClaudHQ &mdash; AI Code Tools &amp; Fixes</a>
+            <a href="https://claudkit.com">ClaudKit &mdash; API</a>
+            <a href="https://enhio.com">Enhio &mdash; Text Tools</a>
+            <a href="https://epochpilot.com">EpochPilot &mdash; Timestamps</a>
+            <a href="https://gen8x.com">Gen8X &mdash; Color Tools</a>
+            <a href="https://gpt0x.com">GPT0X &mdash; AI Models</a>
+            <a href="https://heytensor.com">HeyTensor &mdash; ML Tools</a>
+            <a href="https://invokebot.com">InvokeBot &mdash; Webhooks</a>
+            <a href="https://kappafy.com">Kappafy &mdash; JSON</a>
+            <a href="https://kappakit.com">KappaKit &mdash; Dev Toolkit</a>
+            <a href="https://kickllm.com">KickLLM &mdash; LLM Costs</a>
+            <a href="https://krzen.com">Krzen &mdash; Image Tools</a>
+            <a href="https://lochbot.com">LochBot &mdash; Security</a>
+            <a href="https://lockml.com">LockML &mdash; ML Compare</a>
+        </div>
+    </div>
+</nav>
+
+<script>
+(function(){
+  let N=2;
+  const EPS=1e-10;
+
+  function setSize(n){
+    N=n;
+    document.getElementById('btn-2x2').style.background=n===2?'var(--accent,#EC4899)':'var(--bg-secondary,#1a1a2e)';
+    document.getElementById('btn-2x2').style.color=n===2?'#fff':'var(--text,#e0e0e0)';
+    document.getElementById('btn-3x3').style.background=n===3?'var(--accent,#EC4899)':'var(--bg-secondary,#1a1a2e)';
+    document.getElementById('btn-3x3').style.color=n===3?'#fff':'var(--text,#e0e0e0)';
+    buildGrid();
+  }
+  window.setSize=setSize;
+
+  function buildGrid(){
+    const c=document.getElementById('matrix-input');
+    let h='<div style="display:inline-grid;grid-template-columns:repeat('+N+',1fr);gap:6px;">';
+    for(let i=0;i<N;i++) for(let j=0;j<N;j++)
+      h+='<input type="number" id="m'+i+j+'" value="0" style="width:60px;padding:6px;text-align:center;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:4px;font-size:1rem;">';
+    h+='</div>';
+    c.innerHTML=h;
+    document.getElementById('output').style.display='none';
+  }
+
+  function getMatrix(){
+    const m=[];
+    for(let i=0;i<N;i++){const r=[];for(let j=0;j<N;j++)r.push(parseFloat(document.getElementById('m'+i+j).value)||0);m.push(r);}
+    return m;
+  }
+
+  function loadExample(){
+    if(N===2){
+      const v=[[4,1],[2,3]];
+      for(let i=0;i<2;i++)for(let j=0;j<2;j++)document.getElementById('m'+i+j).value=v[i][j];
+    } else {
+      const v=[[2,0,1],[0,3,0],[1,0,2]];
+      for(let i=0;i<3;i++)for(let j=0;j<3;j++)document.getElementById('m'+i+j).value=v[i][j];
+    }
+  }
+  window.loadExample=loadExample;
+
+  function randomMatrix(){
+    for(let i=0;i<N;i++)for(let j=0;j<N;j++)document.getElementById('m'+i+j).value=Math.floor(Math.random()*11)-5;
+  }
+  window.randomMatrix=randomMatrix;
+
+  function clearAll(){
+    for(let i=0;i<N;i++)for(let j=0;j<N;j++)document.getElementById('m'+i+j).value=0;
+    document.getElementById('output').style.display='none';
+  }
+  window.clearAll=clearAll;
+
+  function fmt(x){if(Math.abs(x)<EPS)return'0';if(Math.abs(x-Math.round(x))<EPS)return String(Math.round(x));return x.toFixed(4).replace(/0+$/,'').replace(/\.$/,'');}
+
+  function matStr(m){return'['+m.map(r=>'['+r.map(fmt).join(', ')+']').join(', ')+']';}
+
+  function trace(m){let s=0;for(let i=0;i<m.length;i++)s+=m[i][i];return s;}
+  function det2(m){return m[0][0]*m[1][1]-m[0][1]*m[1][0];}
+  function det3(m){
+    return m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])
+          -m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])
+          +m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);
+  }
+
+  function solveQuadratic(a,b,c){
+    const disc=b*b-4*a*c;
+    if(disc>=- EPS){
+      const d=Math.sqrt(Math.max(0,disc));
+      const r1=(-b+d)/(2*a), r2=(-b-d)/(2*a);
+      if(Math.abs(r1-r2)<EPS) return [{re:r1,im:0}];
+      return [{re:r1,im:0},{re:r2,im:0}];
+    }
+    const d=Math.sqrt(-disc);
+    return [{re:-b/(2*a),im:d/(2*a)},{re:-b/(2*a),im:-d/(2*a)}];
+  }
+
+  function solveCubic(a,b,c,d){
+    // x^3 + bx^2 + cx + d = 0 (assuming a=1)
+    b/=a;c/=a;d/=a;
+    const p=(3*c-b*b)/3, q=(2*b*b*b-9*b*c+27*d)/27;
+    const disc=q*q/4+p*p*p/27;
+    const roots=[];
+    if(disc>EPS){
+      const sd=Math.sqrt(disc);
+      const u=Math.cbrt(-q/2+sd), v=Math.cbrt(-q/2-sd);
+      roots.push({re:u+v-b/3,im:0});
+      const realPart=-(u+v)/2-b/3, imagPart=Math.sqrt(3)/2*(u-v);
+      roots.push({re:realPart,im:imagPart});
+      roots.push({re:realPart,im:-imagPart});
+    } else if(Math.abs(disc)<EPS){
+      const u=Math.cbrt(-q/2);
+      roots.push({re:2*u-b/3,im:0});
+      if(Math.abs(u)>EPS) roots.push({re:-u-b/3,im:0});
+    } else {
+      const r=Math.sqrt(-p*p*p/27);
+      const theta=Math.acos(-q/(2*r));
+      const m=2*Math.cbrt(r);
+      roots.push({re:m*Math.cos(theta/3)-b/3,im:0});
+      roots.push({re:m*Math.cos((theta+2*Math.PI)/3)-b/3,im:0});
+      roots.push({re:m*Math.cos((theta+4*Math.PI)/3)-b/3,im:0});
+    }
+    return roots;
+  }
+
+  function nullSpace2(m,steps){
+    // m is 2x2, find null space
+    const a=m[0][0],b=m[0][1],c=m[1][0],d=m[1][1];
+    steps.push('  Matrix (A - \u03bbI):');
+    steps.push('    ['+fmt(a)+', '+fmt(b)+']');
+    steps.push('    ['+fmt(c)+', '+fmt(d)+']');
+    if(Math.abs(a)>EPS){
+      steps.push('  Row reduce: R2 = R2 - ('+fmt(c)+'/'+fmt(a)+') * R1');
+      const v=-b/a;
+      steps.push('  From row 1: x\u2081 = '+fmt(v)+' * x\u2082');
+      steps.push('  Set x\u2082 = 1: eigenvector = ['+fmt(v)+', 1]');
+      return [v,1];
+    } else if(Math.abs(b)>EPS){
+      steps.push('  Row 1 gives: '+fmt(b)+' * x\u2082 = 0, so x\u2082 = 0');
+      steps.push('  x\u2081 is free. Set x\u2081 = 1: eigenvector = [1, 0]');
+      return [1,0];
+    } else if(Math.abs(c)>EPS){
+      const v=-d/c;
+      steps.push('  Row 1 is zero. From row 2: x\u2081 = '+fmt(v)+' * x\u2082');
+      steps.push('  Set x\u2082 = 1: eigenvector = ['+fmt(v)+', 1]');
+      return [v,1];
+    } else {
+      steps.push('  Both rows are zero \u2192 eigenspace is entire R\u00b2');
+      steps.push('  Eigenvectors: [1, 0] and [0, 1]');
+      return [1,0];
+    }
+  }
+
+  function nullSpace3(mat,steps){
+    const m=mat.map(r=>[...r]);
+    steps.push('  Matrix (A - \u03bbI):');
+    for(let i=0;i<3;i++) steps.push('    ['+m[i].map(fmt).join(', ')+']');
+    // Gaussian elimination with partial pivoting
+    for(let col=0;col<3;col++){
+      let pivot=-1,best=0;
+      for(let row=col;row<3;row++){if(Math.abs(m[row][col])>best){best=Math.abs(m[row][col]);pivot=row;}}
+      if(best<EPS) continue;
+      if(pivot!==col){[m[col],m[pivot]]=[m[pivot],m[col]];steps.push('  Swap R'+(col+1)+' \u2194 R'+(pivot+1));}
+      for(let row=0;row<3;row++){
+        if(row===col)continue;
+        if(Math.abs(m[row][col])<EPS)continue;
+        const factor=m[row][col]/m[col][col];
+        for(let k=0;k<3;k++) m[row][k]-=factor*m[col][k];
+        m[row][col]=0;
+        steps.push('  R'+(row+1)+' = R'+(row+1)+' - '+fmt(factor)+' * R'+(col+1));
+      }
+    }
+    steps.push('  Row echelon form:');
+    for(let i=0;i<3;i++) steps.push('    ['+m[i].map(fmt).join(', ')+']');
+    // Find free variables
+    const pivotCols=[];
+    for(let i=0;i<3;i++){for(let j=0;j<3;j++){if(Math.abs(m[i][j])>EPS){pivotCols.push(j);break;}}}
+    const free=[];
+    for(let j=0;j<3;j++){if(!pivotCols.includes(j))free.push(j);}
+    if(free.length===0){steps.push('  No free variables \u2192 only trivial solution (error)');return [1,0,0];}
+    const vec=[0,0,0];
+    vec[free[0]]=1;
+    for(let i=pivotCols.length-1;i>=0;i--){
+      const pi=pivotCols[i];
+      let s=0;
+      for(let j=0;j<3;j++){if(j!==pi) s+=m[i][j]*vec[j];}
+      if(Math.abs(m[i][pi])>EPS) vec[pi]=-s/m[i][pi]; else vec[pi]=0;
+    }
+    steps.push('  Free variable: x'+(free[0]+1)+' = 1');
+    steps.push('  Eigenvector = ['+vec.map(fmt).join(', ')+']');
+    return vec;
+  }
+
+  function matVecMul(m,v){
+    const r=[];
+    for(let i=0;i<m.length;i++){let s=0;for(let j=0;j<m.length;j++)s+=m[i][j]*v[j];r.push(s);}
+    return r;
+  }
+
+  function vecLen(v){return Math.sqrt(v.reduce((s,x)=>s+x*x,0));}
+  function vecNorm(v){const l=vecLen(v);return l>EPS?v.map(x=>x/l):v;}
+
+  function solve(){
+    const m=getMatrix();
+    const steps=[];
+    const results=[];
+
+    steps.push('=== STEP 1: Form (A - \u03bbI) and Characteristic Polynomial ===');
+    steps.push('Matrix A = '+matStr(m));
+    steps.push('');
+
+    let eigenvalues=[];
+    if(N===2){
+      const a=m[0][0],b=m[0][1],c=m[1][0],d=m[1][1];
+      const tr=a+d, det=a*d-b*c;
+      steps.push('A - \u03bbI = [['+fmt(a)+'-\u03bb, '+fmt(b)+'], ['+fmt(c)+', '+fmt(d)+'-\u03bb]]');
+      steps.push('');
+      steps.push('det(A - \u03bbI) = ('+fmt(a)+'-\u03bb)('+fmt(d)+'-\u03bb) - ('+fmt(b)+')('+fmt(c)+')');
+      steps.push('             = \u03bb\u00b2 - '+fmt(tr)+'\u03bb + '+fmt(det));
+      steps.push('');
+      steps.push('Trace = '+fmt(a)+' + '+fmt(d)+' = '+fmt(tr));
+      steps.push('Determinant = '+fmt(a)+'\u00b7'+fmt(d)+' - '+fmt(b)+'\u00b7'+fmt(c)+' = '+fmt(det));
+      steps.push('');
+      steps.push('Characteristic polynomial: \u03bb\u00b2 - '+fmt(tr)+'\u03bb + '+fmt(det)+' = 0');
+      const disc=tr*tr-4*det;
+      steps.push('Discriminant = '+fmt(tr)+'\u00b2 - 4\u00b7'+fmt(det)+' = '+fmt(disc));
+      eigenvalues=solveQuadratic(1,-tr,det);
+      steps.push('');
+      if(disc>=-EPS){
+        eigenvalues.forEach((e,i)=>steps.push('\u03bb'+(i+1)+' = '+fmt(e.re)));
+      } else {
+        eigenvalues.forEach((e,i)=>steps.push('\u03bb'+(i+1)+' = '+fmt(e.re)+' + '+fmt(e.im)+'i'));
+      }
+    } else {
+      const tr=trace(m);
+      const cofactorSum=det2([[m[1][1],m[1][2]],[m[2][1],m[2][2]]])+det2([[m[0][0],m[0][2]],[m[2][0],m[2][2]]])+det2([[m[0][0],m[0][1]],[m[1][0],m[1][1]]]);
+      const d=det3(m);
+      steps.push('Trace(A) = '+fmt(m[0][0])+' + '+fmt(m[1][1])+' + '+fmt(m[2][2])+' = '+fmt(tr));
+      steps.push('Sum of 2\u00d72 principal minors = '+fmt(cofactorSum));
+      steps.push('det(A) = '+fmt(d));
+      steps.push('');
+      steps.push('Characteristic polynomial: \u03bb\u00b3 - '+fmt(tr)+'\u03bb\u00b2 + '+fmt(cofactorSum)+'\u03bb - '+fmt(d)+' = 0');
+      eigenvalues=solveCubic(1,-tr,cofactorSum,-d);
+      steps.push('');
+      eigenvalues.forEach((e,i)=>{
+        if(Math.abs(e.im)<EPS) steps.push('\u03bb'+(i+1)+' = '+fmt(e.re));
+        else steps.push('\u03bb'+(i+1)+' = '+fmt(e.re)+' + '+fmt(e.im)+'i');
+      });
+    }
+
+    steps.push('');
+    steps.push('=== STEP 2: Find Eigenvectors ===');
+
+    const realEigs=eigenvalues.filter(e=>Math.abs(e.im)<EPS);
+    const eigenvectors=[];
+
+    // Deduplicate eigenvalues
+    const seen=[];
+    const uniqueEigs=[];
+    for(const e of realEigs){
+      let dup=false;
+      for(const s of seen){if(Math.abs(e.re-s)<EPS){dup=true;break;}}
+      if(!dup){uniqueEigs.push(e.re);seen.push(e.re);}
+    }
+
+    for(const lam of uniqueEigs){
+      steps.push('');
+      steps.push('--- For \u03bb = '+fmt(lam)+' ---');
+      steps.push('Solve (A - '+fmt(lam)+'I)v = 0:');
+      const shifted=m.map((r,i)=>r.map((v,j)=>i===j?v-lam:v));
+      let vec;
+      if(N===2) vec=nullSpace2(shifted,steps);
+      else vec=nullSpace3(shifted,steps);
+      // Verify
+      const Av=matVecMul(m,vec);
+      const lambdaV=vec.map(x=>x*lam);
+      steps.push('  Verify: A*v = ['+Av.map(fmt).join(', ')+']');
+      steps.push('  \u03bb*v = ['+lambdaV.map(fmt).join(', ')+']');
+      const ok=Av.every((x,i)=>Math.abs(x-lambdaV[i])<0.01);
+      steps.push('  Check: '+(ok?'\u2713 Av = \u03bbv confirmed':'\u2717 Numerical error'));
+      eigenvectors.push({lambda:lam,vec:vec});
+    }
+
+    if(eigenvalues.some(e=>Math.abs(e.im)>=EPS)){
+      steps.push('');
+      steps.push('Note: Complex eigenvalues have no real eigenvectors.');
+      steps.push('The transformation involves rotation. Complex eigenvectors');
+      steps.push('exist in C^n but are not shown in the R^n visualization.');
+    }
+
+    document.getElementById('output').style.display='block';
+    document.getElementById('steps-output').textContent=steps.join('\n');
+
+    // Summary
+    let sumHtml='<h3 style="margin-top:0;">Summary</h3><table style="width:100%;border-collapse:collapse;">';
+    sumHtml+='<tr style="border-bottom:1px solid var(--border,#333);"><th style="text-align:left;padding:8px;">Eigenvalue (\u03bb)</th><th style="text-align:left;padding:8px;">Eigenvector (v)</th></tr>';
+    for(const ev of eigenvectors){
+      sumHtml+='<tr style="border-bottom:1px solid var(--border,#222);"><td style="padding:8px;font-family:monospace;">'+fmt(ev.lambda)+'</td><td style="padding:8px;font-family:monospace;">['+ev.vec.map(fmt).join(', ')+']</td></tr>';
+    }
+    if(eigenvalues.some(e=>Math.abs(e.im)>=EPS)){
+      const ce=eigenvalues.filter(e=>e.im>EPS)[0];
+      if(ce) sumHtml+='<tr><td style="padding:8px;font-family:monospace;">'+fmt(ce.re)+' \u00b1 '+fmt(ce.im)+'i</td><td style="padding:8px;font-style:italic;">Complex (no real eigenvector)</td></tr>';
+    }
+    sumHtml+='</table>';
+    document.getElementById('summary-box').innerHTML=sumHtml;
+
+    // Visualization (only for 2D real eigenvectors)
+    if(N===2 && eigenvectors.length>0) drawViz(m,eigenvectors);
+    else if(N===3 && eigenvectors.length>0) drawViz3Dto2D(m,eigenvectors);
+    else document.getElementById('viz-container').innerHTML='<p style="color:var(--text-muted);">Visualization requires real eigenvalues.</p>';
+  }
+  window.solve=solve;
+
+  function drawViz(m,evs){
+    const W=460,H=460,cx=W/2,cy=H/2;
+    const colors=['#EC4899','#3B82F6','#10B981','#F59E0B'];
+    // Find scale
+    let maxR=3;
+    for(const ev of evs){const nv=vecNorm(ev.vec);const tv=matVecMul(m,nv);maxR=Math.max(maxR,Math.abs(tv[0]),Math.abs(tv[1]),Math.abs(nv[0]*2),Math.abs(nv[1]*2));}
+    const scale=(W/2-40)/maxR;
+
+    let svg='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="max-width:100%;background:var(--bg-secondary,#111);border-radius:10px;border:1px solid var(--border,#333);">';
+    // Grid
+    for(let i=-Math.floor(maxR);i<=Math.floor(maxR);i++){
+      const x=cx+i*scale,y=cy-i*scale;
+      svg+='<line x1="'+x+'" y1="0" x2="'+x+'" y2="'+H+'" stroke="#333" stroke-width="0.5"/>';
+      svg+='<line x1="0" y1="'+y+'" x2="'+W+'" y2="'+y+'" stroke="#333" stroke-width="0.5"/>';
+    }
+    // Axes
+    svg+='<line x1="0" y1="'+cy+'" x2="'+W+'" y2="'+cy+'" stroke="#666" stroke-width="1.5"/>';
+    svg+='<line x1="'+cx+'" y1="0" x2="'+cx+'" y2="'+H+'" stroke="#666" stroke-width="1.5"/>';
+    svg+='<text x="'+(W-15)+'" y="'+(cy-8)+'" fill="#888" font-size="12">x</text>';
+    svg+='<text x="'+(cx+8)+'" y="15" fill="#888" font-size="12">y</text>';
+
+    // Draw a sample non-eigenvector and its transform
+    const sample=[1,0.5];
+    const sLen=vecLen(sample);
+    const sNorm=sample.map(x=>x/sLen);
+    const sTransformed=matVecMul(m,sNorm);
+    svg+='<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+sNorm[0]*scale*1.5)+'" y2="'+(cy-sNorm[1]*scale*1.5)+'" stroke="#666" stroke-width="2" stroke-dasharray="6,4"/>';
+    svg+='<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+sTransformed[0]*scale)+'" y2="'+(cy-sTransformed[1]*scale)+'" stroke="#999" stroke-width="2" marker-end="url(#arrowGray)"/>';
+    svg+='<text x="'+(cx+sNorm[0]*scale*1.5+5)+'" y="'+(cy-sNorm[1]*scale*1.5)+'" fill="#888" font-size="11">v (sample)</text>';
+    svg+='<text x="'+(cx+sTransformed[0]*scale+5)+'" y="'+(cy-sTransformed[1]*scale)+'" fill="#999" font-size="11">Av (rotated)</text>';
+
+    // Arrowhead defs
+    svg+='<defs>';
+    svg+='<marker id="arrowGray" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#999"/></marker>';
+    colors.forEach((c,i)=>{
+      svg+='<marker id="arrow'+i+'" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="'+c+'"/></marker>';
+      svg+='<marker id="arrowT'+i+'" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="'+c+'" opacity="0.5"/></marker>';
+    });
+    svg+='</defs>';
+
+    // Draw eigenvectors and transforms
+    for(let i=0;i<evs.length;i++){
+      const ev=evs[i];
+      const nv=vecNorm(ev.vec);
+      const tv=matVecMul(m,nv);
+      const c=colors[i%colors.length];
+      // Original eigenvector
+      svg+='<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+nv[0]*scale*1.5)+'" y2="'+(cy-nv[1]*scale*1.5)+'" stroke="'+c+'" stroke-width="2.5" marker-end="url(#arrow'+i+')"/>';
+      // Transformed eigenvector (should be on same line)
+      svg+='<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+tv[0]*scale)+'" y2="'+(cy-tv[1]*scale)+'" stroke="'+c+'" stroke-width="2" stroke-dasharray="6,3" opacity="0.6" marker-end="url(#arrowT'+i+')"/>';
+      // Labels
+      const lx=cx+nv[0]*scale*1.5+8, ly=cy-nv[1]*scale*1.5-6;
+      svg+='<text x="'+lx+'" y="'+ly+'" fill="'+c+'" font-size="12" font-weight="bold">v'+(i+1)+' (\u03bb='+fmt(ev.lambda)+')</text>';
+      const tlx=cx+tv[0]*scale+8, tly=cy-tv[1]*scale+14;
+      svg+='<text x="'+tlx+'" y="'+tly+'" fill="'+c+'" font-size="11" opacity="0.7">Av'+(i+1)+' (scaled)</text>';
+    }
+
+    // Legend
+    svg+='<rect x="10" y="'+(H-55)+'" width="180" height="48" rx="6" fill="rgba(0,0,0,0.6)"/>';
+    svg+='<text x="18" y="'+(H-38)+'" fill="#ccc" font-size="11">Solid = eigenvector</text>';
+    svg+='<text x="18" y="'+(H-22)+'" fill="#ccc" font-size="11">Dashed = A \u00d7 eigenvector</text>';
+    svg+='<text x="18" y="'+(H-8)+'" fill="#888" font-size="10">Gray = sample non-eigenvector</text>';
+
+    svg+='</svg>';
+    document.getElementById('viz-container').innerHTML=svg;
+  }
+
+  function drawViz3Dto2D(m,evs){
+    // For 3x3, project onto first two eigenvector components
+    const W=460,H=460,cx=W/2,cy=H/2;
+    const colors=['#EC4899','#3B82F6','#10B981'];
+    let maxR=3;
+    for(const ev of evs){const nv=vecNorm(ev.vec);const tv=matVecMul(m,nv);for(let k=0;k<3;k++)maxR=Math.max(maxR,Math.abs(tv[k]),Math.abs(nv[k]*2));}
+    const scale=(W/2-40)/maxR;
+
+    let svg='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="max-width:100%;background:var(--bg-secondary,#111);border-radius:10px;border:1px solid var(--border,#333);">';
+    svg+='<line x1="0" y1="'+cy+'" x2="'+W+'" y2="'+cy+'" stroke="#666" stroke-width="1.5"/>';
+    svg+='<line x1="'+cx+'" y1="0" x2="'+cx+'" y2="'+H+'" stroke="#666" stroke-width="1.5"/>';
+    svg+='<text x="'+(W-25)+'" y="'+(cy-8)+'" fill="#888" font-size="12">x\u2081</text>';
+    svg+='<text x="'+(cx+8)+'" y="15" fill="#888" font-size="12">x\u2082</text>';
+    svg+='<text x="'+(cx+8)+'" y="'+(H-8)+'" fill="#666" font-size="10">3D \u2192 projected onto x\u2081, x\u2082 plane</text>';
+
+    svg+='<defs>';
+    colors.forEach((c,i)=>{
+      svg+='<marker id="a3d'+i+'" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="'+c+'"/></marker>';
+    });
+    svg+='</defs>';
+
+    for(let i=0;i<evs.length;i++){
+      const ev=evs[i];
+      const nv=vecNorm(ev.vec);
+      const tv=matVecMul(m,nv);
+      const c=colors[i%colors.length];
+      svg+='<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+nv[0]*scale*1.5)+'" y2="'+(cy-nv[1]*scale*1.5)+'" stroke="'+c+'" stroke-width="2.5" marker-end="url(#a3d'+i+')"/>';
+      svg+='<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+tv[0]*scale)+'" y2="'+(cy-tv[1]*scale)+'" stroke="'+c+'" stroke-width="2" stroke-dasharray="6,3" opacity="0.6"/>';
+      svg+='<text x="'+(cx+nv[0]*scale*1.5+8)+'" y="'+(cy-nv[1]*scale*1.5-6)+'" fill="'+c+'" font-size="12" font-weight="bold">v'+(i+1)+' ['+ev.vec.map(fmt).join(',')+'] \u03bb='+fmt(ev.lambda)+'</text>';
+    }
+    svg+='</svg>';
+    document.getElementById('viz-container').innerHTML=svg;
+  }
+
+  // Init
+  buildGrid();
+})();
+</script>
+</body>
+</html>

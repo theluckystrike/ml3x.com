@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vector Dot &amp; Cross Product Calculator &mdash; Geometric Interpretation &amp; Visualization | ML3X</title>
+<meta name="description" content="Vector dot product and cross product calculator for 2D and 3D vectors. Computes angle between vectors, scalar projection, unit vectors, magnitude, and shows geometric interpretation with interactive SVG visualization.">
+<meta name="keywords" content="dot product calculator, cross product calculator, vector angle calculator, scalar projection, vector magnitude, unit vector, geometric interpretation, 3D vector calculator">
+<link rel="canonical" href="https://ml3x.com/tools/dot-product-calculator.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Vector Dot &amp; Cross Product Calculator &mdash; Geometric Interpretation &amp; Visualization | ML3X">
+<meta property="og:description" content="Vector dot and cross product calculator with angle, projection, unit vectors, and SVG geometric visualization for 2D and 3D vectors.">
+<meta property="og:url" content="https://ml3x.com/tools/dot-product-calculator.html">
+<meta property="og:site_name" content="Zovo Tools">
+<meta property="og:image" content="https://ml3x.com/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Vector Dot &amp; Cross Product Calculator &mdash; Geometric Interpretation &amp; Visualization | ML3X">
+<meta name="twitter:description" content="Vector dot and cross product calculator with angle, projection, unit vectors, and geometric visualization for 2D and 3D vectors.">
+<meta name="twitter:image" content="https://ml3x.com/assets/og-image.png">
+<link rel="stylesheet" href="/assets/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Vector Dot & Cross Product Calculator — ML3X",
+  "url": "https://ml3x.com/tools/dot-product-calculator.html",
+  "description": "Vector dot product and cross product calculator for 2D and 3D vectors. Computes angle between vectors, scalar projection, unit vectors, magnitude, and shows geometric interpretation with interactive SVG visualization.",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Michael Lip",
+    "url": "https://zovo.one"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "ML3X",
+    "url": "https://ml3x.com"
+  },
+  "datePublished": "2026-05-25",
+  "dateModified": "2026-05-25",
+  "featureList": ["2D and 3D dot product", "3D cross product", "Angle between vectors", "Scalar and vector projection", "Unit vector calculation", "SVG geometric visualization"]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the dot product and what does it measure geometrically?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The dot product of two vectors a and b is the sum of the products of their corresponding components: a dot b = a1*b1 + a2*b2 (+ a3*b3 in 3D). Geometrically, it equals |a| * |b| * cos(theta), where theta is the angle between the vectors. The dot product measures how much two vectors point in the same direction. If the dot product is positive, the angle between them is less than 90 degrees (they point roughly the same way). If it is zero, the vectors are perpendicular (orthogonal). If it is negative, the angle exceeds 90 degrees (they point roughly opposite). The dot product is fundamental in computing projections, angles, and determining orthogonality in every branch of mathematics, physics, and computer graphics."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How is the cross product different from the dot product?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The cross product is defined only for 3D vectors and produces a vector (not a scalar). Given vectors a and b, the cross product a x b is a new vector perpendicular to both a and b, with magnitude |a| * |b| * sin(theta). The direction follows the right-hand rule: if you curl the fingers of your right hand from a toward b, your thumb points in the direction of a x b. The dot product measures parallel alignment (cosine of the angle), while the cross product measures perpendicular alignment (sine of the angle). The magnitude of the cross product also equals the area of the parallelogram formed by the two vectors. In 2D, the cross product reduces to a scalar equal to a1*b2 - a2*b1, which gives the signed area."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the scalar projection of one vector onto another?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The scalar projection of vector a onto vector b is the signed length of the shadow that a casts onto the line defined by b. It equals (a dot b) / |b|, or equivalently |a| * cos(theta). If the scalar projection is positive, a has a component in the direction of b. If negative, the component points opposite to b. If zero, a is perpendicular to b. The vector projection goes further: it gives the actual vector (not just the length) of a's component along b, computed as ((a dot b) / (b dot b)) * b. The scalar projection tells you 'how far along,' while the vector projection tells you 'where along.' Both are essential in physics (decomposing forces), computer graphics (lighting calculations), and machine learning (feature projections)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do you calculate the angle between two vectors using the dot product?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The angle theta between vectors a and b is found using the formula: theta = arccos((a dot b) / (|a| * |b|)). First compute the dot product a dot b. Then compute the magnitudes |a| = sqrt(a1^2 + a2^2 + ...) and |b| similarly. Divide the dot product by the product of magnitudes to get cos(theta), which will be between -1 and 1. Apply arccos to get the angle in radians, then convert to degrees by multiplying by 180/pi. This formula works in any dimension. The result is always between 0 and 180 degrees (0 and pi radians). An angle of 0 means the vectors are parallel and same direction, 90 means perpendicular, and 180 means parallel but opposite direction."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a unit vector and why is it useful?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A unit vector is a vector with magnitude (length) exactly 1. To compute the unit vector of any non-zero vector v, divide each component by the magnitude: unit(v) = v / |v|. Unit vectors preserve direction but normalize the length. They are useful because they simplify formulas: the dot product of two unit vectors directly gives cos(theta) without dividing by magnitudes. In physics, unit vectors represent pure directions (like the standard basis vectors i, j, k along the x, y, z axes). In computer graphics, surface normals are unit vectors used for lighting calculations. In machine learning, normalizing feature vectors to unit length (L2 normalization) enables cosine similarity, which measures directional similarity independent of magnitude."
+      }
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://ml3x.com/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://ml3x.com/tools/"},{"@type":"ListItem","position":3,"name":"Dot Product Calculator"}]}</script>
+</head>
+<body>
+<header class="site-header">
+  <a href="/" class="site-logo">ML3X</a>
+  <nav class="site-nav">
+    <a href="/">Calculator</a>
+    <a href="/tools/">Tools</a>
+    <a href="/guides/">Guides</a>
+    <a href="/answers/">Answers</a>
+    <a href="/blog/">Blog</a>
+      <div class="nav-right">
+      <a href="https://zovo.one/pricing?utm_source=ml3x.com&amp;utm_medium=satellite&amp;utm_campaign=nav-link" class="nav-pro" target="_blank">Go Pro &#10022;</a>
+      <a href="https://zovo.one/tools" class="nav-zovo">Zovo Tools</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="hero">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a> &raquo; <a href="/tools/">Tools</a> &raquo; <span>Dot Product Calculator</span>
+    </nav>
+    <h1>Vector Dot &amp; Cross Product Calculator</h1>
+    <p>Enter two 2D or 3D vectors. This calculator computes the dot product, cross product (3D), angle between vectors, scalar and vector projections, magnitudes, and unit vectors. The SVG visualization shows both vectors, the angle arc, and the projection line with full geometric interpretation.</p>
+  </div>
+
+  <!-- Tool Controls -->
+  <section style="max-width:800px;margin:2rem auto;padding:0 1rem;">
+    <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;">
+      <label><strong>Dimension:</strong></label>
+      <button id="btn-2d" onclick="setDim(2)" style="padding:0.4rem 1.2rem;border:1px solid var(--border,#444);background:var(--accent,#EC4899);color:#fff;border-radius:6px;cursor:pointer;font-weight:600;">2D</button>
+      <button id="btn-3d" onclick="setDim(3)" style="padding:0.4rem 1.2rem;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:6px;cursor:pointer;font-weight:600;">3D</button>
+      <button onclick="loadExample()" style="padding:0.4rem 1rem;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:6px;cursor:pointer;">Load Example</button>
+      <button onclick="randomVectors()" style="padding:0.4rem 1rem;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:6px;cursor:pointer;">Random</button>
+      <button onclick="clearAll()" style="padding:0.4rem 1rem;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:6px;cursor:pointer;">Clear</button>
+    </div>
+
+    <!-- Vector inputs -->
+    <div style="display:flex;gap:2rem;flex-wrap:wrap;justify-content:center;margin-bottom:1.5rem;">
+      <div>
+        <label style="font-weight:600;color:var(--accent,#EC4899);">Vector a</label>
+        <div id="vec-a-inputs" style="display:flex;gap:6px;margin-top:0.5rem;"></div>
+      </div>
+      <div>
+        <label style="font-weight:600;color:#3B82F6;">Vector b</label>
+        <div id="vec-b-inputs" style="display:flex;gap:6px;margin-top:0.5rem;"></div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-bottom:2rem;">
+      <button onclick="compute()" style="padding:0.7rem 2.5rem;font-size:1rem;background:var(--accent,#EC4899);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;">Calculate</button>
+    </div>
+
+    <div id="output" style="display:none;">
+      <div id="steps-output" style="background:var(--bg-secondary,#1a1a2e);border:1px solid var(--border,#333);border-radius:10px;padding:1.5rem;margin-bottom:2rem;line-height:1.8;font-family:monospace;font-size:0.92rem;white-space:pre-wrap;overflow-x:auto;"></div>
+
+      <h3 style="text-align:center;margin-bottom:1rem;">Geometric Visualization</h3>
+      <div id="viz-container" style="display:flex;justify-content:center;margin-bottom:2rem;"></div>
+      <div id="interp-box" style="background:var(--bg-secondary,#1a1a2e);border:1px solid var(--border,#333);border-radius:10px;padding:1.5rem;margin-bottom:2rem;line-height:1.7;"></div>
+      <div id="summary-box" style="background:var(--bg-secondary,#1a1a2e);border:1px solid var(--border,#333);border-radius:10px;padding:1.5rem;margin-bottom:2rem;"></div>
+    </div>
+  </section>
+
+  <div class="last-updated"><time datetime="2026-05-25">Last updated: May 25, 2026</time></div>
+
+  <!-- Expert Content -->
+  <section style="max-width:720px;margin:2rem auto;line-height:1.7;padding:0 1rem;">
+    <h2>The Dot Product: Algebraic and Geometric Definitions</h2>
+    <p>The dot product (also called the inner product or scalar product) is one of the most fundamental operations in linear algebra. Algebraically, the dot product of two vectors a = (a1, a2, ..., an) and b = (b1, b2, ..., bn) is defined as the sum of the products of corresponding components: a &middot; b = a1b1 + a2b2 + ... + anbn. The result is always a scalar (a single number), not a vector. For the 2D case, a &middot; b = a1b1 + a2b2. For the 3D case, a &middot; b = a1b1 + a2b2 + a3b3.</p>
+
+    <p>The geometric definition provides the deeper insight: a &middot; b = |a| |b| cos(&theta;), where |a| and |b| are the magnitudes (lengths) of the vectors and &theta; is the angle between them. This formula connects algebra and geometry in a powerful way. The dot product encodes three pieces of information simultaneously: the lengths of both vectors and the cosine of the angle between them. When both vectors are unit vectors (magnitude 1), the dot product directly equals cos(&theta;), making it a pure measure of directional alignment.</p>
+
+    <h2>Geometric Interpretation: Why the Dot Product Matters</h2>
+    <p>The sign of the dot product reveals the geometric relationship between two vectors. A positive dot product means the angle between the vectors is less than 90 degrees: they point in broadly the same direction. A dot product of zero means the vectors are perpendicular (orthogonal), forming a right angle. A negative dot product means the angle exceeds 90 degrees: the vectors point in broadly opposite directions. This three-way classification is used everywhere: in physics to determine whether a force aids or opposes motion, in computer graphics to determine whether a surface faces toward or away from a light source, and in machine learning to measure similarity between feature vectors.</p>
+
+    <p>The projection interpretation is equally important. The scalar projection of a onto b equals (a &middot; b) / |b| = |a| cos(&theta;). This is the signed length of the "shadow" that vector a casts onto the line defined by b. The vector projection goes further: proj_b(a) = ((a &middot; b) / (b &middot; b)) b, giving the actual vector component of a in the direction of b. The remaining component, a - proj_b(a), is perpendicular to b. This decomposition of a vector into parallel and perpendicular components is the basis of Gram-Schmidt orthogonalization, least-squares regression, and signal processing.</p>
+
+    <h2>The Cross Product: Perpendicular Vectors and Area</h2>
+    <p>The cross product is defined only in three dimensions (and in seven dimensions, by a more exotic construction, but 3D is the practical case). Given vectors a = (a1, a2, a3) and b = (b1, b2, b3), the cross product a &times; b = (a2b3 - a3b2, a3b1 - a1b3, a1b2 - a2b1). The result is a vector, not a scalar. This result vector is perpendicular to both a and b, and its direction follows the right-hand rule: curl the fingers of your right hand from a toward b, and your thumb points in the direction of a &times; b.</p>
+
+    <p>The magnitude of the cross product equals |a| |b| sin(&theta;), which is the area of the parallelogram formed by the two vectors. This geometric interpretation makes the cross product indispensable in physics and engineering: torque is the cross product of the position vector and force vector, the magnetic force on a moving charge is the cross product of velocity and magnetic field, and surface normals in computer graphics are computed as cross products of two edge vectors of a polygon. The cross product is anti-commutative: a &times; b = -(b &times; a), meaning the order matters.</p>
+
+    <h2>Computing Angles Between Vectors</h2>
+    <p>The angle between two vectors is one of the most commonly needed quantities in computational geometry. From the dot product formula a &middot; b = |a| |b| cos(&theta;), we solve for the angle: &theta; = arccos((a &middot; b) / (|a| |b|)). This formula works in any dimension. The result is always between 0 and &pi; radians (0 to 180 degrees). To convert radians to degrees, multiply by 180/&pi;. The formula is numerically stable for most angles, but when the vectors are nearly parallel (or anti-parallel), small floating-point errors in the ratio can push it slightly outside [-1, 1], causing arccos to return NaN. Robust implementations clamp the ratio to [-1, 1] before applying arccos.</p>
+
+    <p>An alternative formula using the cross product gives sin(&theta;) = |a &times; b| / (|a| |b|), which is more accurate for angles near 0 or &pi;. The most robust approach uses atan2(|a &times; b|, a &middot; b), which is accurate across the full range. For 2D vectors, the "cross product" a1b2 - a2b1 gives the signed sine of the angle, allowing you to determine whether b is clockwise or counterclockwise from a. The atan2 approach is standard in computer graphics, robotics, and navigation systems where both the magnitude and the sign of the angle matter.</p>
+
+    <h2>Unit Vectors and Normalization</h2>
+    <p>A unit vector is a vector with magnitude exactly 1. Any non-zero vector v can be converted to a unit vector by dividing each component by the magnitude: v-hat = v / |v|. This operation is called normalization. Unit vectors preserve direction while discarding magnitude information. They are the building blocks of coordinate systems: the standard basis vectors i = (1,0,0), j = (0,1,0), k = (0,0,1) are unit vectors along the three coordinate axes. Any vector can be written as a linear combination of these basis vectors: v = v1 i + v2 j + v3 k.</p>
+
+    <p>Normalization is critical in machine learning and information retrieval. Cosine similarity between two vectors is defined as the dot product of their unit vectors: cos(&theta;) = (a &middot; b) / (|a| |b|). By pre-normalizing all vectors to unit length, cosine similarity reduces to a simple dot product, which is computationally efficient for large-scale similarity searches. Word embeddings (Word2Vec, GloVe, FastText), sentence embeddings, and document embeddings all use cosine similarity as the default similarity metric. In neural network layers, weight normalization and layer normalization involve dividing vectors by their norms to stabilize training.</p>
+
+    <h2>Applications Across Domains</h2>
+    <p>In physics, work equals the dot product of force and displacement: W = F &middot; d = |F| |d| cos(&theta;). Only the component of force parallel to the displacement does work; the perpendicular component does zero work. This is why pushing a cart sideways (perpendicular to its direction of motion) requires no energy expenditure in the idealized physics model. In electrostatics, electric flux through a surface element is the dot product of the electric field vector and the surface normal vector. In quantum mechanics, the probability amplitude of transitioning from one state to another is the inner product of the state vectors in Hilbert space.</p>
+
+    <p>In computer graphics, the Phong lighting model uses the dot product between the surface normal and the light direction to compute diffuse lighting intensity: brighter when the surface faces the light directly (dot product near 1), darker when the surface is edge-on (dot product near 0), and completely dark when the surface faces away (dot product negative, clamped to 0). Specular highlights use the dot product between the reflection vector and the view direction. Ray tracing algorithms use dot products extensively for intersection tests, reflection direction computation, and shading calculations. The cross product computes surface normals from triangle vertices, which are then used in all subsequent lighting calculations.</p>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="faq-section" style="max-width:720px;margin:2rem auto;">
+    <h2>Frequently Asked Questions</h2>
+    <details>
+      <summary>What is the dot product and what does it measure geometrically?</summary>
+      <p>The dot product of vectors a and b is a&middot;b = a1b1 + a2b2 (+ a3b3 in 3D). Geometrically, it equals |a| |b| cos(&theta;). A positive dot product means the angle is less than 90&deg;, zero means perpendicular, and negative means the angle exceeds 90&deg;. It measures how much two vectors point in the same direction.</p>
+    </details>
+    <details>
+      <summary>How is the cross product different from the dot product?</summary>
+      <p>The cross product is defined only for 3D vectors and produces a vector perpendicular to both inputs, with magnitude |a| |b| sin(&theta;). The dot product produces a scalar measuring parallel alignment (cosine). The cross product measures perpendicular alignment (sine), and its magnitude equals the area of the parallelogram formed by the two vectors.</p>
+    </details>
+    <details>
+      <summary>What is the scalar projection of one vector onto another?</summary>
+      <p>The scalar projection of a onto b is (a&middot;b)/|b| = |a| cos(&theta;). It is the signed length of a's shadow onto the line defined by b. The vector projection is the actual vector component: ((a&middot;b)/(b&middot;b)) b. Together they decompose a vector into parallel and perpendicular components.</p>
+    </details>
+    <details>
+      <summary>How do you calculate the angle between two vectors using the dot product?</summary>
+      <p>&theta; = arccos((a&middot;b) / (|a| |b|)). Compute the dot product, compute both magnitudes, divide, then apply arccos. The result is between 0 and 180 degrees. Convert radians to degrees by multiplying by 180/&pi;. This works in any dimension.</p>
+    </details>
+    <details>
+      <summary>What is a unit vector and why is it useful?</summary>
+      <p>A unit vector has magnitude exactly 1: v-hat = v / |v|. Unit vectors preserve direction while discarding magnitude. They simplify formulas: the dot product of two unit vectors directly gives cos(&theta;). In ML, cosine similarity between pre-normalized vectors is just a dot product, enabling efficient similarity search.</p>
+    </details>
+  </section>
+
+  <section style="max-width:720px;margin:2rem auto;padding:0 1rem;">
+    <h2>Related Tools</h2>
+    <ul>
+      <li><a href="/tools/eigenvector-step-solver.html">Eigenvector Step Solver</a> &mdash; eigenvectors are found by null space computation of (A - &lambda;I)</li>
+      <li><a href="/tools/matrix-multiplication.html">Matrix Multiplication Calculator</a> &mdash; matrix-vector product uses dot products row by row</li>
+      <li><a href="/research/pca-explained.html">PCA Visualizer</a> &mdash; PCA uses eigenvectors of the covariance matrix for dimension reduction</li>
+      <li><a href="/tools/determinant-calculator.html">Determinant Calculator</a> &mdash; the 3&times;3 determinant is a triple scalar product (dot of cross)</li>
+    </ul>
+  </section>
+
+  <section style="max-width:720px;margin:2rem auto;padding:0 1rem;">
+    <p style="font-size:0.9rem;color:var(--text-muted);">Built by <a href="https://zovo.one">Michael Lip</a>. Try the <a href="/">ML3X Matrix Calculator</a> for interactive step-by-step solutions.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">Zovo Tools</div>
+        <div class="footer-tagline">Free developer tools by a solo dev. No tracking.</div>
+        <a href="https://zovo.one/pricing?utm_source=ml3x.com&utm_medium=satellite&utm_campaign=footer-link" class="footer-cta">Zovo Lifetime &mdash; $99 once, free forever &rarr;</a>
+        <div class="footer-copy">&copy; 2026 <a href="https://zovo.one">Zovo</a> &middot; 47/500 founding spots</div>
+    </div>
+</footer>
+
+<nav class="zovo-network" aria-label="Zovo Tools Network">
+    <div class="zovo-network-inner">
+        <h3 class="zovo-network-title">Explore More Tools</h3>
+        <div class="zovo-network-links">
+            <a href="https://abwex.com">ABWex &mdash; A/B Testing</a>
+            <a href="https://claudflow.com">ClaudFlow &mdash; Workflows</a>
+            <a href="https://claudhq.com">ClaudHQ &mdash; AI Code Tools &amp; Fixes</a>
+            <a href="https://claudkit.com">ClaudKit &mdash; API</a>
+            <a href="https://enhio.com">Enhio &mdash; Text Tools</a>
+            <a href="https://epochpilot.com">EpochPilot &mdash; Timestamps</a>
+            <a href="https://gen8x.com">Gen8X &mdash; Color Tools</a>
+            <a href="https://gpt0x.com">GPT0X &mdash; AI Models</a>
+            <a href="https://heytensor.com">HeyTensor &mdash; ML Tools</a>
+            <a href="https://invokebot.com">InvokeBot &mdash; Webhooks</a>
+            <a href="https://kappafy.com">Kappafy &mdash; JSON</a>
+            <a href="https://kappakit.com">KappaKit &mdash; Dev Toolkit</a>
+            <a href="https://kickllm.com">KickLLM &mdash; LLM Costs</a>
+            <a href="https://krzen.com">Krzen &mdash; Image Tools</a>
+            <a href="https://lochbot.com">LochBot &mdash; Security</a>
+            <a href="https://lockml.com">LockML &mdash; ML Compare</a>
+        </div>
+    </div>
+</nav>
+
+<script>
+(function(){
+  const EPS=1e-10;
+  let DIM=2;
+
+  function setDim(d){
+    DIM=d;
+    document.getElementById('btn-2d').style.background=d===2?'var(--accent,#EC4899)':'var(--bg-secondary,#1a1a2e)';
+    document.getElementById('btn-2d').style.color=d===2?'#fff':'var(--text,#e0e0e0)';
+    document.getElementById('btn-3d').style.background=d===3?'var(--accent,#EC4899)':'var(--bg-secondary,#1a1a2e)';
+    document.getElementById('btn-3d').style.color=d===3?'#fff':'var(--text,#e0e0e0)';
+    buildInputs();
+  }
+  window.setDim=setDim;
+
+  const labels=['x','y','z'];
+  function buildInputs(){
+    ['a','b'].forEach(v=>{
+      const c=document.getElementById('vec-'+v+'-inputs');
+      let h='';
+      for(let i=0;i<DIM;i++){
+        h+='<div style="text-align:center;"><label style="font-size:0.8rem;color:var(--text-muted,#999);">'+labels[i]+'</label><br><input type="number" id="'+v+i+'" value="0" style="width:60px;padding:6px;text-align:center;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:4px;font-size:1rem;"></div>';
+      }
+      c.innerHTML=h;
+    });
+    document.getElementById('output').style.display='none';
+  }
+
+  function getVec(name){
+    const v=[];
+    for(let i=0;i<DIM;i++) v.push(parseFloat(document.getElementById(name+i).value)||0);
+    return v;
+  }
+
+  function loadExample(){
+    if(DIM===2){
+      [3,1].forEach((v,i)=>document.getElementById('a'+i).value=v);
+      [1,4].forEach((v,i)=>document.getElementById('b'+i).value=v);
+    } else {
+      [2,3,1].forEach((v,i)=>document.getElementById('a'+i).value=v);
+      [1,-1,4].forEach((v,i)=>document.getElementById('b'+i).value=v);
+    }
+  }
+  window.loadExample=loadExample;
+
+  function randomVectors(){
+    for(let i=0;i<DIM;i++){
+      document.getElementById('a'+i).value=Math.floor(Math.random()*11)-5;
+      document.getElementById('b'+i).value=Math.floor(Math.random()*11)-5;
+    }
+  }
+  window.randomVectors=randomVectors;
+
+  function clearAll(){
+    for(let i=0;i<DIM;i++){document.getElementById('a'+i).value=0;document.getElementById('b'+i).value=0;}
+    document.getElementById('output').style.display='none';
+  }
+  window.clearAll=clearAll;
+
+  function fmt(x){if(Math.abs(x)<EPS)return'0';if(Math.abs(x-Math.round(x))<EPS)return String(Math.round(x));return x.toFixed(4).replace(/0+$/,'').replace(/\.$/,'');}
+  function vecStr(v){return'('+v.map(fmt).join(', ')+')';}
+  function mag(v){return Math.sqrt(v.reduce((s,x)=>s+x*x,0));}
+  function dot(a,b){let s=0;for(let i=0;i<a.length;i++)s+=a[i]*b[i];return s;}
+  function cross3(a,b){return[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];}
+  function cross2(a,b){return a[0]*b[1]-a[1]*b[0];}
+  function unitVec(v){const m=mag(v);return m>EPS?v.map(x=>x/m):v;}
+  function scaleVec(v,s){return v.map(x=>x*s);}
+
+  function compute(){
+    const a=getVec('a'),b=getVec('b');
+    const magA=mag(a),magB=mag(b);
+    const steps=[];
+
+    steps.push('=== INPUT VECTORS ===');
+    steps.push('a = '+vecStr(a));
+    steps.push('b = '+vecStr(b));
+    steps.push('');
+
+    // Magnitudes
+    steps.push('=== MAGNITUDES ===');
+    steps.push('|a| = sqrt('+a.map(x=>fmt(x)+'\u00b2').join(' + ')+') = sqrt('+fmt(a.reduce((s,x)=>s+x*x,0))+') = '+fmt(magA));
+    steps.push('|b| = sqrt('+b.map(x=>fmt(x)+'\u00b2').join(' + ')+') = sqrt('+fmt(b.reduce((s,x)=>s+x*x,0))+') = '+fmt(magB));
+    steps.push('');
+
+    // Unit vectors
+    steps.push('=== UNIT VECTORS ===');
+    const uA=unitVec(a),uB=unitVec(b);
+    if(magA>EPS) steps.push('\u00e2 = a / |a| = '+vecStr(uA));
+    else steps.push('\u00e2 = undefined (zero vector)');
+    if(magB>EPS) steps.push('b\u0302 = b / |b| = '+vecStr(uB));
+    else steps.push('b\u0302 = undefined (zero vector)');
+    steps.push('');
+
+    // Dot product
+    steps.push('=== DOT PRODUCT ===');
+    const d=dot(a,b);
+    steps.push('a \u00b7 b = '+a.map((v,i)=>fmt(v)+'\u00b7'+fmt(b[i])).join(' + ')+' = '+fmt(d));
+    steps.push('');
+
+    // Angle
+    let angleDeg=0,angleRad=0;
+    steps.push('=== ANGLE BETWEEN VECTORS ===');
+    if(magA>EPS&&magB>EPS){
+      let cosTheta=d/(magA*magB);
+      cosTheta=Math.max(-1,Math.min(1,cosTheta));
+      angleRad=Math.acos(cosTheta);
+      angleDeg=angleRad*180/Math.PI;
+      steps.push('cos(\u03b8) = (a \u00b7 b) / (|a| |b|) = '+fmt(d)+' / ('+fmt(magA)+' \u00d7 '+fmt(magB)+') = '+fmt(cosTheta));
+      steps.push('\u03b8 = arccos('+fmt(cosTheta)+') = '+fmt(angleRad)+' rad = '+fmt(angleDeg)+'\u00b0');
+    } else {
+      steps.push('Angle undefined (one or both vectors are zero).');
+    }
+    steps.push('');
+
+    // Scalar and vector projection
+    steps.push('=== PROJECTION OF a ONTO b ===');
+    let scalarProj=0,vecProj=null;
+    if(magB>EPS){
+      scalarProj=d/magB;
+      const factor=d/dot(b,b);
+      vecProj=scaleVec(b,factor);
+      steps.push('Scalar projection = (a \u00b7 b) / |b| = '+fmt(d)+' / '+fmt(magB)+' = '+fmt(scalarProj));
+      steps.push('Vector projection = ((a \u00b7 b) / (b \u00b7 b)) b = ('+fmt(d)+' / '+fmt(dot(b,b))+') \u00d7 '+vecStr(b)+' = '+vecStr(vecProj));
+    } else {
+      steps.push('Projection undefined (b is zero vector).');
+    }
+    steps.push('');
+
+    steps.push('=== PROJECTION OF b ONTO a ===');
+    if(magA>EPS){
+      const sp2=d/magA;
+      const factor2=d/dot(a,a);
+      const vp2=scaleVec(a,factor2);
+      steps.push('Scalar projection = (a \u00b7 b) / |a| = '+fmt(d)+' / '+fmt(magA)+' = '+fmt(sp2));
+      steps.push('Vector projection = ((a \u00b7 b) / (a \u00b7 a)) a = '+vecStr(vp2));
+    } else {
+      steps.push('Projection undefined (a is zero vector).');
+    }
+    steps.push('');
+
+    // Cross product
+    let crossResult=null;
+    if(DIM===3){
+      steps.push('=== CROSS PRODUCT ===');
+      crossResult=cross3(a,b);
+      steps.push('a \u00d7 b = ('+fmt(a[1])+'\u00b7'+fmt(b[2])+' - '+fmt(a[2])+'\u00b7'+fmt(b[1])+', '+fmt(a[2])+'\u00b7'+fmt(b[0])+' - '+fmt(a[0])+'\u00b7'+fmt(b[2])+', '+fmt(a[0])+'\u00b7'+fmt(b[1])+' - '+fmt(a[1])+'\u00b7'+fmt(b[0])+')');
+      steps.push('a \u00d7 b = '+vecStr(crossResult));
+      const crossMag=mag(crossResult);
+      steps.push('|a \u00d7 b| = '+fmt(crossMag)+' (area of parallelogram)');
+      steps.push('Area of triangle = '+fmt(crossMag/2));
+      steps.push('');
+      // Direction check
+      if(crossMag>EPS){
+        const crossUnit=unitVec(crossResult);
+        steps.push('Direction (unit): '+vecStr(crossUnit));
+        steps.push('Verify perpendicular to a: (a \u00d7 b) \u00b7 a = '+fmt(dot(crossResult,a)));
+        steps.push('Verify perpendicular to b: (a \u00d7 b) \u00b7 b = '+fmt(dot(crossResult,b)));
+      }
+      steps.push('');
+    } else {
+      steps.push('=== 2D CROSS PRODUCT (SCALAR) ===');
+      const c2=cross2(a,b);
+      steps.push('a \u00d7 b = '+fmt(a[0])+'\u00b7'+fmt(b[1])+' - '+fmt(a[1])+'\u00b7'+fmt(b[0])+' = '+fmt(c2));
+      steps.push('|a \u00d7 b| = '+fmt(Math.abs(c2))+' (area of parallelogram)');
+      steps.push('Sign: '+(c2>EPS?'b is counterclockwise from a':c2<-EPS?'b is clockwise from a':'vectors are parallel'));
+      steps.push('');
+    }
+
+    // Geometric interpretation
+    steps.push('=== GEOMETRIC INTERPRETATION ===');
+    if(magA<EPS||magB<EPS){steps.push('One or both vectors are zero. No geometric relationship.');}
+    else if(Math.abs(d)<EPS){steps.push('Dot product = 0 \u2192 Vectors are PERPENDICULAR (orthogonal).');}
+    else if(Math.abs(angleDeg)<0.01){steps.push('Angle \u2248 0\u00b0 \u2192 Vectors are PARALLEL (same direction).');}
+    else if(Math.abs(angleDeg-180)<0.01){steps.push('Angle \u2248 180\u00b0 \u2192 Vectors are ANTI-PARALLEL (opposite direction).');}
+    else if(angleDeg<90){steps.push('Dot product > 0, angle < 90\u00b0 \u2192 Vectors point in SIMILAR directions.');}
+    else{steps.push('Dot product < 0, angle > 90\u00b0 \u2192 Vectors point in OPPOSING directions.');}
+
+    document.getElementById('output').style.display='block';
+    document.getElementById('steps-output').textContent=steps.join('\n');
+
+    // Visualization
+    drawViz(a,b,vecProj,angleDeg,angleRad);
+
+    // Interpretation box
+    let interpHtml='<h3 style="margin-top:0;">Geometric Interpretation</h3>';
+    interpHtml+='<p><strong>Dot product a &middot; b = '+fmt(d)+'</strong> &mdash; ';
+    if(magA<EPS||magB<EPS) interpHtml+='undefined relationship (zero vector).';
+    else if(Math.abs(d)<EPS) interpHtml+='the vectors are exactly perpendicular. The projection of one onto the other is zero, meaning they share no directional component.';
+    else if(d>0) interpHtml+='positive, meaning the vectors have an acute angle ('+fmt(angleDeg)+'&deg;) between them. They partially point in the same direction.';
+    else interpHtml+='negative, meaning the vectors have an obtuse angle ('+fmt(angleDeg)+'&deg;) between them. They partially point in opposite directions.';
+    interpHtml+='</p>';
+    if(vecProj){
+      interpHtml+='<p><strong>Projection of a onto b</strong>: the component of a in the direction of b has length '+fmt(Math.abs(scalarProj))+'. ';
+      if(scalarProj>EPS) interpHtml+='It points in the same direction as b.';
+      else if(scalarProj<-EPS) interpHtml+='It points opposite to b.';
+      else interpHtml+='It is zero (a is perpendicular to b).';
+      interpHtml+='</p>';
+    }
+    if(DIM===3&&crossResult){
+      const cm=mag(crossResult);
+      interpHtml+='<p><strong>Cross product</strong>: the perpendicular vector '+vecStr(crossResult)+' has magnitude '+fmt(cm)+', which is the area of the parallelogram spanned by a and b. The triangle area is '+fmt(cm/2)+'.</p>';
+    }
+    document.getElementById('interp-box').innerHTML=interpHtml;
+
+    // Summary table
+    let sumHtml='<h3 style="margin-top:0;">Results Summary</h3><table style="width:100%;border-collapse:collapse;">';
+    sumHtml+='<tr style="border-bottom:1px solid var(--border,#333);"><th style="text-align:left;padding:8px;">Quantity</th><th style="text-align:left;padding:8px;">Value</th></tr>';
+    const rows=[
+      ['a',vecStr(a)],['b',vecStr(b)],['|a|',fmt(magA)],['|b|',fmt(magB)],
+      ['Unit a',magA>EPS?vecStr(uA):'undefined'],['Unit b',magB>EPS?vecStr(uB):'undefined'],
+      ['a &middot; b',fmt(d)],['Angle',fmt(angleDeg)+'&deg; ('+fmt(angleRad)+' rad)'],
+      ['Scalar proj a&rarr;b',fmt(scalarProj)],['Vector proj a&rarr;b',vecProj?vecStr(vecProj):'undefined']
+    ];
+    if(DIM===3&&crossResult){rows.push(['a &times; b',vecStr(crossResult)]);rows.push(['|a &times; b|',fmt(mag(crossResult))]);}
+    if(DIM===2){rows.push(['2D cross (scalar)',fmt(cross2(a,b))]);}
+    for(const[k,v]of rows) sumHtml+='<tr style="border-bottom:1px solid var(--border,#222);"><td style="padding:8px;">'+k+'</td><td style="padding:8px;font-family:monospace;">'+v+'</td></tr>';
+    sumHtml+='</table>';
+    document.getElementById('summary-box').innerHTML=sumHtml;
+  }
+  window.compute=compute;
+
+  function drawViz(a,b,vecProj,angleDeg,angleRad){
+    const W=500,H=500,cx=W/2,cy=H/2;
+    // Use first 2 components for visualization
+    const a2=[a[0],a[1]||0],b2=[b[0],b[1]||0];
+    let maxR=Math.max(1,Math.abs(a2[0]),Math.abs(a2[1]),Math.abs(b2[0]),Math.abs(b2[1]));
+    if(vecProj) maxR=Math.max(maxR,Math.abs(vecProj[0]),Math.abs(vecProj[1]||0));
+    maxR*=1.4;
+    const scale=(W/2-50)/maxR;
+
+    let svg='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" style="max-width:100%;background:var(--bg-secondary,#111);border-radius:10px;border:1px solid var(--border,#333);">';
+
+    // Grid
+    const step=Math.pow(10,Math.floor(Math.log10(maxR)));
+    for(let i=-Math.ceil(maxR/step);i<=Math.ceil(maxR/step);i++){
+      const gx=cx+i*step*scale,gy=cy-i*step*scale;
+      svg+='<line x1="'+gx+'" y1="0" x2="'+gx+'" y2="'+H+'" stroke="#333" stroke-width="0.5"/>';
+      svg+='<line x1="0" y1="'+gy+'" x2="'+W+'" y2="'+gy+'" stroke="#333" stroke-width="0.5"/>';
+    }
+
+    // Axes
+    svg+='<line x1="0" y1="'+cy+'" x2="'+W+'" y2="'+cy+'" stroke="#666" stroke-width="1.5"/>';
+    svg+='<line x1="'+cx+'" y1="0" x2="'+cx+'" y2="'+H+'" stroke="#666" stroke-width="1.5"/>';
+    svg+='<text x="'+(W-15)+'" y="'+(cy-8)+'" fill="#888" font-size="12">x</text>';
+    svg+='<text x="'+(cx+8)+'" y="15" fill="#888" font-size="12">y</text>';
+
+    // Defs
+    svg+='<defs>';
+    svg+='<marker id="arrA" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#EC4899"/></marker>';
+    svg+='<marker id="arrB" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#3B82F6"/></marker>';
+    svg+='<marker id="arrP" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#10B981"/></marker>';
+    svg+='</defs>';
+
+    const ax=cx+a2[0]*scale,ay=cy-a2[1]*scale;
+    const bx=cx+b2[0]*scale,by=cy-b2[1]*scale;
+
+    // Projection line and right angle marker
+    if(vecProj){
+      const px=cx+vecProj[0]*scale,py=cy-(vecProj[1]||0)*scale;
+      // Dashed line from a to projection point
+      svg+='<line x1="'+ax+'" y1="'+ay+'" x2="'+px+'" y2="'+py+'" stroke="#F59E0B" stroke-width="1.5" stroke-dasharray="5,4" opacity="0.7"/>';
+      // Projection vector
+      svg+='<line x1="'+cx+'" y1="'+cy+'" x2="'+px+'" y2="'+py+'" stroke="#10B981" stroke-width="2.5" marker-end="url(#arrP)"/>';
+      svg+='<text x="'+(px+8)+'" y="'+(py+16)+'" fill="#10B981" font-size="11">proj</text>';
+      // Right angle marker
+      const perpLen=12;
+      const bDir=mag(b2)>EPS?unitVec(b2):[1,0];
+      const perpDir=[-bDir[1],bDir[0]];
+      const rx1=px-bDir[0]*perpLen,ry1=py+bDir[1]*perpLen;
+      const rx2=rx1+perpDir[0]*perpLen,ry2=ry1-perpDir[1]*perpLen;
+      const rx3=px+perpDir[0]*perpLen,ry3=py-perpDir[1]*perpLen;
+      svg+='<polyline points="'+rx1+','+ry1+' '+rx2+','+ry2+' '+rx3+','+ry3+'" fill="none" stroke="#F59E0B" stroke-width="1.2" opacity="0.7"/>';
+    }
+
+    // Angle arc
+    if(mag(a2)>EPS&&mag(b2)>EPS&&angleDeg>0.5&&angleDeg<179.5){
+      const arcR=35;
+      const angA=Math.atan2(a2[1],a2[0]);
+      const angB=Math.atan2(b2[1],b2[0]);
+      // Draw arc from angB to angA (shorter path)
+      let startAng=angB,endAng=angA;
+      let diff=endAng-startAng;
+      while(diff>Math.PI)diff-=2*Math.PI;
+      while(diff<-Math.PI)diff+=2*Math.PI;
+      const sweepFlag=diff>0?0:1;
+      const arcX1=cx+arcR*Math.cos(startAng),arcY1=cy-arcR*Math.sin(startAng);
+      const arcX2=cx+arcR*Math.cos(endAng),arcY2=cy-arcR*Math.sin(endAng);
+      const largeArc=Math.abs(diff)>Math.PI?1:0;
+      svg+='<path d="M'+arcX1+','+arcY1+' A'+arcR+','+arcR+' 0 '+largeArc+','+sweepFlag+' '+arcX2+','+arcY2+'" fill="none" stroke="#F59E0B" stroke-width="2"/>';
+      // Angle label
+      const midAng=startAng+diff/2;
+      const lx=cx+(arcR+16)*Math.cos(midAng),ly=cy-(arcR+16)*Math.sin(midAng);
+      svg+='<text x="'+lx+'" y="'+ly+'" fill="#F59E0B" font-size="12" text-anchor="middle" font-weight="bold">'+fmt(angleDeg)+'\u00b0</text>';
+    }
+
+    // Vector a
+    svg+='<line x1="'+cx+'" y1="'+cy+'" x2="'+ax+'" y2="'+ay+'" stroke="#EC4899" stroke-width="3" marker-end="url(#arrA)"/>';
+    svg+='<text x="'+(ax+10)+'" y="'+(ay-8)+'" fill="#EC4899" font-size="13" font-weight="bold">a '+vecStr(a2)+'</text>';
+
+    // Vector b
+    svg+='<line x1="'+cx+'" y1="'+cy+'" x2="'+bx+'" y2="'+by+'" stroke="#3B82F6" stroke-width="3" marker-end="url(#arrB)"/>';
+    svg+='<text x="'+(bx+10)+'" y="'+(by-8)+'" fill="#3B82F6" font-size="13" font-weight="bold">b '+vecStr(b2)+'</text>';
+
+    // Legend
+    svg+='<rect x="10" y="'+(H-70)+'" width="210" height="62" rx="6" fill="rgba(0,0,0,0.6)"/>';
+    svg+='<text x="18" y="'+(H-52)+'" fill="#EC4899" font-size="11">Pink = vector a</text>';
+    svg+='<text x="18" y="'+(H-38)+'" fill="#3B82F6" font-size="11">Blue = vector b</text>';
+    svg+='<text x="18" y="'+(H-24)+'" fill="#10B981" font-size="11">Green = projection of a onto b</text>';
+    svg+='<text x="18" y="'+(H-10)+'" fill="#F59E0B" font-size="11">Yellow = angle arc + error line</text>';
+
+    if(DIM===3){
+      svg+='<text x="'+(W/2)+'" y="'+(H-5)+'" fill="#888" font-size="10" text-anchor="middle">3D vectors shown projected onto x-y plane</text>';
+    }
+
+    svg+='</svg>';
+    document.getElementById('viz-container').innerHTML=svg;
+  }
+
+  // Init
+  buildInputs();
+})();
+</script>
+</body>
+</html>

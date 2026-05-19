@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matrix Decomposition Calculator &mdash; LU, QR, SVD Step-by-Step | ML3X</title>
+<meta name="description" content="Decompose matrices into LU (with partial pivoting), QR (Gram-Schmidt), and SVD factors. Step-by-step computation with color-coded intermediate matrices. Free browser tool.">
+<meta name="keywords" content="matrix decomposition, LU decomposition, QR decomposition, SVD, singular value decomposition, Gram-Schmidt, partial pivoting, matrix factorization">
+<link rel="canonical" href="https://ml3x.com/tools/matrix-decomposition.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Matrix Decomposition Calculator &mdash; LU, QR, SVD Step-by-Step | ML3X">
+<meta property="og:description" content="Decompose matrices into LU, QR, and SVD factors with step-by-step computation and color-coded intermediate matrices.">
+<meta property="og:url" content="https://ml3x.com/tools/matrix-decomposition.html">
+<meta property="og:site_name" content="Zovo Tools">
+<meta property="og:image" content="https://ml3x.com/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Matrix Decomposition Calculator &mdash; LU, QR, SVD Step-by-Step | ML3X">
+<meta name="twitter:description" content="Decompose matrices into LU, QR, and SVD factors with step-by-step computation.">
+<meta name="twitter:image" content="https://ml3x.com/assets/og-image.png">
+<link rel="stylesheet" href="/assets/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Matrix Decomposition Calculator — ML3X",
+  "url": "https://ml3x.com/tools/matrix-decomposition.html",
+  "description": "Decompose matrices into LU (with partial pivoting), QR (Gram-Schmidt), and SVD factors. Step-by-step computation with color-coded intermediate matrices.",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Michael Lip",
+    "url": "https://zovo.one"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "ML3X",
+    "url": "https://ml3x.com"
+  },
+  "datePublished": "2026-05-25",
+  "dateModified": "2026-05-25",
+  "featureList": ["LU Decomposition with Partial Pivoting", "QR Decomposition via Gram-Schmidt", "Singular Value Decomposition (SVD)", "Step-by-step intermediate matrices", "Color-coded factor display"]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is LU decomposition and when is it used?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "LU decomposition factors a square matrix A into a lower triangular matrix L and an upper triangular matrix U such that A = LU (or PA = LU with partial pivoting, where P is a permutation matrix). It is used to solve systems of linear equations efficiently: once you have L and U, solving Ax = b reduces to two triangular systems (Ly = b, then Ux = y) each solvable by simple substitution. LU is also used to compute determinants (product of diagonal entries of U) and matrix inverses."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is QR decomposition and how does Gram-Schmidt work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "QR decomposition factors a matrix A into an orthogonal matrix Q (whose columns are orthonormal) and an upper triangular matrix R, such that A = QR. The Gram-Schmidt process constructs Q by orthogonalizing the columns of A one at a time: take each column, subtract its projections onto all previously computed orthonormal vectors, and normalize the result. QR decomposition is fundamental to the QR algorithm for computing eigenvalues, and is used in least-squares regression to solve overdetermined systems."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What does SVD (Singular Value Decomposition) tell you about a matrix?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "SVD decomposes any matrix A (not necessarily square) into A = U * Sigma * V^T, where U and V are orthogonal matrices and Sigma is a diagonal matrix of singular values. The singular values reveal the matrix's rank (number of non-zero singular values), condition number (ratio of largest to smallest singular value), and the best low-rank approximation (truncated SVD). SVD is the mathematical backbone of image compression, latent semantic analysis, recommender systems, and pseudoinverse computation."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why does LU decomposition need partial pivoting?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Without pivoting, LU decomposition fails when a zero appears on the diagonal during elimination, and produces numerically unstable results when a very small pivot is used. Partial pivoting swaps rows to place the largest available entry on the diagonal at each step, improving numerical stability. The result is PA = LU where P is a permutation matrix recording the row swaps. In practice, all numerical libraries use partial pivoting by default."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do you verify a matrix decomposition is correct?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Multiply the factors back together and check that you recover the original matrix (within floating-point tolerance). For LU: compute L * U and compare with P * A. For QR: compute Q * R and compare with A, and also verify Q^T * Q = I (orthogonality). For SVD: compute U * Sigma * V^T and compare with A. This tool performs verification automatically and displays the reconstruction error."
+      }
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://ml3x.com/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://ml3x.com/tools/"},{"@type":"ListItem","position":3,"name":"Matrix Decomposition"}]}</script>
+</head>
+<body>
+<header class="site-header">
+  <a href="/" class="site-logo">ML3X</a>
+  <nav class="site-nav">
+    <a href="/">Calculator</a>
+    <a href="/tools/">Tools</a>
+    <a href="/guides/">Guides</a>
+    <a href="/answers/">Answers</a>
+    <a href="/blog/">Blog</a>
+      <div class="nav-right">
+      <a href="https://zovo.one/pricing?utm_source=ml3x.com&amp;utm_medium=satellite&amp;utm_campaign=nav-link" class="nav-pro" target="_blank">Go Pro &#10022;</a>
+      <a href="https://zovo.one/tools" class="nav-zovo">Zovo Tools</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="hero">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a> &raquo; <a href="/tools/">Tools</a> &raquo; <span>Matrix Decomposition</span>
+    </nav>
+    <h1>Matrix Decomposition Calculator</h1>
+    <p>Decompose matrices into LU (partial pivoting), QR (Gram-Schmidt), or SVD factors. Step-by-step computation with color-coded intermediate matrices for every elimination and orthogonalization step.</p>
+  </div>
+
+  <!-- Tool -->
+  <section style="max-width:860px;margin:2rem auto;padding:0 1rem;">
+    <div style="display:flex;gap:0.8rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap;">
+      <label><strong>Size:</strong></label>
+      <select id="sel-rows" onchange="rebuildInput()" style="padding:5px 10px;background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border:1px solid var(--border,#444);border-radius:4px;">
+        <option value="2">2 rows</option><option value="3" selected>3 rows</option><option value="4">4 rows</option>
+      </select>
+      <span>&times;</span>
+      <select id="sel-cols" onchange="rebuildInput()" style="padding:5px 10px;background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border:1px solid var(--border,#444);border-radius:4px;">
+        <option value="2">2 cols</option><option value="3" selected>3 cols</option><option value="4">4 cols</option>
+      </select>
+      <button onclick="fillRandom()" style="padding:5px 12px;background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border:1px solid var(--border,#444);border-radius:4px;cursor:pointer;">Random</button>
+      <button onclick="fillExample()" style="padding:5px 12px;background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border:1px solid var(--border,#444);border-radius:4px;cursor:pointer;">Example</button>
+      <button onclick="clearInput()" style="padding:5px 12px;background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border:1px solid var(--border,#444);border-radius:4px;cursor:pointer;">Clear</button>
+    </div>
+
+    <div id="matrix-grid" style="display:flex;justify-content:center;margin-bottom:1.5rem;"></div>
+
+    <div style="display:flex;gap:0.8rem;justify-content:center;margin-bottom:1.5rem;flex-wrap:wrap;">
+      <label><strong>Decomposition:</strong></label>
+      <button id="btn-lu" class="dec-btn" onclick="setDecomp('lu')" style="padding:6px 18px;background:var(--accent,#EC4899);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;">LU</button>
+      <button id="btn-qr" class="dec-btn" onclick="setDecomp('qr')" style="padding:6px 18px;background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border:1px solid var(--border,#444);border-radius:6px;cursor:pointer;font-weight:600;">QR</button>
+      <button id="btn-svd" class="dec-btn" onclick="setDecomp('svd')" style="padding:6px 18px;background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border:1px solid var(--border,#444);border-radius:6px;cursor:pointer;font-weight:600;">SVD</button>
+    </div>
+
+    <div style="text-align:center;margin-bottom:2rem;">
+      <button onclick="decompose()" style="padding:0.7rem 2.5rem;font-size:1rem;background:var(--accent,#EC4899);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;">Decompose</button>
+    </div>
+
+    <div id="output" style="display:none;">
+      <div id="steps-box" style="background:var(--bg-secondary,#1a1a2e);border:1px solid var(--border,#333);border-radius:10px;padding:1.5rem;margin-bottom:2rem;line-height:1.8;font-family:monospace;font-size:0.9rem;white-space:pre-wrap;overflow-x:auto;"></div>
+      <div id="factors-box" style="margin-bottom:2rem;"></div>
+      <div id="verify-box" style="background:var(--bg-secondary,#1a1a2e);border:1px solid var(--border,#333);border-radius:10px;padding:1rem;margin-bottom:2rem;font-family:monospace;font-size:0.9rem;"></div>
+    </div>
+  </section>
+
+  <div class="last-updated"><time datetime="2026-05-25">Last updated: May 25, 2026</time></div>
+
+  <!-- Expert Content -->
+  <section style="max-width:720px;margin:2rem auto;line-height:1.7;padding:0 1rem;">
+    <h2>Matrix Decomposition: Factoring Matrices for Computation</h2>
+    <p>Matrix decomposition (also called matrix factorization) is the process of breaking a matrix into a product of simpler matrices that reveal its structure and make computations more efficient. Just as integer factorization (60 = 2 &times; 2 &times; 3 &times; 5) reveals the prime building blocks of a number, matrix decomposition reveals the fundamental components of a linear transformation. The three most important decompositions in applied linear algebra are LU, QR, and SVD, each optimized for different classes of problems.</p>
+
+    <h3>LU Decomposition with Partial Pivoting</h3>
+    <p>LU decomposition factors a square matrix A into a lower triangular matrix L (with ones on the diagonal) and an upper triangular matrix U, such that PA = LU where P is a permutation matrix that records row swaps during elimination. The decomposition is essentially a formalized version of Gaussian elimination: U is the row echelon form of A, and L stores the multipliers used during elimination.</p>
+
+    <p>The computational advantage of LU decomposition becomes clear when solving multiple systems with the same coefficient matrix. Given Ax = b, you first decompose A = LU (which costs O(n&sup3;/3) operations), then for each new right-hand side b, you solve Ly = Pb by forward substitution and Ux = y by back substitution (each costing only O(n&sup2;)). Without LU, each new right-hand side would require a full O(n&sup3;) elimination. This makes LU decomposition the standard method in numerical libraries for solving linear systems, computing determinants (det(A) = product of diagonal entries of U, with a sign flip for each row swap), and computing matrix inverses.</p>
+
+    <p>Partial pivoting selects the row with the largest absolute value in the current column as the pivot row, swapping it into position before elimination. This prevents division by zero and minimizes the growth of rounding errors. Without pivoting, even a well-conditioned matrix can produce catastrophically inaccurate results due to floating-point arithmetic. The permutation matrix P records these row swaps so that the factorization PA = LU remains exact.</p>
+
+    <h3>QR Decomposition via Gram-Schmidt Orthogonalization</h3>
+    <p>QR decomposition factors a matrix A (which can be rectangular) into an orthogonal matrix Q (whose columns are orthonormal: Q<sup>T</sup>Q = I) and an upper triangular matrix R, such that A = QR. The classical Gram-Schmidt process constructs Q column by column: take each column of A, subtract its projection onto all previously computed orthonormal vectors, and normalize the result. The entries of R are the projection coefficients and the norms of the intermediate vectors.</p>
+
+    <p>QR decomposition is the computational engine behind the QR algorithm, the standard method for computing all eigenvalues of a matrix. The QR algorithm repeatedly computes A<sub>k</sub> = Q<sub>k</sub>R<sub>k</sub> and forms A<sub>k+1</sub> = R<sub>k</sub>Q<sub>k</sub>, which converges to an upper triangular matrix whose diagonal entries are the eigenvalues. QR decomposition is also the preferred method for solving least-squares problems (minimizing ||Ax - b||) because it is numerically more stable than the normal equations approach (A<sup>T</sup>Ax = A<sup>T</sup>b), which squares the condition number.</p>
+
+    <p>The modified Gram-Schmidt process, which this calculator uses, reorthogonalizes against each new column immediately rather than against the original columns. This produces the same result in exact arithmetic but is significantly more stable in floating-point computation, reducing the loss of orthogonality that plagues classical Gram-Schmidt on ill-conditioned matrices.</p>
+
+    <h3>Singular Value Decomposition (SVD)</h3>
+    <p>SVD decomposes any m&times;n matrix A into the product A = U&Sigma;V<sup>T</sup>, where U is an m&times;m orthogonal matrix (left singular vectors), &Sigma; is an m&times;n diagonal matrix of non-negative singular values &sigma;<sub>1</sub> &ge; &sigma;<sub>2</sub> &ge; ... &ge; 0, and V is an n&times;n orthogonal matrix (right singular vectors). SVD exists for every matrix, regardless of shape or rank, making it the most general and powerful decomposition in linear algebra.</p>
+
+    <p>The singular values reveal critical information about the matrix. The rank equals the number of non-zero singular values. The condition number &sigma;<sub>max</sub>/&sigma;<sub>min</sub> measures how sensitive the solution of Ax = b is to perturbations in A or b. The Eckart-Young theorem proves that the best rank-k approximation to A (in both the Frobenius and spectral norms) is obtained by keeping only the k largest singular values and setting the rest to zero. This truncated SVD is the mathematical foundation of image compression (keeping the top singular values captures the image structure while discarding noise), latent semantic analysis (reducing a term-document matrix to its most significant dimensions), and recommender systems (Netflix Prize, where truncated SVD predicts user-movie ratings).</p>
+
+    <p>The singular values of A are related to the eigenvalues of A<sup>T</sup>A: &sigma;<sub>i</sub> = sqrt(&lambda;<sub>i</sub>(A<sup>T</sup>A)). The right singular vectors (columns of V) are the eigenvectors of A<sup>T</sup>A, and the left singular vectors (columns of U) are the eigenvectors of AA<sup>T</sup>. This calculator computes SVD through this eigenvalue relationship for small matrices, displaying each intermediate step.</p>
+
+    <h2>Choosing the Right Decomposition</h2>
+    <p>Use LU decomposition when you need to solve square linear systems Ax = b, especially when solving multiple systems with the same A but different b vectors. LU is also the fastest way to compute determinants and inverses. Use QR decomposition for least-squares problems, eigenvalue computation via the QR algorithm, and when numerical stability is paramount (QR preserves orthogonality better than LU for ill-conditioned matrices). Use SVD when you need to analyze the rank, condition number, or low-rank structure of a matrix, for pseudoinverse computation (Moore-Penrose inverse), or for dimensionality reduction in data analysis.</p>
+
+    <p>In terms of computational cost, all three decompositions are O(n&sup3;) for an n&times;n matrix. LU requires approximately n&sup3;/3 floating-point operations, QR requires approximately 2n&sup3;/3 (twice as expensive as LU), and SVD requires approximately 4n&sup3;/3 (four times as expensive as LU for the full decomposition). For this reason, production code uses the cheapest decomposition that solves the problem: LU for general systems, QR for least-squares, and SVD only when its specific properties are needed.</p>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="faq-section" style="max-width:720px;margin:2rem auto;">
+    <h2>Frequently Asked Questions</h2>
+    <details>
+      <summary>What is LU decomposition and when is it used?</summary>
+      <p>LU decomposition factors a square matrix A into a lower triangular matrix L and an upper triangular matrix U such that A = LU (or PA = LU with partial pivoting). It is used to solve systems of linear equations efficiently, compute determinants, and find matrix inverses. Once you have L and U, solving Ax = b reduces to two easy triangular systems.</p>
+    </details>
+    <details>
+      <summary>What is QR decomposition and how does Gram-Schmidt work?</summary>
+      <p>QR decomposition factors a matrix A into an orthogonal matrix Q and an upper triangular matrix R. The Gram-Schmidt process constructs Q by orthogonalizing the columns of A one at a time: subtract projections onto previously computed orthonormal vectors and normalize. QR is fundamental to eigenvalue computation and least-squares regression.</p>
+    </details>
+    <details>
+      <summary>What does SVD tell you about a matrix?</summary>
+      <p>SVD decomposes any matrix into A = U&Sigma;V<sup>T</sup>. The singular values reveal the rank, condition number, and best low-rank approximation. SVD is the backbone of image compression, latent semantic analysis, recommender systems, and pseudoinverse computation.</p>
+    </details>
+    <details>
+      <summary>Why does LU decomposition need partial pivoting?</summary>
+      <p>Without pivoting, LU decomposition fails on zero diagonal entries and produces numerically unstable results with very small pivots. Partial pivoting swaps rows to place the largest entry on the diagonal at each step, preventing division by zero and minimizing rounding errors. All numerical libraries use it by default.</p>
+    </details>
+    <details>
+      <summary>How do you verify a matrix decomposition is correct?</summary>
+      <p>Multiply the factors back together and compare with the original matrix. For LU: check L&times;U = P&times;A. For QR: check Q&times;R = A and Q<sup>T</sup>&times;Q = I. For SVD: check U&times;&Sigma;&times;V<sup>T</sup> = A. This tool performs verification automatically and displays the reconstruction error.</p>
+    </details>
+  </section>
+
+  <section style="max-width:720px;margin:2rem auto;padding:0 1rem;">
+    <h2>Related Tools</h2>
+    <ul>
+      <li><a href="/tools/eigenvector-step-solver.html">Eigenvector Step Solver</a> &mdash; step-by-step eigenvalue and eigenvector computation with visualization</li>
+      <li><a href="/tools/eigenvalue-calculator.html">Eigenvalue Calculator</a> &mdash; eigenvalues via characteristic polynomial for matrices up to 5&times;5</li>
+      <li><a href="/tools/inverse-matrix.html">Inverse Matrix Calculator</a> &mdash; matrix inverse via the adjugate method</li>
+      <li><a href="/answers/linear-algebra-cheatsheet.html">Linear Algebra Cheatsheet</a> &mdash; searchable formula reference with mini-calculators</li>
+    </ul>
+  </section>
+
+  <section style="max-width:720px;margin:2rem auto;padding:0 1rem;">
+    <p style="font-size:0.9rem;color:var(--text-muted);">Built by <a href="https://zovo.one">Michael Lip</a>. Try the <a href="/">ML3X Matrix Calculator</a> for interactive step-by-step solutions.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">Zovo Tools</div>
+        <div class="footer-tagline">Free developer tools by a solo dev. No tracking.</div>
+        <a href="https://zovo.one/pricing?utm_source=ml3x.com&utm_medium=satellite&utm_campaign=footer-link" class="footer-cta">Zovo Lifetime &mdash; $99 once, free forever &rarr;</a>
+        <div class="footer-copy">&copy; 2026 <a href="https://zovo.one">Zovo</a> &middot; 47/500 founding spots</div>
+    </div>
+</footer>
+
+<nav class="zovo-network" aria-label="Zovo Tools Network">
+    <div class="zovo-network-inner">
+        <h3 class="zovo-network-title">Explore More Tools</h3>
+        <div class="zovo-network-links">
+            <a href="https://abwex.com">ABWex &mdash; A/B Testing</a>
+            <a href="https://claudflow.com">ClaudFlow &mdash; Workflows</a>
+            <a href="https://claudhq.com">ClaudHQ &mdash; AI Code Tools &amp; Fixes</a>
+            <a href="https://claudkit.com">ClaudKit &mdash; API</a>
+            <a href="https://enhio.com">Enhio &mdash; Text Tools</a>
+            <a href="https://epochpilot.com">EpochPilot &mdash; Timestamps</a>
+            <a href="https://gen8x.com">Gen8X &mdash; Color Tools</a>
+            <a href="https://gpt0x.com">GPT0X &mdash; AI Models</a>
+            <a href="https://heytensor.com">HeyTensor &mdash; ML Tools</a>
+            <a href="https://invokebot.com">InvokeBot &mdash; Webhooks</a>
+            <a href="https://kappafy.com">Kappafy &mdash; JSON</a>
+            <a href="https://kappakit.com">KappaKit &mdash; Dev Toolkit</a>
+            <a href="https://kickllm.com">KickLLM &mdash; LLM Costs</a>
+            <a href="https://krzen.com">Krzen &mdash; Image Tools</a>
+            <a href="https://lochbot.com">LochBot &mdash; Security</a>
+            <a href="https://lockml.com">LockML &mdash; ML Compare</a>
+        </div>
+    </div>
+</nav>
+
+<script>
+(function(){
+  let mode='lu';
+  const EPS=1e-10;
+
+  function getRC(){return{rows:+document.getElementById('sel-rows').value,cols:+document.getElementById('sel-cols').value};}
+
+  function rebuildInput(){
+    const{rows,cols}=getRC();
+    let h='<div style="display:inline-grid;grid-template-columns:repeat('+cols+',1fr);gap:6px;">';
+    for(let i=0;i<rows;i++)for(let j=0;j<cols;j++)
+      h+='<input type="number" id="c'+i+j+'" value="0" style="width:60px;padding:6px;text-align:center;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:4px;font-size:1rem;">';
+    h+='</div>';
+    document.getElementById('matrix-grid').innerHTML=h;
+    document.getElementById('output').style.display='none';
+  }
+  window.rebuildInput=rebuildInput;
+
+  function getMatrix(){
+    const{rows,cols}=getRC();const m=[];
+    for(let i=0;i<rows;i++){const r=[];for(let j=0;j<cols;j++)r.push(parseFloat(document.getElementById('c'+i+j).value)||0);m.push(r);}
+    return m;
+  }
+
+  function fillRandom(){
+    const{rows,cols}=getRC();
+    for(let i=0;i<rows;i++)for(let j=0;j<cols;j++)document.getElementById('c'+i+j).value=Math.floor(Math.random()*11)-5;
+  }
+  window.fillRandom=fillRandom;
+
+  function fillExample(){
+    const{rows,cols}=getRC();
+    const ex3=[[2,1,1],[4,3,3],[8,7,9]];
+    const ex2=[[4,3],[6,3]];
+    const ex4=[[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]];
+    const ex=rows>=4?ex4:rows>=3?ex3:ex2;
+    for(let i=0;i<Math.min(rows,ex.length);i++)for(let j=0;j<Math.min(cols,ex[0].length);j++)document.getElementById('c'+i+j).value=ex[i][j];
+  }
+  window.fillExample=fillExample;
+
+  function clearInput(){
+    const{rows,cols}=getRC();
+    for(let i=0;i<rows;i++)for(let j=0;j<cols;j++)document.getElementById('c'+i+j).value=0;
+    document.getElementById('output').style.display='none';
+  }
+  window.clearInput=clearInput;
+
+  function setDecomp(d){
+    mode=d;
+    ['lu','qr','svd'].forEach(t=>{
+      const b=document.getElementById('btn-'+t);
+      if(t===d){b.style.background='var(--accent,#EC4899)';b.style.color='#fff';b.style.border='none';}
+      else{b.style.background='var(--bg-secondary,#1a1a2e)';b.style.color='var(--text,#e0e0e0)';b.style.border='1px solid var(--border,#444)';}
+    });
+  }
+  window.setDecomp=setDecomp;
+
+  function fmt(x){if(Math.abs(x)<EPS)return'0';if(Math.abs(x-Math.round(x))<EPS)return String(Math.round(x));return x.toFixed(4).replace(/0+$/,'').replace(/\.$/,'');}
+
+  function matHtml(m,color,label){
+    let h='<div style="display:inline-block;margin:0.5rem;vertical-align:top;">';
+    h+='<div style="font-weight:bold;text-align:center;color:'+color+';margin-bottom:4px;">'+label+'</div>';
+    h+='<table style="border-collapse:collapse;border:2px solid '+color+';border-radius:4px;">';
+    for(const r of m){
+      h+='<tr>';for(const v of r) h+='<td style="padding:4px 10px;text-align:right;font-family:monospace;font-size:0.88rem;border:1px solid rgba(255,255,255,0.1);">'+fmt(v)+'</td>';h+='</tr>';
+    }
+    h+='</table></div>';return h;
+  }
+
+  function clone(m){return m.map(r=>[...r]);}
+  function zeros(r,c){return Array.from({length:r},()=>Array(c).fill(0));}
+  function eye(n){const m=zeros(n,n);for(let i=0;i<n;i++)m[i][i]=1;return m;}
+
+  function matMul(a,b){
+    const r=a.length,c=b[0].length,k=b.length,m=zeros(r,c);
+    for(let i=0;i<r;i++)for(let j=0;j<c;j++)for(let p=0;p<k;p++)m[i][j]+=a[i][p]*b[p][j];
+    return m;
+  }
+
+  function transpose(m){
+    const r=m.length,c=m[0].length,t=zeros(c,r);
+    for(let i=0;i<r;i++)for(let j=0;j<c;j++)t[j][i]=m[i][j];
+    return t;
+  }
+
+  function vecDot(a,b){let s=0;for(let i=0;i<a.length;i++)s+=a[i]*b[i];return s;}
+  function vecNorm(v){return Math.sqrt(vecDot(v,v));}
+  function vecScale(v,s){return v.map(x=>x*s);}
+  function vecSub(a,b){return a.map((x,i)=>x-b[i]);}
+
+  function luDecomp(A){
+    const n=A.length;
+    const L=zeros(n,n),U=clone(A),P=eye(n);
+    const steps=[];
+    steps.push('=== LU Decomposition with Partial Pivoting ===');
+    steps.push('A = '+JSON.stringify(A.map(r=>r.map(fmt))));
+    steps.push('');
+
+    for(let i=0;i<n;i++) L[i][i]=1;
+
+    for(let k=0;k<n;k++){
+      // Partial pivoting
+      let maxVal=Math.abs(U[k][k]),maxRow=k;
+      for(let i=k+1;i<n;i++){if(Math.abs(U[i][k])>maxVal){maxVal=Math.abs(U[i][k]);maxRow=i;}}
+      if(maxRow!==k){
+        [U[k],U[maxRow]]=[U[maxRow],U[k]];
+        [P[k],P[maxRow]]=[P[maxRow],P[k]];
+        for(let j=0;j<k;j++){const tmp=L[k][j];L[k][j]=L[maxRow][j];L[maxRow][j]=tmp;}
+        steps.push('Step '+(k+1)+': Swap rows '+(k+1)+' and '+(maxRow+1)+' (pivot = '+fmt(U[k][k])+')');
+      } else {
+        steps.push('Step '+(k+1)+': Pivot = '+fmt(U[k][k])+' (no swap needed)');
+      }
+
+      if(Math.abs(U[k][k])<EPS){steps.push('  Zero pivot encountered. Matrix may be singular.');continue;}
+
+      for(let i=k+1;i<n;i++){
+        const factor=U[i][k]/U[k][k];
+        L[i][k]=factor;
+        steps.push('  R'+(i+1)+' = R'+(i+1)+' - '+fmt(factor)+' * R'+(k+1));
+        for(let j=k;j<n;j++) U[i][j]-=factor*U[k][j];
+        U[i][k]=0;
+      }
+      steps.push('  U after step '+(k+1)+': '+JSON.stringify(U.map(r=>r.map(fmt))));
+      steps.push('');
+    }
+    return{L,U,P,steps};
+  }
+
+  function qrDecomp(A){
+    const m=A.length,n=A[0].length;
+    const steps=[];
+    steps.push('=== QR Decomposition via Modified Gram-Schmidt ===');
+    steps.push('A = '+JSON.stringify(A.map(r=>r.map(fmt))));
+    steps.push('');
+
+    // Extract columns
+    const cols=[];
+    for(let j=0;j<n;j++){const c=[];for(let i=0;i<m;i++)c.push(A[i][j]);cols.push(c);}
+
+    const Q_cols=[];
+    const R=zeros(n,n);
+
+    for(let j=0;j<n;j++){
+      let v=[...cols[j]];
+      steps.push('--- Column '+(j+1)+': a'+(j+1)+' = ['+cols[j].map(fmt).join(', ')+'] ---');
+
+      for(let i=0;i<j;i++){
+        R[i][j]=vecDot(Q_cols[i],v);
+        steps.push('  r'+(i+1)+(j+1)+' = q'+(i+1)+' \u00b7 a'+(j+1)+' = '+fmt(R[i][j]));
+        v=vecSub(v,vecScale(Q_cols[i],R[i][j]));
+        steps.push('  Subtract projection: v = v - '+fmt(R[i][j])+' * q'+(i+1)+' = ['+v.map(fmt).join(', ')+']');
+      }
+
+      R[j][j]=vecNorm(v);
+      steps.push('  r'+(j+1)+(j+1)+' = ||v|| = '+fmt(R[j][j]));
+      if(R[j][j]>EPS){
+        Q_cols.push(vecScale(v,1/R[j][j]));
+        steps.push('  q'+(j+1)+' = v / '+fmt(R[j][j])+' = ['+Q_cols[j].map(fmt).join(', ')+']');
+      } else {
+        Q_cols.push(v);
+        steps.push('  Column is linearly dependent (zero norm). q'+(j+1)+' = ['+v.map(fmt).join(', ')+']');
+      }
+      steps.push('');
+    }
+
+    // Build Q matrix
+    const Q=zeros(m,n);
+    for(let i=0;i<m;i++)for(let j=0;j<n;j++)Q[i][j]=Q_cols[j][i];
+
+    return{Q,R,steps};
+  }
+
+  function svdDecomp(A){
+    const m=A.length,n=A[0].length;
+    const steps=[];
+    steps.push('=== Singular Value Decomposition (SVD) ===');
+    steps.push('A = '+JSON.stringify(A.map(r=>r.map(fmt))));
+    steps.push('');
+
+    const At=transpose(A);
+    const AtA=matMul(At,A);
+    const AAt=matMul(A,At);
+
+    steps.push('Step 1: Compute A\u1d40A');
+    steps.push('A\u1d40A = '+JSON.stringify(AtA.map(r=>r.map(fmt))));
+    steps.push('');
+
+    // Eigenvalues of AtA (simple power iteration + deflation for small matrices)
+    // For 2x2 and 3x3, use analytical
+    const size=Math.min(m,n);
+    let eigenvals=[],eigenvecs_V=[];
+
+    if(n===2){
+      const a=AtA[0][0],b=AtA[0][1],c=AtA[1][0],d=AtA[1][1];
+      const tr=a+d,det=a*d-b*c;
+      const disc=tr*tr-4*det;
+      const sq=Math.sqrt(Math.max(0,disc));
+      eigenvals=[(tr+sq)/2,(tr-sq)/2].map(x=>Math.max(0,x));
+      steps.push('Step 2: Eigenvalues of A\u1d40A (characteristic polynomial)');
+      steps.push('\u03bb\u00b2 - '+fmt(tr)+'\u03bb + '+fmt(det)+' = 0');
+      steps.push('\u03bb\u2081 = '+fmt(eigenvals[0])+', \u03bb\u2082 = '+fmt(eigenvals[1]));
+      // Eigenvectors
+      for(const lam of eigenvals){
+        const mat=[[a-lam,b],[c,d-lam]];
+        let v;
+        if(Math.abs(mat[0][0])>EPS) v=[-mat[0][1]/mat[0][0],1];
+        else if(Math.abs(mat[1][0])>EPS) v=[-mat[1][1]/mat[1][0],1];
+        else v=[1,0];
+        const len=vecNorm(v);v=v.map(x=>x/len);
+        eigenvecs_V.push(v);
+      }
+    } else if(n===3){
+      const tr=AtA[0][0]+AtA[1][1]+AtA[2][2];
+      const cofSum=AtA[0][0]*AtA[1][1]-AtA[0][1]*AtA[1][0]+AtA[0][0]*AtA[2][2]-AtA[0][2]*AtA[2][0]+AtA[1][1]*AtA[2][2]-AtA[1][2]*AtA[2][1];
+      const det=AtA[0][0]*(AtA[1][1]*AtA[2][2]-AtA[1][2]*AtA[2][1])-AtA[0][1]*(AtA[1][0]*AtA[2][2]-AtA[1][2]*AtA[2][0])+AtA[0][2]*(AtA[1][0]*AtA[2][1]-AtA[1][1]*AtA[2][0]);
+      // Solve cubic: x^3 - tr*x^2 + cofSum*x - det = 0
+      const b2=-tr,c2=cofSum,d2=-det;
+      const p=(3*c2-b2*b2)/3,q=(2*b2*b2*b2-9*b2*c2+27*d2)/27;
+      const disc2=q*q/4+p*p*p/27;
+      if(disc2<=EPS){
+        const r=Math.sqrt(Math.max(0,-p*p*p/27));
+        const theta=r>EPS?Math.acos(Math.max(-1,Math.min(1,-q/(2*r)))):0;
+        const mb=2*Math.cbrt(Math.max(0,r));
+        eigenvals=[mb*Math.cos(theta/3)-b2/3,mb*Math.cos((theta+2*Math.PI)/3)-b2/3,mb*Math.cos((theta+4*Math.PI)/3)-b2/3].map(x=>Math.max(0,x));
+      } else {
+        const sd=Math.sqrt(Math.max(0,disc2));
+        const u=Math.cbrt(-q/2+sd),v2=Math.cbrt(-q/2-sd);
+        eigenvals=[Math.max(0,u+v2-b2/3)];
+        const rp=-(u+v2)/2-b2/3;
+        eigenvals.push(Math.max(0,rp),Math.max(0,rp));
+      }
+      eigenvals.sort((a,b)=>b-a);
+      steps.push('Step 2: Eigenvalues of A\u1d40A');
+      eigenvals.forEach((e,i)=>steps.push('  \u03bb'+(i+1)+' = '+fmt(e)));
+
+      // Eigenvectors via null space
+      for(const lam of eigenvals){
+        const mat=AtA.map((r,i)=>r.map((v,j)=>i===j?v-lam:v));
+        // Gaussian elimination
+        const g=clone(mat);
+        for(let col=0;col<3;col++){
+          let pivot=-1,best=0;
+          for(let row=col;row<3;row++){if(Math.abs(g[row][col])>best){best=Math.abs(g[row][col]);pivot=row;}}
+          if(best<EPS)continue;
+          if(pivot!==col)[g[col],g[pivot]]=[g[pivot],g[col]];
+          for(let row=0;row<3;row++){
+            if(row===col||Math.abs(g[row][col])<EPS)continue;
+            const f=g[row][col]/g[col][col];
+            for(let k=0;k<3;k++)g[row][k]-=f*g[col][k];
+            g[row][col]=0;
+          }
+        }
+        const pivotCols=[];
+        for(let i=0;i<3;i++)for(let j=0;j<3;j++){if(Math.abs(g[i][j])>EPS){pivotCols.push(j);break;}}
+        const free=[];
+        for(let j=0;j<3;j++)if(!pivotCols.includes(j))free.push(j);
+        const vec=[0,0,0];
+        if(free.length>0){
+          vec[free[0]]=1;
+          for(let i=pivotCols.length-1;i>=0;i--){
+            const pi=pivotCols[i];let s=0;
+            for(let j=0;j<3;j++)if(j!==pi)s+=g[i][j]*vec[j];
+            if(Math.abs(g[i][pi])>EPS)vec[pi]=-s/g[i][pi];
+          }
+        } else vec[0]=1;
+        const len=vecNorm(vec);
+        eigenvecs_V.push(len>EPS?vec.map(x=>x/len):vec);
+      }
+    } else {
+      // 4x4 - use power iteration
+      steps.push('Step 2: Eigenvalues of A\u1d40A (power iteration)');
+      let remaining=clone(AtA);
+      for(let k=0;k<n;k++){
+        let v=Array(n).fill(0);v[k]=1;
+        for(let iter=0;iter<100;iter++){
+          const next=v.map((_,i)=>remaining[i].reduce((s,x,j)=>s+x*v[j],0));
+          const norm=vecNorm(next);
+          if(norm<EPS)break;
+          v=next.map(x=>x/norm);
+        }
+        const Av=v.map((_,i)=>remaining[i].reduce((s,x,j)=>s+x*v[j],0));
+        const lam=vecDot(v,Av);
+        eigenvals.push(Math.max(0,lam));
+        eigenvecs_V.push([...v]);
+        // Deflate
+        for(let i=0;i<n;i++)for(let j=0;j<n;j++)remaining[i][j]-=lam*v[i]*v[j];
+        steps.push('  \u03bb'+(k+1)+' = '+fmt(Math.max(0,lam)));
+      }
+    }
+
+    steps.push('');
+    const sigmas=eigenvals.map(x=>Math.sqrt(Math.max(0,x)));
+    steps.push('Step 3: Singular values \u03c3\u1d62 = \u221a\u03bb\u1d62');
+    sigmas.forEach((s,i)=>steps.push('  \u03c3'+(i+1)+' = '+fmt(s)));
+    steps.push('');
+
+    // Build V
+    const V=zeros(n,n);
+    for(let i=0;i<n;i++)for(let j=0;j<Math.min(n,eigenvecs_V.length);j++)V[i][j]=eigenvecs_V[j][i];
+
+    // Build Sigma
+    const Sigma=zeros(m,n);
+    for(let i=0;i<Math.min(m,n,sigmas.length);i++)Sigma[i][i]=sigmas[i];
+
+    // Build U: u_i = Av_i / sigma_i
+    const U=zeros(m,m);
+    for(let i=0;i<Math.min(m,eigenvecs_V.length);i++){
+      if(sigmas[i]>EPS){
+        const Avi=eigenvecs_V[i].map((_,row)=>A[row]?A[row].reduce((s,x,j)=>s+x*eigenvecs_V[i][j],0):0);
+        for(let r=0;r<m;r++) U[r][i]=Avi[r]/sigmas[i];
+      }
+    }
+    // Fill remaining U columns with orthogonal complement (simple for small matrices)
+    for(let i=Math.min(sigmas.length,n);i<m;i++){
+      const v=Array(m).fill(0);v[i]=1;
+      // Orthogonalize against existing columns
+      for(let j=0;j<i;j++){
+        const ucol=[];for(let r=0;r<m;r++)ucol.push(U[r][j]);
+        const proj=vecDot(v,ucol);
+        for(let r=0;r<m;r++)v[r]-=proj*ucol[r];
+      }
+      const len=vecNorm(v);
+      if(len>EPS)for(let r=0;r<m;r++)U[r][i]=v[r]/len;
+    }
+
+    steps.push('Step 4: Compute U = AV\u03a3\u207b\u00b9');
+    steps.push('V = '+JSON.stringify(V.map(r=>r.map(fmt))));
+    steps.push('U = '+JSON.stringify(U.map(r=>r.map(fmt))));
+
+    return{U,Sigma,V,sigmas,steps};
+  }
+
+  function maxErr(a,b){
+    let e=0;
+    for(let i=0;i<a.length;i++)for(let j=0;j<a[0].length;j++)e=Math.max(e,Math.abs(a[i][j]-b[i][j]));
+    return e;
+  }
+
+  function decompose(){
+    const A=getMatrix();
+    const{rows,cols}=getRC();
+    document.getElementById('output').style.display='block';
+
+    if(mode==='lu'){
+      if(rows!==cols){document.getElementById('steps-box').textContent='LU decomposition requires a square matrix. Current: '+rows+'x'+cols;document.getElementById('factors-box').innerHTML='';document.getElementById('verify-box').innerHTML='';return;}
+      const{L,U,P,steps}=luDecomp(A);
+      document.getElementById('steps-box').textContent=steps.join('\n');
+      document.getElementById('factors-box').innerHTML='<div style="text-align:center;overflow-x:auto;">'+matHtml(P,'#F59E0B','P')+' '+matHtml(A,'#888','A')+' = '+matHtml(L,'#3B82F6','L')+' '+matHtml(U,'#10B981','U')+'</div>';
+      const PA=matMul(P,A),LU=matMul(L,U);
+      const err=maxErr(PA,LU);
+      document.getElementById('verify-box').innerHTML='<strong>Verification:</strong> ||PA - LU||<sub>max</sub> = '+fmt(err)+' '+(err<0.01?'<span style="color:#10B981;">\u2713 Correct</span>':'<span style="color:#EF4444;">\u2717 Error</span>');
+    } else if(mode==='qr'){
+      const{Q,R,steps}=qrDecomp(A);
+      document.getElementById('steps-box').textContent=steps.join('\n');
+      document.getElementById('factors-box').innerHTML='<div style="text-align:center;overflow-x:auto;">'+matHtml(A,'#888','A')+' = '+matHtml(Q,'#3B82F6','Q')+' '+matHtml(R,'#10B981','R')+'</div>';
+      const QR=matMul(Q,R);
+      const err=maxErr(A,QR);
+      const QtQ=matMul(transpose(Q),Q);
+      const I=eye(Q[0].length);
+      const orthErr=maxErr(QtQ,I);
+      document.getElementById('verify-box').innerHTML='<strong>Verification:</strong> ||A - QR||<sub>max</sub> = '+fmt(err)+' '+(err<0.01?'<span style="color:#10B981;">\u2713</span>':'<span style="color:#EF4444;">\u2717</span>')+' &nbsp; ||Q\u1d40Q - I||<sub>max</sub> = '+fmt(orthErr)+' '+(orthErr<0.01?'<span style="color:#10B981;">\u2713 Orthogonal</span>':'<span style="color:#EF4444;">\u2717</span>');
+    } else {
+      const{U,Sigma,V,sigmas,steps}=svdDecomp(A);
+      document.getElementById('steps-box').textContent=steps.join('\n');
+      document.getElementById('factors-box').innerHTML='<div style="text-align:center;overflow-x:auto;">'+matHtml(A,'#888','A')+' = '+matHtml(U,'#EC4899','U')+' '+matHtml(Sigma,'#F59E0B','\u03a3')+' '+matHtml(transpose(V),'#3B82F6','V\u1d40')+'</div>';
+      const USVt=matMul(matMul(U,Sigma),transpose(V));
+      const err=maxErr(A,USVt);
+      const rank=sigmas.filter(s=>s>0.001).length;
+      const cond=sigmas[0]>EPS&&sigmas[sigmas.length-1]>EPS?sigmas[0]/sigmas[sigmas.length-1]:Infinity;
+      document.getElementById('verify-box').innerHTML='<strong>Verification:</strong> ||A - U\u03a3V\u1d40||<sub>max</sub> = '+fmt(err)+' '+(err<0.1?'<span style="color:#10B981;">\u2713</span>':'<span style="color:#EF4444;">\u2717</span>')+'<br><strong>Rank:</strong> '+rank+' &nbsp; <strong>Condition number:</strong> '+(cond===Infinity?'\u221e':fmt(cond));
+    }
+  }
+  window.decompose=decompose;
+
+  // Init
+  rebuildInput();
+})();
+</script>
+</body>
+</html>

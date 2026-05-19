@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Numerical Stability Guide &mdash; Floating Point Analyzer &amp; Condition Number Calculator | ML3X</title>
+<meta name="description" content="Numerical stability guide with interactive condition number calculator, floating point precision demo, catastrophic cancellation visualizer, ill-conditioned system detector, and single vs double precision comparison.">
+<meta name="keywords" content="numerical stability, condition number calculator, floating point precision, catastrophic cancellation, ill-conditioned matrix, numerical analysis, floating point errors, machine epsilon">
+<link rel="canonical" href="https://ml3x.com/guides/numerical-stability-guide.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Numerical Stability Guide &mdash; Floating Point Analyzer &amp; Condition Number Calculator | ML3X">
+<meta property="og:description" content="Interactive numerical stability guide with condition number calculator, floating point precision demo, catastrophic cancellation detector, and stability tips per operation.">
+<meta property="og:url" content="https://ml3x.com/guides/numerical-stability-guide.html">
+<meta property="og:site_name" content="Zovo Tools">
+<meta property="og:image" content="https://ml3x.com/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Numerical Stability Guide &mdash; Floating Point Analyzer &amp; Condition Number Calculator | ML3X">
+<meta name="twitter:description" content="Interactive numerical stability guide with condition number calculator, floating point precision demo, and ill-conditioned system detector.">
+<meta name="twitter:image" content="https://ml3x.com/assets/og-image.png">
+<link rel="stylesheet" href="/assets/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Numerical Stability Guide — Floating Point Analyzer & Condition Number Calculator",
+  "url": "https://ml3x.com/guides/numerical-stability-guide.html",
+  "description": "Numerical stability guide with interactive condition number calculator, floating point precision demo, catastrophic cancellation visualizer, ill-conditioned system detector, and single vs double precision comparison.",
+  "author": {
+    "@type": "Person",
+    "name": "Michael Lip",
+    "url": "https://zovo.one"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "ML3X",
+    "url": "https://ml3x.com"
+  },
+  "datePublished": "2026-05-25",
+  "dateModified": "2026-05-25"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the condition number of a matrix and why does it matter?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The condition number of a matrix A measures how sensitive the solution of the linear system Ax = b is to small changes in A or b. It is defined as cond(A) = ||A|| * ||A-inverse||, or equivalently as the ratio of the largest singular value to the smallest singular value: cond(A) = sigma_max / sigma_min. A condition number near 1 means the matrix is well-conditioned and the solution is stable. A large condition number (say 10^6 or more) means the matrix is ill-conditioned: a tiny perturbation in the input can cause a massive change in the output. When solving Ax = b with an ill-conditioned matrix, you can lose approximately log10(cond(A)) digits of accuracy. For example, if cond(A) = 10^8 and you use double precision (about 16 digits), you may only have 8 correct digits in the solution. The condition number is the single most important indicator of whether a numerical computation will produce reliable results."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is catastrophic cancellation in floating point arithmetic?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Catastrophic cancellation occurs when two nearly equal floating point numbers are subtracted, causing a dramatic loss of significant digits. For example, if a = 1.234567890123456 and b = 1.234567890123400, both stored with about 16 digits of precision, then a - b = 0.000000000000056 = 5.6e-14. The result has only 2 significant digits even though the inputs had 16 each. This happens because the leading digits cancel, leaving only the least significant (and least accurate) digits. Catastrophic cancellation is one of the most common sources of numerical instability. It appears in the quadratic formula when b^2 is much larger than 4ac, in computing variance using the naive formula sum(x^2)/n - (sum(x)/n)^2, in finite difference approximations with too-small step sizes, and in evaluating functions near removable singularities. The fix is usually to reformulate the computation: use the stable quadratic formula, use Welford's algorithm for variance, or use analytically equivalent but numerically different expressions."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is machine epsilon and how does it relate to floating point precision?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Machine epsilon is the smallest number epsilon such that 1 + epsilon is distinguishable from 1 in floating point arithmetic. For IEEE 754 double precision (64-bit), machine epsilon is approximately 2.22e-16 (about 16 decimal digits of precision). For single precision (32-bit), it is approximately 1.19e-7 (about 7 decimal digits). Machine epsilon represents the relative rounding error: any real number x is represented as fl(x) = x(1 + delta) where |delta| <= epsilon. This means every floating point operation introduces a relative error of at most epsilon. Over many operations, these errors accumulate. In the best case (well-conditioned problems), the final error is proportional to n * epsilon where n is the number of operations. In the worst case (ill-conditioned problems), the error is amplified by the condition number. Machine epsilon sets the fundamental precision limit: no algorithm can achieve accuracy better than epsilon times the condition number, regardless of how clever the algorithm is."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do you detect and fix ill-conditioned systems?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Detection: Compute the condition number using SVD (sigma_max / sigma_min). A condition number above 10^6 is a warning; above 10^12 means the system is effectively singular in double precision. Alternatively, check if the determinant is very small relative to the matrix entries, but the condition number is more reliable. Other signs include: the solution changes dramatically with small perturbations, iterative solvers converge slowly or oscillate, and residuals are small but the solution is wrong. Fixes: (1) Regularization: add a small multiple of the identity matrix (Tikhonov regularization), which bounds the condition number at the cost of slight bias. (2) Preconditioning: multiply by a matrix that reduces the condition number before solving. (3) Use higher precision arithmetic (e.g., 128-bit or arbitrary precision). (4) Reformulate the problem: sometimes a different mathematical formulation of the same problem has a lower condition number. (5) Use QR or SVD instead of LU decomposition, as they are more numerically stable for ill-conditioned systems. (6) Truncated SVD: discard singular values below a threshold, effectively reducing the rank and avoiding amplification of noise."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What are the most common numerical stability pitfalls in machine learning?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The most common pitfalls are: (1) Log-sum-exp overflow: computing log(sum(exp(x))) directly overflows when x values are large. The fix is the log-sum-exp trick: subtract max(x) before exponentiating. (2) Softmax overflow and underflow: same issue as log-sum-exp, solved by subtracting the max. (3) Cross-entropy with log(0): when a predicted probability is exactly 0, log(0) = -infinity. The fix is to clamp probabilities to [epsilon, 1-epsilon]. (4) Vanishing and exploding gradients: in deep networks, gradients can shrink to zero or grow to infinity across many layers. Fixes include batch normalization, residual connections, gradient clipping, and careful weight initialization (Xavier/He). (5) Covariance matrix inversion: sample covariance matrices are often ill-conditioned or singular. Use regularized covariance (shrinkage) or pseudoinverse. (6) Learning rate too high: causes numerical divergence in gradient descent. Use learning rate warmup, schedulers, or adaptive methods like Adam. (7) Float32 vs Float16: mixed-precision training uses float16 for speed but requires loss scaling to prevent gradient underflow."
+      }
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://ml3x.com/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://ml3x.com/guides/"},{"@type":"ListItem","position":3,"name":"Numerical Stability Guide"}]}</script>
+</head>
+<body>
+<header class="site-header">
+  <a href="/" class="site-logo">ML3X</a>
+  <nav class="site-nav">
+    <a href="/">Calculator</a>
+    <a href="/tools/">Tools</a>
+    <a href="/guides/">Guides</a>
+    <a href="/answers/">Answers</a>
+    <a href="/blog/">Blog</a>
+      <div class="nav-right">
+      <a href="https://zovo.one/pricing?utm_source=ml3x.com&amp;utm_medium=satellite&amp;utm_campaign=nav-link" class="nav-pro" target="_blank">Go Pro &#10022;</a>
+      <a href="https://zovo.one/tools" class="nav-zovo">Zovo Tools</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="hero">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a> &raquo; <a href="/guides/">Guides</a> &raquo; <span>Numerical Stability Guide</span>
+    </nav>
+    <h1>Numerical Stability Guide &mdash; Floating Point Analyzer</h1>
+    <p>Understand why floating point arithmetic causes errors, compute condition numbers for any matrix, visualize catastrophic cancellation, detect ill-conditioned systems, and compare single vs double precision. Essential for anyone writing numerical code, training neural networks, or solving linear systems.</p>
+  </div>
+
+  <!-- Tool 1: Condition Number Calculator -->
+  <section style="max-width:900px;margin:2rem auto;padding:0 1rem;">
+    <h2 style="color:var(--accent,#EC4899);">1. Condition Number Calculator</h2>
+    <p>Enter a square matrix to compute its condition number, singular values, and stability assessment. The condition number &kappa;(A) = &sigma;<sub>max</sub> / &sigma;<sub>min</sub> tells you how many digits of accuracy you can lose when solving Ax = b.</p>
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-start;margin:1rem 0;">
+      <div>
+        <label style="font-size:0.9rem;color:var(--text-muted,#999);">Matrix (rows on lines, spaces between entries):</label><br>
+        <textarea id="cond-input" rows="4" cols="24" style="font-family:monospace;padding:8px;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:6px;font-size:0.95rem;">1 2
+3 4</textarea>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-top:1.5rem;">
+        <button onclick="calcCondition()" style="padding:0.5rem 1.5rem;background:var(--accent,#EC4899);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;">Compute</button>
+        <button onclick="loadHilbert()" style="padding:0.5rem 1.5rem;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:6px;cursor:pointer;font-size:0.85rem;">Load Hilbert 4&times;4</button>
+        <button onclick="loadWellCond()" style="padding:0.5rem 1.5rem;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:6px;cursor:pointer;font-size:0.85rem;">Load Well-Conditioned</button>
+        <button onclick="loadIllCond()" style="padding:0.5rem 1.5rem;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:6px;cursor:pointer;font-size:0.85rem;">Load Ill-Conditioned</button>
+      </div>
+    </div>
+    <div id="cond-output" style="display:none;background:var(--bg-secondary,#1a1a2e);border:1px solid var(--border,#333);border-radius:10px;padding:1.5rem;margin:1rem 0;line-height:1.8;font-family:monospace;font-size:0.92rem;white-space:pre-wrap;overflow-x:auto;"></div>
+    <div id="cond-bar" style="display:none;margin:1rem 0;"></div>
+  </section>
+
+  <!-- Tool 2: Floating Point Precision Demo -->
+  <section style="max-width:900px;margin:2rem auto;padding:0 1rem;">
+    <h2 style="color:#3B82F6;">2. Floating Point Precision Demo</h2>
+    <p>See how floating point arithmetic introduces errors. Enter an expression to compare the floating point result with the mathematically exact result.</p>
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0;">
+      <div style="flex:1;min-width:250px;">
+        <label style="font-size:0.9rem;color:var(--text-muted,#999);">Select a classic example:</label><br>
+        <select id="fp-select" onchange="runFpDemo()" style="width:100%;padding:8px;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:6px;font-size:0.9rem;margin-top:4px;">
+          <option value="01">0.1 + 0.2 === 0.3?</option>
+          <option value="sum">Sum 0.1 ten times === 1.0?</option>
+          <option value="assoc">Associativity: (a + b) + c vs a + (b + c)</option>
+          <option value="cancel">Catastrophic cancellation: (1 + 1e-16) - 1</option>
+          <option value="quad">Quadratic formula stability</option>
+          <option value="exp">Large exponent overflow</option>
+          <option value="var">Variance: naive vs Welford</option>
+        </select>
+      </div>
+    </div>
+    <div id="fp-output" style="background:var(--bg-secondary,#1a1a2e);border:1px solid var(--border,#333);border-radius:10px;padding:1.5rem;margin:1rem 0;line-height:1.8;font-family:monospace;font-size:0.92rem;white-space:pre-wrap;overflow-x:auto;"></div>
+  </section>
+
+  <!-- Tool 3: Catastrophic Cancellation Visualizer -->
+  <section style="max-width:900px;margin:2rem auto;padding:0 1rem;">
+    <h2 style="color:#10B981;">3. Catastrophic Cancellation Detector</h2>
+    <p>Enter two numbers that are close in value. The tool shows how many significant digits survive after subtraction, and visualizes the digit-by-digit cancellation.</p>
+    <div style="display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0;">
+      <div>
+        <label style="font-size:0.9rem;color:var(--text-muted,#999);">Number a:</label><br>
+        <input type="text" id="cc-a" value="1.234567890123456" style="width:220px;padding:8px;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:6px;font-family:monospace;font-size:0.95rem;">
+      </div>
+      <div>
+        <label style="font-size:0.9rem;color:var(--text-muted,#999);">Number b:</label><br>
+        <input type="text" id="cc-b" value="1.234567890123400" style="width:220px;padding:8px;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:6px;font-family:monospace;font-size:0.95rem;">
+      </div>
+      <div style="margin-top:1.3rem;">
+        <button onclick="runCancellation()" style="padding:0.5rem 1.5rem;background:#10B981;color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600;">Analyze</button>
+      </div>
+    </div>
+    <div id="cc-output" style="background:var(--bg-secondary,#1a1a2e);border:1px solid var(--border,#333);border-radius:10px;padding:1.5rem;margin:1rem 0;line-height:1.8;font-size:0.92rem;overflow-x:auto;"></div>
+  </section>
+
+  <!-- Tool 4: Single vs Double Precision Comparison -->
+  <section style="max-width:900px;margin:2rem auto;padding:0 1rem;">
+    <h2 style="color:#F59E0B;">4. Single vs Double Precision Comparison</h2>
+    <p>Compare how the same computation performs in simulated single precision (float32, ~7 digits) vs double precision (float64, ~16 digits). See where single precision breaks down.</p>
+    <div style="margin:1rem 0;">
+      <label style="font-size:0.9rem;color:var(--text-muted,#999);">Select test:</label><br>
+      <select id="prec-select" onchange="runPrecDemo()" style="padding:8px;border:1px solid var(--border,#444);background:var(--bg-secondary,#1a1a2e);color:var(--text,#e0e0e0);border-radius:6px;font-size:0.9rem;margin-top:4px;min-width:300px;">
+        <option value="eps">Machine epsilon comparison</option>
+        <option value="accum">Accumulation: sum 1/n for n=1..10000</option>
+        <option value="big">Large number precision: 1e8 + 0.5</option>
+        <option value="trig">Trigonometric: sin(pi) should be 0</option>
+        <option value="mat">Matrix condition number sensitivity</option>
+      </select>
+    </div>
+    <div id="prec-output" style="background:var(--bg-secondary,#1a1a2e);border:1px solid var(--border,#333);border-radius:10px;padding:1.5rem;margin:1rem 0;line-height:1.8;font-family:monospace;font-size:0.92rem;white-space:pre-wrap;overflow-x:auto;"></div>
+  </section>
+
+  <!-- Tool 5: Stability Tips -->
+  <section style="max-width:900px;margin:2rem auto;padding:0 1rem;">
+    <h2 style="color:#8B5CF6;">5. Stability Tips Per Operation</h2>
+    <p>Click any operation to see its stability profile, common pitfalls, and recommended practices.</p>
+    <div id="tips-container" style="margin:1rem 0;"></div>
+  </section>
+
+  <div class="last-updated"><time datetime="2026-05-25">Last updated: May 25, 2026</time></div>
+
+  <!-- Expert Content -->
+  <section style="max-width:720px;margin:2rem auto;line-height:1.7;padding:0 1rem;">
+    <h2>Why Numerical Stability Matters</h2>
+    <p>Every number stored in a computer is an approximation. The real number line is continuous and infinite, but a 64-bit floating point number can only represent about 2<sup>64</sup> distinct values. The gap between representable numbers varies: near zero, values are packed tightly together (the smallest positive double is about 5 &times; 10<sup>-324</sup>), but near large numbers, the gaps are enormous (near 10<sup>308</sup>, adjacent representable values differ by about 10<sup>292</sup>). This non-uniform spacing is the root cause of most numerical instability.</p>
+
+    <p>IEEE 754 double precision floating point uses 64 bits: 1 sign bit, 11 exponent bits, and 52 mantissa bits. This gives approximately 15-16 significant decimal digits of precision. The machine epsilon, approximately 2.22 &times; 10<sup>-16</sup>, represents the smallest relative perturbation that can be detected: 1 + &epsilon; &ne; 1, but 1 + &epsilon;/2 = 1 in floating point. Every arithmetic operation (addition, subtraction, multiplication, division) introduces a relative error of at most &epsilon;. Over thousands or millions of operations, these tiny errors can accumulate to produce results that are completely wrong.</p>
+
+    <h2>The Condition Number: Quantifying Sensitivity</h2>
+    <p>The condition number of a problem measures the inherent sensitivity of the output to perturbations in the input. For a linear system Ax = b, the condition number &kappa;(A) = ||A|| &middot; ||A<sup>-1</sup>|| quantifies the worst-case amplification of relative error: if the input b is perturbed by a relative amount &delta;, the output x can be perturbed by as much as &kappa;(A) &middot; &delta;. The condition number is a property of the mathematical problem, not the algorithm used to solve it. No algorithm can produce a result more accurate than the condition number allows.</p>
+
+    <p>For a matrix, the condition number computed using the 2-norm equals the ratio of the largest to smallest singular value: &kappa;<sub>2</sub>(A) = &sigma;<sub>max</sub> / &sigma;<sub>min</sub>. A well-conditioned matrix has a condition number near 1 (the identity matrix has &kappa; = 1). An ill-conditioned matrix has a large condition number. The infamous Hilbert matrix, where H(i,j) = 1/(i+j-1), is a classic example: the 5&times;5 Hilbert matrix has a condition number of about 476,607, and the 10&times;10 Hilbert matrix has a condition number of about 1.6 &times; 10<sup>13</sup>, meaning you lose 13 of your 16 digits of accuracy when solving a linear system with it.</p>
+
+    <h2>Catastrophic Cancellation: The Silent Killer</h2>
+    <p>Subtraction of nearly equal numbers is the most dangerous basic operation in floating point arithmetic. When two numbers agree in their first k digits, subtraction eliminates those k digits, leaving only the remaining (16-k) digits. If the numbers agree in 14 of 16 digits, only 2 significant digits survive. This is called catastrophic cancellation, and it appears in many common formulas.</p>
+
+    <p>The quadratic formula x = (-b &plusmn; sqrt(b&sup2; - 4ac)) / (2a) suffers from catastrophic cancellation when b&sup2; is much larger than 4ac. In that case, sqrt(b&sup2; - 4ac) &approx; |b|, and one of the two roots involves subtracting two nearly equal numbers. The fix is to compute the root that avoids cancellation first, then use the identity x1 &middot; x2 = c/a to get the other root. Similarly, the naive variance formula Var = E[X&sup2;] - (E[X])&sup2; is numerically catastrophic when the mean is large relative to the standard deviation, because E[X&sup2;] and (E[X])&sup2; are nearly equal large numbers. Welford's online algorithm avoids this entirely by computing the variance incrementally.</p>
+
+    <h2>Stability of Matrix Operations</h2>
+    <p>Different matrix decomposition algorithms have different stability properties. Gaussian elimination without pivoting is unstable: it can amplify rounding errors exponentially. Gaussian elimination with partial pivoting (LU with row permutations) is stable in practice, though pathological examples exist where it grows exponentially (such growth has never been observed in practice for random matrices). QR decomposition via Householder reflections is unconditionally backward stable: the computed Q and R satisfy (A + E) = QR where ||E|| is at most a small multiple of &epsilon; ||A||. SVD computed by the Golub-Kahan bidiagonalization is also backward stable.</p>
+
+    <p>For eigenvalue problems, the symmetric eigenvalue problem (A = A<sup>T</sup>) is well-conditioned: each eigenvalue has a condition number equal to 1. The non-symmetric eigenvalue problem can be arbitrarily ill-conditioned: eigenvalues of non-symmetric matrices can be extremely sensitive to perturbations. The condition number of an eigenvalue &lambda; is 1 / |y<sup>T</sup>x|, where x and y are the right and left eigenvectors. When x and y are nearly orthogonal (as happens for defective or near-defective matrices), the eigenvalue is extremely sensitive.</p>
+
+    <h2>Numerical Stability in Machine Learning</h2>
+    <p>Machine learning practitioners encounter numerical stability issues constantly, often without realizing it. The softmax function softmax(x)<sub>i</sub> = exp(x<sub>i</sub>) / sum(exp(x<sub>j</sub>)) overflows when any x<sub>i</sub> exceeds about 709 (the limit for double precision exp). The standard fix is to subtract max(x) from all components before exponentiating: this does not change the mathematical result but prevents overflow. The log-sum-exp function, log(sum(exp(x))), uses the same trick: LSE(x) = max(x) + log(sum(exp(x - max(x)))).</p>
+
+    <p>Cross-entropy loss, -sum(y log(p)), produces -infinity when any predicted probability p = 0. Clipping p to [&epsilon;, 1-&epsilon;] prevents this. In practice, frameworks like PyTorch combine softmax and cross-entropy into a single numerically stable operation (LogSoftmax + NLLLoss) that avoids computing intermediate probabilities. Gradient clipping (clamping gradient norms to a maximum value) prevents exploding gradients in deep networks and recurrent architectures. Batch normalization, layer normalization, and weight normalization all improve numerical stability by keeping activations and gradients in a reasonable range throughout training.</p>
+
+    <h2>Best Practices for Numerically Stable Code</h2>
+    <p>First, avoid subtracting nearly equal numbers whenever possible. Reformulate expressions to use addition, multiplication, or mathematically equivalent forms that avoid cancellation. Second, use compensated summation (Kahan summation) when accumulating many small numbers: it maintains a running compensation term that captures the rounding error of each addition. Third, always use pivoting in Gaussian elimination (partial pivoting at minimum, complete pivoting for maximum safety). Fourth, prefer QR or SVD over normal equations (A<sup>T</sup>Ax = A<sup>T</sup>b) for least-squares problems, because normal equations square the condition number. Fifth, compute condition numbers before trusting your results: if &kappa;(A) &times; &epsilon; is close to 1, your answer has no reliable digits. Sixth, use appropriate precision: float64 for scientific computing, float32 or float16 with loss scaling for deep learning inference, and arbitrary precision libraries when double precision is insufficient.</p>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="faq-section" style="max-width:720px;margin:2rem auto;">
+    <h2>Frequently Asked Questions</h2>
+    <details>
+      <summary>What is the condition number of a matrix and why does it matter?</summary>
+      <p>The condition number &kappa;(A) = &sigma;<sub>max</sub> / &sigma;<sub>min</sub> measures how much errors in the input are amplified in the output when solving Ax = b. A condition number near 1 is stable; &kappa; = 10<sup>k</sup> means you lose approximately k digits of accuracy. It is the single most important indicator of numerical reliability.</p>
+    </details>
+    <details>
+      <summary>What is catastrophic cancellation in floating point arithmetic?</summary>
+      <p>When subtracting two nearly equal numbers, the leading digits cancel and only the least significant (least accurate) digits remain. For example, 1.234567890123456 - 1.234567890123400 = 5.6e-14, which has only 2 significant digits despite 16-digit inputs. Fixes include reformulating expressions to avoid subtraction of similar values.</p>
+    </details>
+    <details>
+      <summary>What is machine epsilon and how does it relate to floating point precision?</summary>
+      <p>Machine epsilon is the smallest &epsilon; such that 1 + &epsilon; &ne; 1 in floating point. For float64: &epsilon; &approx; 2.22e-16 (~16 digits). For float32: &epsilon; &approx; 1.19e-7 (~7 digits). It sets the fundamental precision limit: no algorithm can beat &epsilon; &times; &kappa;(A) accuracy for a problem with condition number &kappa;(A).</p>
+    </details>
+    <details>
+      <summary>How do you detect and fix ill-conditioned systems?</summary>
+      <p>Detect via SVD: if &sigma;<sub>max</sub> / &sigma;<sub>min</sub> > 10<sup>6</sup>, the system is ill-conditioned. Fixes: Tikhonov regularization (add &lambda;I), preconditioning, higher precision arithmetic, QR or SVD instead of LU, and truncated SVD to discard near-zero singular values.</p>
+    </details>
+    <details>
+      <summary>What are the most common numerical stability pitfalls in machine learning?</summary>
+      <p>Log-sum-exp overflow (fix: subtract max), softmax overflow (fix: subtract max), log(0) in cross-entropy (fix: clamp probabilities), vanishing/exploding gradients (fix: normalization + gradient clipping), ill-conditioned covariance matrices (fix: regularization), and float16 gradient underflow (fix: loss scaling).</p>
+    </details>
+  </section>
+
+  <section style="max-width:720px;margin:2rem auto;padding:0 1rem;">
+    <h2>Related Tools</h2>
+    <ul>
+      <li><a href="/tools/matrix-multiplication.html">Matrix Multiplication Calculator</a> &mdash; see step-by-step matrix products with dimension checking</li>
+      <li><a href="/tools/eigenvector-step-solver.html">Eigenvector Step Solver</a> &mdash; compute eigenvalues and eigenvectors with stability analysis</li>
+      <li><a href="/tools/determinant-calculator.html">Determinant Calculator</a> &mdash; compute determinants via cofactor expansion and LU</li>
+      <li><a href="/answers/matrix-operations-reference.html">Matrix Operations Reference</a> &mdash; interactive cheatsheet of 20+ matrix operations</li>
+    </ul>
+  </section>
+
+  <section style="max-width:720px;margin:2rem auto;padding:0 1rem;">
+    <p style="font-size:0.9rem;color:var(--text-muted);">Built by <a href="https://zovo.one">Michael Lip</a>. Try the <a href="/">ML3X Matrix Calculator</a> for interactive step-by-step solutions.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">Zovo Tools</div>
+        <div class="footer-tagline">Free developer tools by a solo dev. No tracking.</div>
+        <a href="https://zovo.one/pricing?utm_source=ml3x.com&utm_medium=satellite&utm_campaign=footer-link" class="footer-cta">Zovo Lifetime &mdash; $99 once, free forever &rarr;</a>
+        <div class="footer-copy">&copy; 2026 <a href="https://zovo.one">Zovo</a> &middot; 47/500 founding spots</div>
+    </div>
+</footer>
+
+<nav class="zovo-network" aria-label="Zovo Tools Network">
+    <div class="zovo-network-inner">
+        <h3 class="zovo-network-title">Explore More Tools</h3>
+        <div class="zovo-network-links">
+            <a href="https://abwex.com">ABWex &mdash; A/B Testing</a>
+            <a href="https://claudflow.com">ClaudFlow &mdash; Workflows</a>
+            <a href="https://claudhq.com">ClaudHQ &mdash; AI Code Tools &amp; Fixes</a>
+            <a href="https://claudkit.com">ClaudKit &mdash; API</a>
+            <a href="https://enhio.com">Enhio &mdash; Text Tools</a>
+            <a href="https://epochpilot.com">EpochPilot &mdash; Timestamps</a>
+            <a href="https://gen8x.com">Gen8X &mdash; Color Tools</a>
+            <a href="https://gpt0x.com">GPT0X &mdash; AI Models</a>
+            <a href="https://heytensor.com">HeyTensor &mdash; ML Tools</a>
+            <a href="https://invokebot.com">InvokeBot &mdash; Webhooks</a>
+            <a href="https://kappafy.com">Kappafy &mdash; JSON</a>
+            <a href="https://kappakit.com">KappaKit &mdash; Dev Toolkit</a>
+            <a href="https://kickllm.com">KickLLM &mdash; LLM Costs</a>
+            <a href="https://krzen.com">Krzen &mdash; Image Tools</a>
+            <a href="https://lochbot.com">LochBot &mdash; Security</a>
+            <a href="https://lockml.com">LockML &mdash; ML Compare</a>
+        </div>
+    </div>
+</nav>
+
+<script>
+(function(){
+  /* ===== UTILITY FUNCTIONS ===== */
+  function parseMat(s){
+    return s.trim().split('\n').map(function(line){return line.trim().split(/\s+/).map(Number);});
+  }
+  function fmt(x){if(typeof x==='string')return x;if(Math.abs(x)<1e-20)return'0';if(Math.abs(x)>1e15||Math.abs(x)<1e-6)return x.toExponential(6);if(Math.abs(x-Math.round(x))<1e-10)return String(Math.round(x));return x.toPrecision(10).replace(/0+$/,'').replace(/\.$/,'');}
+
+  /* ===== 2x2 SVD (analytic) ===== */
+  function svd2x2(m){
+    var a=m[0][0],b=m[0][1],c=m[1][0],d=m[1][1];
+    var s1=a*a+b*b+c*c+d*d;
+    var s2=Math.sqrt(Math.pow(a*a+b*b-c*c-d*d,2)+4*Math.pow(a*c+b*d,2));
+    var sig1=Math.sqrt((s1+s2)/2);
+    var sig2=Math.sqrt(Math.max(0,(s1-s2)/2));
+    return [sig1,sig2];
+  }
+
+  /* ===== NxN SVD via eigenvalues of A^T A (power iteration for largest/smallest) ===== */
+  function matMul(a,b){
+    var m=a.length,n=b[0].length,p=b.length,c=[];
+    for(var i=0;i<m;i++){c[i]=[];for(var j=0;j<n;j++){var s=0;for(var k=0;k<p;k++)s+=a[i][k]*b[k][j];c[i][j]=s;}}
+    return c;
+  }
+  function matT(a){var r=[];for(var j=0;j<a[0].length;j++){r[j]=[];for(var i=0;i<a.length;i++)r[j][i]=a[i][j];}return r;}
+  function vecNorm(v){var s=0;for(var i=0;i<v.length;i++)s+=v[i]*v[i];return Math.sqrt(s);}
+  function matVec(m,v){var r=[];for(var i=0;i<m.length;i++){var s=0;for(var j=0;j<v.length;j++)s+=m[i][j]*v[j];r.push(s);}return r;}
+
+  function powerIteration(m,n,maxIter){
+    // Find largest eigenvalue of symmetric matrix m (nxn)
+    var v=[];for(var i=0;i<n;i++)v.push(Math.random()-0.5);
+    var nrm=vecNorm(v);for(var i=0;i<n;i++)v[i]/=nrm;
+    var lam=0;
+    for(var it=0;it<(maxIter||200);it++){
+      var w=matVec(m,v);
+      lam=0;for(var i=0;i<n;i++)lam+=w[i]*v[i];
+      nrm=vecNorm(w);if(nrm<1e-30)break;
+      for(var i=0;i<n;i++)v[i]=w[i]/nrm;
+    }
+    return{value:lam,vector:v};
+  }
+
+  function inversePowerIteration(m,n,shift,maxIter){
+    // Find eigenvalue closest to shift
+    // Solve (M - shift*I)w = v each iteration via simple Gauss elimination
+    var ms=[];
+    for(var i=0;i<n;i++){ms[i]=[];for(var j=0;j<n;j++)ms[i][j]=m[i][j]-(i===j?shift:0);}
+    var v=[];for(var i=0;i<n;i++)v.push(Math.random()-0.5);
+    var nrm=vecNorm(v);for(var i=0;i<n;i++)v[i]/=nrm;
+    var lam=0;
+    for(var it=0;it<(maxIter||200);it++){
+      // Solve ms*w = v using Gaussian elimination
+      var aug=[];
+      for(var i=0;i<n;i++){aug[i]=[];for(var j=0;j<n;j++)aug[i][j]=ms[i][j];aug[i][n]=v[i];}
+      // Forward elimination with partial pivoting
+      for(var col=0;col<n;col++){
+        var mx=Math.abs(aug[col][col]),mr=col;
+        for(var r=col+1;r<n;r++){if(Math.abs(aug[r][col])>mx){mx=Math.abs(aug[r][col]);mr=r;}}
+        if(mr!==col){var tmp=aug[col];aug[col]=aug[mr];aug[mr]=tmp;}
+        if(Math.abs(aug[col][col])<1e-30)continue;
+        for(var r=col+1;r<n;r++){
+          var f=aug[r][col]/aug[col][col];
+          for(var j=col;j<=n;j++)aug[r][j]-=f*aug[col][j];
+        }
+      }
+      // Back substitution
+      var w=new Array(n);
+      for(var i=n-1;i>=0;i--){
+        var s=aug[i][n];for(var j=i+1;j<n;j++)s-=aug[i][j]*w[j];
+        w[i]=Math.abs(aug[i][i])>1e-30?s/aug[i][i]:0;
+      }
+      nrm=vecNorm(w);if(nrm<1e-30)break;
+      for(var i=0;i<n;i++)v[i]=w[i]/nrm;
+      lam=0;var mv=matVec(m,v);for(var i=0;i<n;i++)lam+=mv[i]*v[i];
+    }
+    return{value:lam,vector:v};
+  }
+
+  function getSingularValues(mat){
+    var n=mat.length;
+    if(n===2&&mat[0].length===2)return svd2x2(mat);
+    var ata=matMul(matT(mat),mat);
+    var largest=powerIteration(ata,n,300);
+    var smallest=inversePowerIteration(ata,n,0,300);
+    var sigMax=Math.sqrt(Math.max(0,largest.value));
+    var sigMin=Math.sqrt(Math.max(0,smallest.value));
+    return[sigMax,sigMin];
+  }
+
+  /* ===== TOOL 1: Condition Number Calculator ===== */
+  function calcCondition(){
+    var mat=parseMat(document.getElementById('cond-input').value);
+    var n=mat.length;
+    if(n<2||mat[0].length<2){document.getElementById('cond-output').textContent='Enter at least a 2x2 matrix.';document.getElementById('cond-output').style.display='block';return;}
+    if(n!==mat[0].length){document.getElementById('cond-output').textContent='Matrix must be square for condition number.';document.getElementById('cond-output').style.display='block';return;}
+
+    var sigs=getSingularValues(mat);
+    var sigMax=Math.max(sigs[0],sigs[1]);
+    var sigMin=Math.min(sigs[0],sigs[1]);
+    var cond=sigMin>1e-30?sigMax/sigMin:Infinity;
+
+    // Determinant for 2x2 and 3x3
+    var det='N/A';
+    if(n===2)det=mat[0][0]*mat[1][1]-mat[0][1]*mat[1][0];
+    else if(n===3)det=mat[0][0]*(mat[1][1]*mat[2][2]-mat[1][2]*mat[2][1])-mat[0][1]*(mat[1][0]*mat[2][2]-mat[1][2]*mat[2][0])+mat[0][2]*(mat[1][0]*mat[2][1]-mat[1][1]*mat[2][0]);
+
+    var lines=[];
+    lines.push('=== CONDITION NUMBER ANALYSIS ===');
+    lines.push('Matrix size: '+n+' x '+n);
+    lines.push('');
+    lines.push('Singular values (from SVD of A^T A):');
+    lines.push('  sigma_max = '+fmt(sigMax));
+    lines.push('  sigma_min = '+fmt(sigMin));
+    lines.push('');
+    lines.push('Condition number kappa(A) = sigma_max / sigma_min');
+    lines.push('  kappa(A) = '+fmt(sigMax)+' / '+fmt(sigMin)+' = '+(cond===Infinity?'INFINITY (singular matrix)':fmt(cond)));
+    lines.push('');
+    if(typeof det==='number')lines.push('Determinant: '+fmt(det));
+    lines.push('');
+    lines.push('=== STABILITY ASSESSMENT ===');
+    var digitsLost=cond===Infinity?16:Math.log10(cond);
+    var digitsRemaining=Math.max(0,16-digitsLost);
+    if(cond===Infinity){
+      lines.push('STATUS: SINGULAR MATRIX');
+      lines.push('The matrix is singular (or numerically singular). The linear system');
+      lines.push('Ax = b has no unique solution or infinitely many solutions.');
+      lines.push('Digits of accuracy remaining: 0 of 16');
+    } else if(cond<10){
+      lines.push('STATUS: EXCELLENT (well-conditioned)');
+      lines.push('This matrix is very well-conditioned. Solutions will be highly accurate.');
+      lines.push('Digits lost to conditioning: ~'+fmt(digitsLost)+' of 16');
+      lines.push('Digits of accuracy remaining: ~'+fmt(digitsRemaining));
+    } else if(cond<1e4){
+      lines.push('STATUS: GOOD');
+      lines.push('The matrix is reasonably well-conditioned. Results should be reliable.');
+      lines.push('Digits lost to conditioning: ~'+fmt(digitsLost)+' of 16');
+      lines.push('Digits of accuracy remaining: ~'+fmt(digitsRemaining));
+    } else if(cond<1e8){
+      lines.push('STATUS: WARNING (moderately ill-conditioned)');
+      lines.push('The matrix is moderately ill-conditioned. Results may have reduced accuracy.');
+      lines.push('Consider using QR or SVD instead of LU decomposition.');
+      lines.push('Digits lost to conditioning: ~'+fmt(digitsLost)+' of 16');
+      lines.push('Digits of accuracy remaining: ~'+fmt(digitsRemaining));
+    } else if(cond<1e14){
+      lines.push('STATUS: DANGER (highly ill-conditioned)');
+      lines.push('The matrix is highly ill-conditioned. Results are likely unreliable.');
+      lines.push('Use regularization (Tikhonov), truncated SVD, or higher precision.');
+      lines.push('Digits lost to conditioning: ~'+fmt(digitsLost)+' of 16');
+      lines.push('Digits of accuracy remaining: ~'+fmt(digitsRemaining));
+    } else {
+      lines.push('STATUS: CRITICAL (effectively singular)');
+      lines.push('The matrix is so ill-conditioned that results are meaningless in double precision.');
+      lines.push('Use arbitrary precision arithmetic or reformulate the problem.');
+      lines.push('Digits lost to conditioning: ~'+fmt(digitsLost)+' of 16');
+      lines.push('Digits of accuracy remaining: ~'+fmt(digitsRemaining));
+    }
+
+    document.getElementById('cond-output').textContent=lines.join('\n');
+    document.getElementById('cond-output').style.display='block';
+
+    // Visual bar
+    var barPct=cond===Infinity?100:Math.min(100,Math.max(2,digitsLost/16*100));
+    var barColor=cond<10?'#10B981':cond<1e4?'#3B82F6':cond<1e8?'#F59E0B':cond<1e14?'#F97316':'#EF4444';
+    var barHtml='<div style="margin-bottom:0.5rem;font-size:0.9rem;font-weight:600;">Precision Loss Gauge</div>';
+    barHtml+='<div style="background:#1a1a2e;border:1px solid var(--border,#333);border-radius:8px;height:30px;overflow:hidden;position:relative;">';
+    barHtml+='<div style="width:'+barPct+'%;height:100%;background:'+barColor+';transition:width 0.5s;border-radius:8px;"></div>';
+    barHtml+='<div style="position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;font-size:0.85rem;font-weight:600;color:#fff;">'+fmt(digitsRemaining)+' of 16 digits survive</div>';
+    barHtml+='</div>';
+    barHtml+='<div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--text-muted,#888);margin-top:4px;"><span>Well-conditioned</span><span>Ill-conditioned</span><span>Singular</span></div>';
+    document.getElementById('cond-bar').innerHTML=barHtml;
+    document.getElementById('cond-bar').style.display='block';
+  }
+  window.calcCondition=calcCondition;
+
+  function loadHilbert(){
+    document.getElementById('cond-input').value='1 0.5 0.333333 0.25\n0.5 0.333333 0.25 0.2\n0.333333 0.25 0.2 0.166667\n0.25 0.2 0.166667 0.142857';
+    calcCondition();
+  }
+  window.loadHilbert=loadHilbert;
+  function loadWellCond(){
+    document.getElementById('cond-input').value='4 1\n1 3';
+    calcCondition();
+  }
+  window.loadWellCond=loadWellCond;
+  function loadIllCond(){
+    document.getElementById('cond-input').value='1 1\n1 1.0001';
+    calcCondition();
+  }
+  window.loadIllCond=loadIllCond;
+
+  /* ===== TOOL 2: Floating Point Demo ===== */
+  function runFpDemo(){
+    var sel=document.getElementById('fp-select').value;
+    var lines=[];
+    if(sel==='01'){
+      var r=0.1+0.2;
+      lines.push('=== 0.1 + 0.2 === 0.3? ===');
+      lines.push('');
+      lines.push('0.1 + 0.2 = '+r.toPrecision(20));
+      lines.push('Expected:    0.3');
+      lines.push('');
+      lines.push('0.1 + 0.2 === 0.3? '+(0.1+0.2===0.3?'TRUE':'FALSE'));
+      lines.push('');
+      lines.push('WHY: 0.1 in binary is 0.0001100110011... (repeating).');
+      lines.push('Neither 0.1 nor 0.2 can be represented exactly in binary.');
+      lines.push('The sum accumulates rounding errors from both operands.');
+      lines.push('');
+      lines.push('FIX: Use Math.abs(a - b) < Number.EPSILON for comparisons,');
+      lines.push('or use a tolerance: Math.abs(result - 0.3) < 1e-10.');
+    } else if(sel==='sum'){
+      var s=0;for(var i=0;i<10;i++)s+=0.1;
+      lines.push('=== Sum 0.1 ten times ===');
+      lines.push('');
+      lines.push('Result: '+s.toPrecision(20));
+      lines.push('Expected: 1.0');
+      lines.push('Error: '+(s-1).toExponential(6));
+      lines.push('');
+      lines.push('0.1 ten times === 1.0? '+(s===1.0?'TRUE':'FALSE'));
+      lines.push('');
+      lines.push('Each addition introduces ~epsilon relative error.');
+      lines.push('After 10 additions, errors accumulate.');
+      lines.push('');
+      lines.push('FIX: Use Kahan (compensated) summation for long sums.');
+      // Kahan
+      var kS=0,kC=0;for(var i=0;i<10;i++){var y=0.1-kC;var t=kS+y;kC=(t-kS)-y;kS=t;}
+      lines.push('Kahan sum result: '+kS.toPrecision(20));
+    } else if(sel==='assoc'){
+      var a=1e20,b=-1e20,c=1;
+      lines.push('=== Associativity test ===');
+      lines.push('a = 1e20, b = -1e20, c = 1');
+      lines.push('');
+      lines.push('(a + b) + c = '+(a+b+c));
+      lines.push('a + (b + c) = '+(a+(b+c)));
+      lines.push('');
+      lines.push('Expected: 1');
+      lines.push('');
+      lines.push('(a + b) + c = (1e20 - 1e20) + 1 = 0 + 1 = 1  (CORRECT)');
+      lines.push('a + (b + c) = 1e20 + (-1e20 + 1) = 1e20 + (-1e20) = 0  (WRONG!)');
+      lines.push('');
+      lines.push('WHY: b + c = -1e20 because 1 is below the precision');
+      lines.push('threshold of -1e20 (lost to rounding). Floating point');
+      lines.push('addition is NOT associative.');
+    } else if(sel==='cancel'){
+      var x=(1+1e-16)-1;
+      lines.push('=== Catastrophic cancellation ===');
+      lines.push('');
+      lines.push('(1 + 1e-16) - 1');
+      lines.push('');
+      lines.push('Exact answer: 1e-16');
+      lines.push('Float64 result: '+x.toExponential(6));
+      lines.push('');
+      if(x===0){
+        lines.push('RESULT: ZERO (total cancellation!)');
+        lines.push('1e-16 is below machine epsilon relative to 1.');
+        lines.push('1 + 1e-16 rounds to exactly 1.0, so subtracting 1 gives 0.');
+      } else {
+        lines.push('Relative error: '+Math.abs((x-1e-16)/1e-16).toExponential(3));
+      }
+      lines.push('');
+      var x2=(1+1e-15)-1;
+      lines.push('Compare: (1 + 1e-15) - 1 = '+x2.toExponential(6));
+      lines.push('1e-15 is just above machine epsilon, so 1 significant digit survives.');
+      lines.push('');
+      var x3=(1+1e-10)-1;
+      lines.push('Compare: (1 + 1e-10) - 1 = '+x3.toExponential(6));
+      lines.push('1e-10 preserves about 6 significant digits.');
+    } else if(sel==='quad'){
+      var a2=1,b2=1e8,c2=1;
+      var disc=b2*b2-4*a2*c2;
+      var x1=(-b2+Math.sqrt(disc))/(2*a2);
+      var x2=(-b2-Math.sqrt(disc))/(2*a2);
+      lines.push('=== Quadratic formula: x^2 + 1e8*x + 1 = 0 ===');
+      lines.push('');
+      lines.push('NAIVE formula: x = (-b +/- sqrt(b^2 - 4ac)) / 2a');
+      lines.push('  x1 = '+x1.toExponential(10));
+      lines.push('  x2 = '+x2.toExponential(10));
+      lines.push('');
+      lines.push('Exact x1 = -1e-8 (approx)');
+      lines.push('Naive x1 error: '+(Math.abs(x1-(-1e-8))/1e-8*100).toFixed(2)+'%');
+      lines.push('');
+      // Stable version
+      var q=-0.5*(b2+Math.sign(b2)*Math.sqrt(disc));
+      var xs1=q/a2;
+      var xs2=c2/q;
+      lines.push('STABLE formula (avoid cancellation):');
+      lines.push('  q = -0.5 * (b + sign(b) * sqrt(discriminant))');
+      lines.push('  x1 = c/q, x2 = q/a');
+      lines.push('  x1 = '+Math.min(xs1,xs2).toExponential(10));
+      lines.push('  x2 = '+Math.max(xs1,xs2).toExponential(10));
+      lines.push('');
+      lines.push('The stable version avoids subtracting two nearly equal');
+      lines.push('large numbers, preserving full precision.');
+    } else if(sel==='exp'){
+      lines.push('=== Large exponent overflow ===');
+      lines.push('');
+      lines.push('exp(709) = '+Math.exp(709).toExponential(6));
+      lines.push('exp(710) = '+Math.exp(710)+' (OVERFLOW to Infinity!)');
+      lines.push('');
+      lines.push('Max finite float64: '+Number.MAX_VALUE.toExponential(6));
+      lines.push('Min positive float64: '+Number.MIN_VALUE.toExponential(6));
+      lines.push('');
+      lines.push('FIX for softmax: subtract max(x) before exp()');
+      var x=[700,710,705];
+      lines.push('');
+      lines.push('Example: softmax([700, 710, 705])');
+      lines.push('Naive: exp(710) = Infinity -> NaN');
+      var mx=Math.max.apply(null,x);
+      var shifted=x.map(function(v){return v-mx;});
+      var exps=shifted.map(function(v){return Math.exp(v);});
+      var sm=exps.reduce(function(a,b){return a+b;},0);
+      var probs=exps.map(function(v){return v/sm;});
+      lines.push('Stable (subtract max=710): exp(['+shifted.join(', ')+'])');
+      lines.push('Result: ['+probs.map(function(p){return p.toFixed(6);}).join(', ')+']');
+    } else if(sel==='var'){
+      var data=[1e9+1,1e9+2,1e9+3,1e9+4,1e9+5];
+      var n2=data.length;
+      // Naive
+      var sumX=0,sumX2=0;
+      for(var i=0;i<n2;i++){sumX+=data[i];sumX2+=data[i]*data[i];}
+      var naiveVar=sumX2/n2-Math.pow(sumX/n2,2);
+      lines.push('=== Variance: naive vs Welford ===');
+      lines.push('Data: [1e9+1, 1e9+2, 1e9+3, 1e9+4, 1e9+5]');
+      lines.push('True variance: 2.5');
+      lines.push('');
+      lines.push('NAIVE: E[X^2] - E[X]^2');
+      lines.push('  E[X^2] = '+fmt(sumX2/n2));
+      lines.push('  E[X]^2 = '+fmt(Math.pow(sumX/n2,2)));
+      lines.push('  Naive variance = '+naiveVar);
+      lines.push('  Error: '+(Math.abs(naiveVar-2.5)).toExponential(3));
+      lines.push('');
+      // Welford
+      var mean3=0,m2=0;
+      for(var i=0;i<n2;i++){var delta=data[i]-mean3;mean3+=delta/(i+1);var d2=data[i]-mean3;m2+=delta*d2;}
+      var welfordVar=m2/(n2);
+      lines.push('WELFORD (online, stable):');
+      lines.push('  Welford variance = '+welfordVar);
+      lines.push('  Error: '+(Math.abs(welfordVar-2.5)).toExponential(3));
+      lines.push('');
+      lines.push('The naive formula subtracts two huge nearly-equal numbers');
+      lines.push('(catastrophic cancellation). Welford accumulates deviations');
+      lines.push('from a running mean, avoiding cancellation entirely.');
+    }
+
+    document.getElementById('fp-output').textContent=lines.join('\n');
+  }
+  window.runFpDemo=runFpDemo;
+
+  /* ===== TOOL 3: Catastrophic Cancellation ===== */
+  function runCancellation(){
+    var a=parseFloat(document.getElementById('cc-a').value);
+    var b=parseFloat(document.getElementById('cc-b').value);
+    var diff=a-b;
+    var aStr=a.toPrecision(16);
+    var bStr=b.toPrecision(16);
+    var dStr=diff.toPrecision(16);
+
+    // Count matching leading digits
+    var matching=0;
+    for(var i=0;i<Math.min(aStr.length,bStr.length);i++){
+      if(aStr[i]===bStr[i])matching++;else break;
+    }
+
+    // Significant digits in result
+    var sigDigits;
+    if(diff===0){sigDigits=0;}
+    else{
+      var absD=Math.abs(diff);
+      var mag=Math.floor(Math.log10(absD));
+      sigDigits=Math.max(1,16-matching+2);
+      if(sigDigits>16)sigDigits=16;
+      // More accurate: compare relative magnitudes
+      var maxAB=Math.max(Math.abs(a),Math.abs(b));
+      if(maxAB>0){
+        var relMag=Math.log10(maxAB/absD);
+        sigDigits=Math.max(0,Math.round(16-relMag));
+      }
+    }
+
+    var html='<div style="font-family:monospace;line-height:2;">';
+    html+='<div style="font-weight:700;margin-bottom:1rem;color:var(--text,#e0e0e0);">Digit-by-Digit Analysis</div>';
+
+    // Show a
+    html+='<div>a = <span style="color:#EC4899;">'+aStr+'</span></div>';
+    html+='<div>b = <span style="color:#3B82F6;">'+bStr+'</span></div>';
+    html+='<div style="border-top:2px solid var(--border,#444);margin:8px 0;"></div>';
+
+    // Colorized diff
+    html+='<div>a - b = ';
+    if(diff===0){
+      html+='<span style="color:#EF4444;font-weight:700;">0 (TOTAL CANCELLATION)</span>';
+    } else {
+      html+='<span style="color:#10B981;">'+diff.toPrecision(Math.max(1,sigDigits))+'</span>';
+    }
+    html+='</div>';
+
+    html+='<div style="margin-top:1rem;padding:1rem;background:rgba(0,0,0,0.3);border-radius:8px;">';
+    html+='<div><strong>Input precision:</strong> ~16 significant digits (float64)</div>';
+    html+='<div><strong>Surviving digits:</strong> <span style="color:'+(sigDigits<4?'#EF4444':sigDigits<10?'#F59E0B':'#10B981')+';font-weight:700;">'+sigDigits+'</span> significant digits</div>';
+    html+='<div><strong>Digits lost:</strong> <span style="color:#EF4444;font-weight:700;">'+(16-sigDigits)+'</span></div>';
+
+    // Severity
+    var severity,sevColor;
+    if(sigDigits>=12){severity='Minimal cancellation';sevColor='#10B981';}
+    else if(sigDigits>=8){severity='Moderate cancellation';sevColor='#3B82F6';}
+    else if(sigDigits>=4){severity='Significant cancellation';sevColor='#F59E0B';}
+    else if(sigDigits>=1){severity='Severe cancellation';sevColor='#F97316';}
+    else{severity='CATASTROPHIC (total loss)';sevColor='#EF4444';}
+    html+='<div><strong>Severity:</strong> <span style="color:'+sevColor+';font-weight:700;">'+severity+'</span></div>';
+    html+='</div>';
+
+    // Visual bar
+    html+='<div style="margin-top:1rem;">';
+    html+='<div style="font-size:0.85rem;margin-bottom:4px;">Digits remaining:</div>';
+    html+='<div style="display:flex;gap:3px;">';
+    for(var i=0;i<16;i++){
+      var c=i<sigDigits?'#10B981':'#EF4444';
+      var op=i<sigDigits?'1':'0.3';
+      html+='<div style="width:20px;height:24px;background:'+c+';opacity:'+op+';border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:#fff;font-weight:600;">'+(i+1)+'</div>';
+    }
+    html+='</div></div>';
+
+    html+='</div>';
+    document.getElementById('cc-output').innerHTML=html;
+  }
+  window.runCancellation=runCancellation;
+
+  /* ===== TOOL 4: Single vs Double Precision ===== */
+  function toFloat32(x){
+    var buf=new Float32Array(1);buf[0]=x;return buf[0];
+  }
+  function runPrecDemo(){
+    var sel=document.getElementById('prec-select').value;
+    var lines=[];
+    var eps64=2.220446049250313e-16;
+    var eps32=1.1920929e-7;
+
+    if(sel==='eps'){
+      lines.push('=== Machine Epsilon Comparison ===');
+      lines.push('');
+      lines.push('Float32 (single precision):');
+      lines.push('  Bits: 32 (1 sign + 8 exponent + 23 mantissa)');
+      lines.push('  Machine epsilon: '+eps32.toExponential(6));
+      lines.push('  Decimal digits: ~7');
+      lines.push('  Max value: ~3.4e38');
+      lines.push('');
+      lines.push('Float64 (double precision):');
+      lines.push('  Bits: 64 (1 sign + 11 exponent + 52 mantissa)');
+      lines.push('  Machine epsilon: '+eps64.toExponential(6));
+      lines.push('  Decimal digits: ~16');
+      lines.push('  Max value: ~1.8e308');
+      lines.push('');
+      lines.push('Float64 is ~10^9 times more precise than float32.');
+      lines.push('Float64 has ~10^270 times more range than float32.');
+      lines.push('');
+      lines.push('VERIFICATION:');
+      lines.push('  Float64: 1 + eps/2 === 1? '+(1+eps64/2===1));
+      lines.push('  Float64: 1 + eps === 1? '+(1+eps64===1));
+      lines.push('  Float32: 1 + eps32/2 === 1? '+(toFloat32(1+eps32/2)===toFloat32(1)));
+      lines.push('  Float32: 1 + eps32 === 1? '+(toFloat32(1+eps32)===toFloat32(1)));
+    } else if(sel==='accum'){
+      var s64=0,s32=toFloat32(0);
+      for(var n=1;n<=10000;n++){s64+=1/n;s32=toFloat32(s32+toFloat32(1/n));}
+      lines.push('=== Accumulation: sum of 1/n for n=1..10000 ===');
+      lines.push('');
+      lines.push('Float64 result: '+s64.toPrecision(16));
+      lines.push('Float32 result: '+s32.toPrecision(10));
+      lines.push('');
+      lines.push('Difference: '+(Math.abs(s64-s32)).toExponential(6));
+      lines.push('Relative error of float32: '+((Math.abs(s64-s32)/s64)*100).toFixed(6)+'%');
+      lines.push('');
+      lines.push('After 10,000 additions, float32 errors accumulate.');
+      lines.push('The error grows roughly as sqrt(N) * epsilon.');
+    } else if(sel==='big'){
+      var a=1e8,b=0.5;
+      var r64=a+b;
+      var r32=toFloat32(toFloat32(a)+toFloat32(b));
+      lines.push('=== Large number precision: 1e8 + 0.5 ===');
+      lines.push('');
+      lines.push('Exact answer: 100000000.5');
+      lines.push('Float64: '+r64.toPrecision(16));
+      lines.push('Float32: '+r32.toPrecision(10));
+      lines.push('');
+      lines.push('Float32 has only 7 decimal digits.');
+      lines.push('1e8 already uses 9 digits, so 0.5 is below float32 precision.');
+      lines.push('Float32 cannot distinguish 1e8 from 1e8 + 0.5.');
+      lines.push('');
+      lines.push('Float64 stores 16 digits, so it handles this easily.');
+      lines.push('');
+      lines.push('This is why financial calculations should never use float32,');
+      lines.push('and neural network training uses float32 only with loss scaling.');
+    } else if(sel==='trig'){
+      var r64=Math.sin(Math.PI);
+      var r32=toFloat32(Math.sin(toFloat32(Math.PI)));
+      lines.push('=== sin(pi) should be 0 ===');
+      lines.push('');
+      lines.push('Float64: Math.sin(Math.PI) = '+r64.toExponential(10));
+      lines.push('Float32: sin(float32(pi))  = '+r32.toExponential(10));
+      lines.push('');
+      lines.push('Neither is exactly 0 because pi cannot be represented exactly.');
+      lines.push('Math.PI = 3.141592653589793 (16 digits)');
+      lines.push('True pi = 3.14159265358979323846...');
+      lines.push('');
+      lines.push('The error in sin(pi) comes from the error in representing pi,');
+      lines.push('not from the sin function itself. sin is well-conditioned near pi');
+      lines.push('(condition number = |pi * cos(pi)| = pi), so errors are modest.');
+    } else if(sel==='mat'){
+      lines.push('=== Matrix condition number sensitivity ===');
+      lines.push('');
+      lines.push('Consider solving [[1, 1], [1, 1.0001]] * x = [2, 2.0001]');
+      lines.push('Exact solution: x = [1, 1]');
+      lines.push('');
+      lines.push('Condition number kappa = ~40002');
+      lines.push('');
+      lines.push('Float64 (16 digits):');
+      lines.push('  Digits lost: ~5 (log10(40002))');
+      lines.push('  Remaining: ~11 digits -> RELIABLE');
+      lines.push('');
+      lines.push('Float32 (7 digits):');
+      lines.push('  Digits lost: ~5');
+      lines.push('  Remaining: ~2 digits -> MARGINAL');
+      lines.push('');
+      lines.push('Now consider kappa = 1e8 (highly ill-conditioned):');
+      lines.push('  Float64: 16 - 8 = 8 digits remaining -> Acceptable');
+      lines.push('  Float32: 7 - 8 = -1 digits remaining -> NO RELIABLE DIGITS');
+      lines.push('');
+      lines.push('Rule of thumb: you need kappa * epsilon < 0.01 for reliable results.');
+      lines.push('  Float64: kappa < 1e14');
+      lines.push('  Float32: kappa < 1e5');
+    }
+
+    document.getElementById('prec-output').textContent=lines.join('\n');
+  }
+  window.runPrecDemo=runPrecDemo;
+
+  /* ===== TOOL 5: Stability Tips ===== */
+  var TIPS=[
+    {name:'Matrix Multiplication', risk:'Low', color:'#10B981',
+      tips:'Matrix multiplication is backward stable when using standard algorithms. The computed product satisfies fl(AB) = (A+E)B where ||E|| <= n*eps*||A||. For large matrices, use BLAS libraries (LAPACK, OpenBLAS, MKL) which are carefully implemented for numerical stability. Avoid computing matrix powers by repeated multiplication; use eigendecomposition or matrix exponentiation instead.'},
+    {name:'Gaussian Elimination (LU)', risk:'Medium', color:'#F59E0B',
+      tips:'Without pivoting, Gaussian elimination is UNSTABLE and can amplify errors exponentially. Always use partial pivoting (PA = LU). Complete pivoting is more stable but slower and rarely needed. The growth factor g satisfies ||L||||U|| <= g*||A||; for partial pivoting g <= 2^(n-1) in theory but stays small in practice. For symmetric positive definite matrices, no pivoting is needed (Cholesky is always stable).'},
+    {name:'Solving Ax = b', risk:'Depends on kappa(A)', color:'#3B82F6',
+      tips:'The achievable accuracy is limited by kappa(A)*epsilon. For well-conditioned systems (kappa < 1e6), LU with partial pivoting is fine. For moderately ill-conditioned systems, use iterative refinement: solve, compute the residual r = b - Ax, solve A*delta = r, update x += delta. For badly ill-conditioned systems, use QR, SVD, or regularization. Never form the normal equations A^T*A*x = A^T*b for least squares; this squares the condition number.'},
+    {name:'Eigenvalue Computation', risk:'Low (symmetric) / High (non-symmetric)', color:'#F97316',
+      tips:'For symmetric matrices, eigenvalues are perfectly conditioned (condition number 1 each). Use the symmetric QR algorithm or divide-and-conquer. For non-symmetric matrices, eigenvalues can be very ill-conditioned, especially near defective matrices. Use Schur decomposition rather than direct eigendecomposition. For the generalized eigenvalue problem Ax = lambda*Bx, use the QZ algorithm (not invert B first).'},
+    {name:'SVD Computation', risk:'Low', color:'#10B981',
+      tips:'SVD is one of the most numerically stable decompositions. The Golub-Kahan bidiagonalization followed by the implicit QR algorithm is backward stable. Singular values are always well-conditioned (relative perturbation in A causes at most the same relative perturbation in singular values). However, singular vectors can be ill-conditioned when singular values are close together. Use divide-and-conquer SVD for large matrices.'},
+    {name:'Matrix Inversion', risk:'High', color:'#EF4444',
+      tips:'AVOID computing the explicit inverse whenever possible. Solving Ax = b directly (via LU or QR) is always more accurate and faster than computing A^{-1} then multiplying. The inverse amplifies errors by kappa(A). If you must compute the inverse, use LU factorization with partial pivoting and iterative refinement. For symmetric positive definite matrices, use Cholesky. Never invert a matrix to solve a least-squares problem.'},
+    {name:'Determinant', risk:'Medium', color:'#F59E0B',
+      tips:'Computing determinants via cofactor expansion is catastrophically unstable for n > 4 due to cancellation. Use LU decomposition: det(A) = product of diagonal entries of U times the permutation sign. Even then, the determinant can overflow or underflow for large matrices. Use log-determinant (sum of log of diagonal entries of U) for numerical stability. In ML, the log-determinant is needed for Gaussian log-likelihoods.'},
+    {name:'Summation', risk:'Medium', color:'#F59E0B',
+      tips:'Naive summation of n numbers has O(n*epsilon) error. For large sums, use Kahan (compensated) summation which achieves O(epsilon) error regardless of n. Pairwise summation (recursively split the sum in half) achieves O(log(n)*epsilon) and is used by NumPy. Sort numbers by magnitude (smallest first) before summing to reduce error. Never subtract a large sum from another large sum.'},
+    {name:'Log-Sum-Exp / Softmax', risk:'High (naive) / Low (stabilized)', color:'#10B981',
+      tips:'Always use the max-subtraction trick: LSE(x) = max(x) + log(sum(exp(x - max(x)))). This prevents overflow from large exponents and underflow from very negative exponents. All major ML frameworks do this automatically. For softmax, compute in log-space when possible (log-softmax) to avoid the intermediate probability values.'},
+  ];
+
+  function buildTips(){
+    var c=document.getElementById('tips-container');
+    var h='';
+    for(var i=0;i<TIPS.length;i++){
+      var t=TIPS[i];
+      h+='<div style="background:var(--bg-secondary,#1a1a2e);border:1px solid var(--border,#333);border-left:4px solid '+t.color+';border-radius:10px;padding:1rem 1.2rem;margin-bottom:0.8rem;cursor:pointer;" onclick="toggleTip('+i+')">';
+      h+='<div style="display:flex;justify-content:space-between;align-items:center;">';
+      h+='<span style="font-weight:700;">'+t.name+'</span>';
+      h+='<span style="font-size:0.8rem;padding:2px 10px;border-radius:4px;background:'+t.color+'22;color:'+t.color+';font-weight:600;">Risk: '+t.risk+'</span>';
+      h+='</div>';
+      h+='<div id="tip-'+i+'" style="display:none;margin-top:0.8rem;color:var(--text-muted,#ccc);line-height:1.6;font-size:0.92rem;">'+t.tips+'</div>';
+      h+='</div>';
+    }
+    c.innerHTML=h;
+  }
+
+  function toggleTip(i){
+    var el=document.getElementById('tip-'+i);
+    el.style.display=el.style.display==='none'?'block':'none';
+  }
+  window.toggleTip=toggleTip;
+
+  /* ===== INIT ===== */
+  runFpDemo();
+  runCancellation();
+  runPrecDemo();
+  buildTips();
+})();
+</script>
+</body>
+</html>
