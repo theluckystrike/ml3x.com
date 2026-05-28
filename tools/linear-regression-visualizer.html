@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linear Regression Visualizer — Fit Lines &amp; See Residuals | ML3X</title>
+<meta name="description" content="Interactive linear regression visualizer. Click to add data points on a scatter plot. Real-time OLS best-fit line, R-squared, residuals, confidence bands. Toggle linear, polynomial (2nd/3rd degree), and robust regression.">
+<meta name="keywords" content="linear regression visualizer, OLS calculator, R-squared, residuals, polynomial regression, robust regression, scatter plot, best fit line, regression tool">
+<link rel="canonical" href="https://ml3x.com/tools/linear-regression-visualizer.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Linear Regression Visualizer — Fit Lines &amp; See Residuals | ML3X">
+<meta property="og:description" content="Click to add points. Real-time OLS, polynomial, and robust regression with R-squared, residuals, and confidence bands.">
+<meta property="og:url" content="https://ml3x.com/tools/linear-regression-visualizer.html">
+<meta property="og:site_name" content="Zovo Tools">
+<meta property="og:image" content="https://ml3x.com/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Linear Regression Visualizer — Fit Lines &amp; See Residuals | ML3X">
+<meta name="twitter:description" content="Interactive regression visualizer. Click to add points, see OLS fit, R-squared, residuals, polynomial and robust modes.">
+<meta name="twitter:image" content="https://ml3x.com/assets/og-image.png">
+<link rel="stylesheet" href="/assets/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Linear Regression Visualizer — ML3X",
+  "url": "https://ml3x.com/tools/linear-regression-visualizer.html",
+  "description": "Interactive linear regression visualizer. Click to add data points, see real-time OLS best-fit line, R-squared, residuals, confidence bands. Supports linear, polynomial (2nd/3rd degree), and robust regression.",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Michael Lip",
+    "url": "https://zovo.one"
+  },
+  "datePublished": "2026-05-28",
+  "dateModified": "2026-05-28"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Linear Regression Visualizer — Fit Lines and See Residuals",
+  "description": "Interactive scatter plot where you click to add data points and see real-time linear, polynomial, and robust regression with R-squared and residual diagnostics.",
+  "url": "https://ml3x.com/tools/linear-regression-visualizer.html",
+  "datePublished": "2026-05-28",
+  "dateModified": "2026-05-28",
+  "author": {
+    "@type": "Person",
+    "name": "Michael Lip",
+    "url": "https://zovo.one"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "ML3X",
+    "url": "https://ml3x.com"
+  }
+}
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://ml3x.com/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://ml3x.com/tools/"},{"@type":"ListItem","position":3,"name":"Linear Regression Visualizer"}]}</script>
+<style>
+.lr-tool { max-width:960px; margin:0 auto; }
+.toolbar { display:flex; flex-wrap:wrap; gap:0.6rem; align-items:center; margin-bottom:1rem; background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:0.9rem 1rem; }
+.toolbar label { font-size:0.8rem; color:var(--text-muted); }
+.mode-btns { display:flex; gap:0.4rem; flex-wrap:wrap; }
+.mode-btn { background:var(--bg); border:1px solid var(--border); border-radius:5px; color:var(--text-muted); padding:0.35rem 0.8rem; font-size:0.82rem; cursor:pointer; font-family:inherit; transition:border-color 0.15s,color 0.15s; }
+.mode-btn:hover { border-color:var(--accent); color:var(--text); }
+.mode-btn.active { border-color:var(--accent); color:var(--accent); background:rgba(236,72,153,0.08); }
+.canvas-row { display:flex; gap:1rem; flex-wrap:wrap; align-items:flex-start; }
+.scatter-wrap { position:relative; flex:2; min-width:280px; }
+.scatter-wrap canvas { display:block; border-radius:6px; background:#0b0b0b; border:1px solid var(--border); cursor:crosshair; width:100%; }
+.resid-wrap { flex:1; min-width:200px; }
+.resid-wrap canvas { display:block; border-radius:6px; background:#0b0b0b; border:1px solid var(--border); width:100%; }
+.panel-title { font-family:'Space Mono',monospace; font-size:0.82rem; color:var(--text-muted); margin-bottom:0.4rem; }
+.stats-row { display:flex; flex-wrap:wrap; gap:0.75rem; margin:0.9rem 0; }
+.stat-card { background:var(--bg-card); border:1px solid var(--border); border-radius:5px; padding:0.6rem 1rem; flex:1; min-width:130px; }
+.stat-label { font-size:0.72rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:0.25rem; }
+.stat-value { font-family:'Space Mono',monospace; font-size:1.05rem; color:var(--accent); font-weight:700; }
+.eq-display { background:var(--bg-card); border:1px solid var(--border); border-radius:5px; padding:0.75rem 1rem; font-family:'Space Mono',monospace; font-size:0.9rem; color:var(--text); margin-bottom:0.75rem; min-height:2.5rem; }
+.hint { font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem; }
+.data-table-wrap { overflow-x:auto; max-height:200px; overflow-y:auto; margin-top:0.5rem; }
+table.data-tbl { width:100%; border-collapse:collapse; font-size:0.8rem; font-family:'Space Mono',monospace; }
+table.data-tbl th { background:var(--bg-card); color:var(--text-muted); padding:0.35rem 0.6rem; border-bottom:1px solid var(--border); text-align:left; font-size:0.75rem; position:sticky; top:0; }
+table.data-tbl td { padding:0.3rem 0.6rem; border-bottom:1px solid #1a1a1a; color:var(--text); }
+table.data-tbl tr:hover td { background:var(--bg-hover); }
+.del-btn { color:#ef4444; border:none; background:none; cursor:pointer; font-size:0.85rem; padding:0 0.3rem; }
+.del-btn:hover { color:#ff6060; }
+.faq-section details { border:1px solid var(--border); border-radius:5px; margin-bottom:0.6rem; padding:0.75rem 1rem; }
+.faq-section summary { cursor:pointer; font-weight:600; font-size:0.9rem; color:var(--text); list-style:none; }
+.faq-section summary::-webkit-details-marker { display:none; }
+.faq-section summary::before { content:'+ '; color:var(--accent); font-family:'Space Mono',monospace; }
+.faq-section details[open] summary::before { content:'- '; }
+.faq-section details p { margin-top:0.6rem; font-size:0.88rem; color:var(--text-muted); line-height:1.65; }
+@media(max-width:640px){
+  .canvas-row { flex-direction:column; }
+  .resid-wrap { min-width:0; }
+}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a href="/" class="site-logo">ML3X</a>
+  <nav class="site-nav">
+    <a href="/">Calculator</a>
+    <a href="/tools/" class="active">Tools</a>
+    <a href="/blog/">Blog</a>
+    <a href="/about.html">About</a>
+    <div class="nav-right">
+      <a href="https://zovo.one/pricing?utm_source=ml3x.com&utm_medium=satellite&utm_campaign=nav-link" class="nav-pro" target="_blank">Go Pro &#10022;</a>
+      <a href="https://zovo.one/tools" class="nav-zovo">Zovo Tools</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="hero">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a> &raquo; <a href="/tools/">Tools</a> &raquo; <span>Linear Regression Visualizer</span>
+    </nav>
+    <h1>Linear Regression Visualizer</h1>
+    <p>Click the scatter plot to add points. Watch the best-fit line, R&sup2;, residuals, and confidence bands update in real time. Switch between OLS, polynomial, and robust regression.</p>
+  </div>
+
+  <div class="lr-tool">
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <span class="panel-title" style="margin:0;white-space:nowrap;">Model:</span>
+      <div class="mode-btns" id="modeBtns">
+        <button class="mode-btn active" data-mode="linear">Linear (OLS)</button>
+        <button class="mode-btn" data-mode="poly2">Polynomial &deg;2</button>
+        <button class="mode-btn" data-mode="poly3">Polynomial &deg;3</button>
+        <button class="mode-btn" data-mode="robust">Robust (Huber)</button>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;">
+        <label><input type="checkbox" id="chkBands" checked> Confidence bands</label>
+        <label><input type="checkbox" id="chkResLines" checked> Residual lines</label>
+        <button class="btn btn-outline btn-sm" id="btnPreset1">Demo: Linear</button>
+        <button class="btn btn-outline btn-sm" id="btnPreset2">Demo: Quadratic</button>
+        <button class="btn btn-outline btn-sm" id="btnPreset3">Demo: Outliers</button>
+        <button class="btn btn-sm" id="btnClear">Clear</button>
+      </div>
+    </div>
+
+    <p class="hint">Left-click to add a point. Right-click or use the table below to remove points. Drag to pan is not supported by design (click = data point).</p>
+
+    <!-- Equation display -->
+    <div class="eq-display" id="eqDisplay">Add at least 2 points to fit a model.</div>
+
+    <!-- Stats row -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">n (points)</div><div class="stat-value" id="statN">0</div></div>
+      <div class="stat-card"><div class="stat-label">R&sup2;</div><div class="stat-value" id="statR2">&mdash;</div></div>
+      <div class="stat-card"><div class="stat-label">RMSE</div><div class="stat-value" id="statRMSE">&mdash;</div></div>
+      <div class="stat-card"><div class="stat-label">MAE</div><div class="stat-value" id="statMAE">&mdash;</div></div>
+      <div class="stat-card"><div class="stat-label">SSRes</div><div class="stat-value" id="statSSRes">&mdash;</div></div>
+    </div>
+
+    <!-- Canvases -->
+    <div class="canvas-row">
+      <div class="scatter-wrap">
+        <div class="panel-title">Scatter Plot &amp; Regression Fit</div>
+        <canvas id="scatterCanvas" width="560" height="400"></canvas>
+      </div>
+      <div class="resid-wrap">
+        <div class="panel-title">Residual Plot (y&hat; vs e)</div>
+        <canvas id="residCanvas" width="280" height="200"></canvas>
+        <div style="margin-top:0.6rem;">
+          <div class="panel-title">Q-Q Plot (normal quantiles)</div>
+          <canvas id="qqCanvas" width="280" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data table -->
+    <div style="margin-top:1rem;">
+      <div class="panel-title">Data Points</div>
+      <div class="data-table-wrap">
+        <table class="data-tbl" id="dataTable">
+          <thead><tr><th>#</th><th>x</th><th>y</th><th>y&#x0302; (fitted)</th><th>Residual e</th><th></th></tr></thead>
+          <tbody id="dataTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Educational content -->
+  <section style="max-width:720px;margin:3rem auto;line-height:1.7;">
+    <h2>Ordinary Least Squares (OLS)</h2>
+    <p>OLS finds the line y = &beta;<sub>0</sub> + &beta;<sub>1</sub>x that minimizes the sum of squared residuals:</p>
+    <p style="text-align:center;font-family:'Space Mono',monospace;font-size:1rem;padding:0.9rem;background:var(--bg-card);border-radius:6px;margin:1.25rem 0;">SSRes = &sum; (y<sub>i</sub> - &ycirc;<sub>i</sub>)<sup>2</sup></p>
+    <p>The closed-form solution is given by the normal equations: (X<sup>T</sup>X)&beta; = X<sup>T</sup>y, yielding &beta; = (X<sup>T</sup>X)<sup>-1</sup>X<sup>T</sup>y. For simple linear regression this simplifies to explicit formulas: &beta;<sub>1</sub> = Cov(x,y)/Var(x) and &beta;<sub>0</sub> = &ybar; - &beta;<sub>1</sub>&xbar;.</p>
+
+    <h2>R&sup2; — Coefficient of Determination</h2>
+    <p>R&sup2; measures the proportion of total variance explained by the model:</p>
+    <p style="text-align:center;font-family:'Space Mono',monospace;font-size:1rem;padding:0.9rem;background:var(--bg-card);border-radius:6px;margin:1.25rem 0;">R&sup2; = 1 - SSRes / SSTotal &nbsp;&nbsp; SSTotal = &sum;(y<sub>i</sub> - &ybar;)<sup>2</sup></p>
+    <p>R&sup2; = 1 means the model perfectly explains all variance; R&sup2; = 0 means the model does no better than the mean. R&sup2; can be negative for polynomial or robust fits when the model is worse than the mean (possible with poor extrapolation). Caution: R&sup2; always increases when you add more terms, so always check residual plots.</p>
+
+    <h2>Polynomial Regression</h2>
+    <p>A degree-d polynomial regression adds x<sup>2</sup>, ..., x<sup>d</sup> as features. The model becomes y = &beta;<sub>0</sub> + &beta;<sub>1</sub>x + &beta;<sub>2</sub>x<sup>2</sup> + ... + &beta;<sub>d</sub>x<sup>d</sup>. This is still a linear model in the parameters &beta;, so OLS still applies via the expanded design matrix. The risk is overfitting &mdash; a degree-n polynomial passes exactly through n+1 points (Runge&rsquo;s phenomenon).</p>
+
+    <h2>Robust Regression (Huber)</h2>
+    <p>Huber regression replaces the squared loss with a hybrid function that is quadratic for small residuals (|e| &le; &delta;) and linear for large residuals (|e| &gt; &delta;). This makes it far less sensitive to outliers than OLS, which squares large residuals and lets outliers dominate. This visualizer implements iteratively reweighted least squares (IRLS) with the Huber M-estimator (&delta; = 1.35 &times; MAD/0.6745).</p>
+
+    <h2>Reading the Residual Plot</h2>
+    <p>A good fit shows residuals randomly scattered around zero with no pattern. A clear curve or trend in the residual plot means the model misses non-linearity. Funnel shapes indicate heteroscedasticity (variance increases with x). Large isolated residuals flag potential outliers or data-entry errors. The Q-Q plot compares residual quantiles to normal quantiles &mdash; points on the diagonal confirm the normality assumption needed for classical inference.</p>
+
+    <h2>Confidence Bands</h2>
+    <p>The confidence bands (shaded region) show the 95% confidence interval for the expected value E[y|x]. They are narrowest at x = &xbar; and widen toward the edges of the data range. The formula for the half-width at a given x is t<sub>0.025,n-2</sub> &middot; s &middot; &radic;(1/n + (x-&xbar;)<sup>2</sup>/S<sub>xx</sub>), where s<sup>2</sup> = SSRes/(n-2). Note: these are confidence bands for the mean prediction, not prediction intervals for individual observations.</p>
+  </section>
+
+  <section class="faq-section" style="max-width:720px;margin:2rem auto;">
+    <h2>Frequently Asked Questions</h2>
+    <details>
+      <summary>What is the difference between R&sup2; and adjusted R&sup2;?</summary>
+      <p>R&sup2; increases whenever you add a predictor to the model, even if that predictor has no real relationship with y. Adjusted R&sup2; penalizes for the number of predictors: R&sup2;<sub>adj</sub> = 1 - (1 - R&sup2;)(n-1)/(n-p-1), where p is the number of predictors. Adjusted R&sup2; can decrease if a new predictor adds less than it costs in degrees of freedom. For simple linear regression (p=1) the difference is small; it matters more in multiple regression.</p>
+    </details>
+    <details>
+      <summary>Why do outliers have such a large effect on OLS?</summary>
+      <p>OLS minimizes the sum of squared residuals. Squaring the error means a single point with residual 10 contributes 100 to the loss, dominating 100 points each with residual 1 (total 100). The influence of a point on the regression line is measured by its leverage (determined by how unusual its x value is) multiplied by its residual. The combination is called Cook's distance. Robust regression methods like Huber or RANSAC limit the influence of high-residual points.</p>
+    </details>
+    <details>
+      <summary>When should I use polynomial vs. linear regression?</summary>
+      <p>Use linear regression when the scatter plot suggests a straight-line relationship and residuals are random. Use polynomial regression when there is a clear curve (U-shape, S-shape) that a line cannot capture. As a rule of thumb, degree-2 handles simple curves and degree-3 handles inflection points; higher degrees risk overfitting. Always prefer the simpler model that explains the data adequately. Cross-validation can quantify whether the added complexity actually improves out-of-sample predictions.</p>
+    </details>
+    <details>
+      <summary>What do the confidence bands represent?</summary>
+      <p>The confidence bands show the 95% confidence interval for the mean response E[y|x] at each x. They do not bound individual predictions. The prediction interval (which would be wider) bounds where a new individual observation y is expected to fall. The bands are narrowest at x = &xbar; because the regression line is most constrained at the centroid of the data, and they widen at the extremes because small errors in slope compound as you move away from the center.</p>
+    </details>
+    <details>
+      <summary>How does IRLS (robust regression) work?</summary>
+      <p>Iteratively Reweighted Least Squares starts with an OLS estimate, computes residuals, and assigns each observation a weight that decreases with residual magnitude using the Huber function: w<sub>i</sub> = min(1, &delta;/|e<sub>i</sub>|). It then solves a weighted least squares problem with those weights, recomputes residuals, updates weights, and repeats until convergence (typically 20-50 iterations). Outliers receive small weights and have little influence on the final estimate.</p>
+    </details>
+  </section>
+
+  <section class="related-links" style="max-width:720px;margin:2rem auto;">
+    <h2>Related Tools</h2>
+    <div class="related-grid">
+      <a class="related-card" href="/tools/svd-step-calculator.html">SVD Calculator &mdash; U, &Sigma;, V<sup>T</sup> step by step</a>
+      <a class="related-card" href="/tools/eigenvalue-calculator.html">Eigenvalue Calculator &mdash; PCA foundations</a>
+      <a class="related-card" href="/tools/matrix-decomposition.html">Matrix Decomposition &mdash; LU, QR, SVD</a>
+      <a class="related-card" href="/tools/dot-product-calculator.html">Dot Product Calculator &mdash; projections &amp; similarity</a>
+    </div>
+  </section>
+
+  <section style="max-width:720px;margin:2rem auto;">
+    <p style="font-size:0.9rem;color:var(--text-muted);">Built by <a href="https://zovo.one">Michael Lip</a>. Try the <a href="/">ML3X Matrix Calculator</a> for interactive step-by-step solutions.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">Zovo Tools</div>
+    <div class="footer-tagline">Free developer tools by a solo dev. No tracking.</div>
+    <a href="https://zovo.one/pricing?utm_source=ml3x.com&utm_medium=satellite&utm_campaign=footer-link" class="footer-cta">Zovo Lifetime — $99 once, free forever &rarr;</a>
+    <div class="footer-copy">&copy; 2026 <a href="https://zovo.one">Zovo</a> &middot; 47/500 founding spots</div>
+  </div>
+</footer>
+
+<nav class="zovo-network" aria-label="Zovo Tools Network">
+  <div class="zovo-network-inner">
+    <h3 class="zovo-network-title">Explore More Tools</h3>
+    <div class="zovo-network-links">
+      <a href="https://abwex.com">ABWex — A/B Testing</a>
+      <a href="https://claudflow.com">ClaudFlow — Workflows</a>
+      <a href="https://claudhq.com">ClaudHQ — AI Code Tools &amp; Fixes</a>
+      <a href="https://claudkit.com">ClaudKit — API</a>
+      <a href="https://enhio.com">Enhio — Text Tools</a>
+      <a href="https://epochpilot.com">EpochPilot — Timestamps</a>
+      <a href="https://gen8x.com">Gen8X — Color Tools</a>
+      <a href="https://gpt0x.com">GPT0X — AI Models</a>
+      <a href="https://heytensor.com">HeyTensor — ML Tools</a>
+      <a href="https://invokebot.com">InvokeBot — Webhooks</a>
+      <a href="https://kappafy.com">Kappafy — JSON</a>
+      <a href="https://kappakit.com">KappaKit — Dev Toolkit</a>
+      <a href="https://kickllm.com">KickLLM — LLM Costs</a>
+      <a href="https://krzen.com">Krzen — Image Tools</a>
+      <a href="https://lochbot.com">LochBot — Security</a>
+      <a href="https://lockml.com">LockML — ML Compare</a>
+    </div>
+  </div>
+</nav>
+
+<script src="/assets/js/pro-nudge.js"></script>
+<script>
+// ============================================================
+// Linear Regression Visualizer — pure JS, zero external deps
+// Supports: OLS linear, polynomial deg 2/3, robust (Huber IRLS)
+// Canvas: scatter + fit, residual plot, Q-Q plot
+// ============================================================
+
+const scatterCanvas = document.getElementById('scatterCanvas');
+const residCanvas = document.getElementById('residCanvas');
+const qqCanvas = document.getElementById('qqCanvas');
+const eqDisplay = document.getElementById('eqDisplay');
+const dataTbody = document.getElementById('dataTbody');
+const chkBands = document.getElementById('chkBands');
+const chkResLines = document.getElementById('chkResLines');
+
+let points = []; // [{x, y}]
+let currentMode = 'linear';
+let fitResult = null;
+
+// ---- Responsive canvas sizing ----
+function resizeCanvas(canvas, maxW, h) {
+  const parent = canvas.parentElement;
+  const w = Math.min(maxW, parent.offsetWidth || maxW);
+  canvas.width = w;
+  canvas.height = h;
+}
+
+function resizeAll() {
+  resizeCanvas(scatterCanvas, 560, 400);
+  resizeCanvas(residCanvas, 280, 200);
+  resizeCanvas(qqCanvas, 280, 200);
+  redraw();
+}
+
+// ---- Math helpers ----
+function mean(arr) { return arr.reduce((a,b)=>a+b,0)/arr.length; }
+function stddev(arr) { const m=mean(arr); return Math.sqrt(arr.reduce((s,x)=>s+(x-m)**2,0)/arr.length); }
+function fmtN(x, d=4) {
+  if(Math.abs(x)<1e-10) return '0';
+  if(Math.abs(x)>=1e5||Math.abs(x)<0.001) return x.toExponential(3);
+  return parseFloat(x.toFixed(d)).toString();
+}
+
+// ---- OLS for polynomial degree d ----
+// Solves via normal equations (X^T X)^-1 X^T y using Cholesky or Gaussian elimination
+function polyFeatures(xs, d) {
+  return xs.map(x => Array.from({length:d+1},(_,k)=>Math.pow(x,k)));
+}
+
+function matVecMul(M, v) {
+  return M.map(row => row.reduce((s,a,j)=>s+a*v[j],0));
+}
+
+function solveLinearSystem(A, b) {
+  // Gaussian elimination with partial pivoting
+  const n = A.length;
+  const M = A.map((row,i) => [...row, b[i]]);
+  for(let col=0;col<n;col++){
+    let maxRow=col;
+    for(let row=col+1;row<n;row++) if(Math.abs(M[row][col])>Math.abs(M[maxRow][col])) maxRow=row;
+    [M[col],M[maxRow]]=[M[maxRow],M[col]];
+    if(Math.abs(M[col][col])<1e-14) return null; // singular
+    for(let row=col+1;row<n;row++){
+      const f=M[row][col]/M[col][col];
+      for(let k=col;k<=n;k++) M[row][k]-=f*M[col][k];
+    }
+  }
+  const x=new Array(n).fill(0);
+  for(let i=n-1;i>=0;i--){
+    x[i]=M[i][n]/M[i][i];
+    for(let j=i+1;j<n;j++) x[i]-=M[i][j]*x[j]/M[i][i];
+  }
+  return x;
+}
+
+function matMul(A, B) {
+  const r=A.length, c=B[0].length, k=B.length;
+  return Array.from({length:r},(_,i)=>Array.from({length:c},(_,j)=>A[i].reduce((s,a,l)=>s+a*B[l][j],0)));
+}
+
+function matTranspose(A) {
+  return A[0].map((_,j)=>A.map(row=>row[j]));
+}
+
+function olsFit(xs, ys, degree) {
+  const n = xs.length;
+  if(n < degree+1) return null;
+  const X = polyFeatures(xs, degree);
+  const Xt = matTranspose(X);
+  const XtX = matMul(Xt, X);
+  const Xty = matVecMul(Xt, ys);
+  const beta = solveLinearSystem(XtX, Xty);
+  if(!beta) return null;
+  const fitted = X.map(row=>row.reduce((s,v,k)=>s+v*beta[k],0));
+  return {beta, fitted};
+}
+
+function predictPoly(beta, x) {
+  return beta.reduce((s,b,k)=>s+b*Math.pow(x,k),0);
+}
+
+// ---- Robust (Huber IRLS) ----
+function robustFit(xs, ys, degree=1, maxIter=50) {
+  const n=xs.length;
+  if(n < degree+2) return null;
+  const X=polyFeatures(xs,degree);
+  let weights=new Array(n).fill(1);
+  let beta=null;
+
+  for(let iter=0;iter<maxIter;iter++){
+    // Weighted least squares
+    const Xw=X.map((row,i)=>row.map(v=>v*Math.sqrt(weights[i])));
+    const yw=ys.map((y,i)=>y*Math.sqrt(weights[i]));
+    const Xt=matTranspose(Xw);
+    const XtX=matMul(Xt,Xw);
+    const Xty=matVecMul(Xt,yw);
+    beta=solveLinearSystem(XtX,Xty);
+    if(!beta) break;
+    // Compute residuals
+    const resids=xs.map((x,i)=>ys[i]-predictPoly(beta,x));
+    // Huber threshold: 1.345 * MAD / 0.6745
+    const absR=resids.map(Math.abs).sort((a,b)=>a-b);
+    const mad=absR[Math.floor(n/2)];
+    const delta=Math.max(1e-6, 1.345*mad/0.6745);
+    const newWeights=resids.map(r=>r===0?1:Math.min(1,delta/Math.abs(r)));
+    const maxChange=newWeights.reduce((m,w,i)=>Math.max(m,Math.abs(w-weights[i])),0);
+    weights=newWeights;
+    if(maxChange<1e-6) break;
+  }
+  if(!beta) return null;
+  const fitted=xs.map(x=>predictPoly(beta,x));
+  return {beta, fitted, weights};
+}
+
+// ---- Stats ----
+function computeStats(ys, fitted) {
+  const n=ys.length;
+  const ybar=mean(ys);
+  const ssRes=ys.reduce((s,y,i)=>s+(y-fitted[i])**2,0);
+  const ssTotal=ys.reduce((s,y)=>s+(y-ybar)**2,0);
+  const r2=ssTotal<1e-14?1:1-ssRes/ssTotal;
+  const rmse=Math.sqrt(ssRes/n);
+  const mae=ys.reduce((s,y,i)=>s+Math.abs(y-fitted[i]),0)/n;
+  return {r2, rmse, mae, ssRes, n};
+}
+
+// ---- Confidence band for linear OLS ----
+function confBand(xs, ys, xVal, beta) {
+  const n=xs.length;
+  if(n<3) return 0;
+  const xbar=mean(xs);
+  const fitted=xs.map(x=>predictPoly(beta,x));
+  const ssRes=ys.reduce((s,y,i)=>s+(y-fitted[i])**2,0);
+  const s2=ssRes/Math.max(n-2,1);
+  const Sxx=xs.reduce((s,x)=>s+(x-xbar)**2,0);
+  if(Sxx<1e-14) return 0;
+  const se=Math.sqrt(s2*(1/n+(xVal-xbar)**2/Sxx));
+  // t critical at 0.025, approximate for large n
+  const t=2.0; // approximate 95% for n>10; good enough for visualization
+  return t*se;
+}
+
+// ---- Coordinate mapping ----
+function dataBounds(pts) {
+  if(!pts.length) return {xMin:-10,xMax:10,yMin:-10,yMax:10};
+  const xs=pts.map(p=>p.x), ys=pts.map(p=>p.y);
+  let xMin=Math.min(...xs), xMax=Math.max(...xs);
+  let yMin=Math.min(...ys), yMax=Math.max(...ys);
+  const xPad=Math.max((xMax-xMin)*0.15,1), yPad=Math.max((yMax-yMin)*0.15,1);
+  return {xMin:xMin-xPad, xMax:xMax+xPad, yMin:yMin-yPad, yMax:yMax+yPad};
+}
+
+function toCanvas(cx, px, py, xMin, xMax, yMin, yMax, W, H, margin=40) {
+  const x=margin+(px-xMin)/(xMax-xMin)*(W-2*margin);
+  const y=(H-margin)-(py-yMin)/(yMax-yMin)*(H-2*margin);
+  return [x,y];
+}
+
+// ---- Draw scatter + fit ----
+function drawScatter() {
+  const ctx=scatterCanvas.getContext('2d');
+  const W=scatterCanvas.width, H=scatterCanvas.height;
+  ctx.clearRect(0,0,W,H);
+  const margin=40;
+
+  const bounds=dataBounds(points);
+  // Also incorporate fitted values into bounds
+  let allY=[...points.map(p=>p.y)];
+  if(fitResult){
+    allY=[...allY,...fitResult.fitted];
+    const xs=points.map(p=>p.x);
+    const xMin=Math.min(...xs), xMax=Math.max(...xs);
+    for(let i=0;i<=80;i++){
+      const x=xMin+(xMax-xMin)*i/80;
+      allY.push(predictPoly(fitResult.beta,x));
+    }
+  }
+  if(allY.length){
+    bounds.yMin=Math.min(bounds.yMin,...allY)-Math.max(Math.abs(mean(allY))*0.1,1);
+    bounds.yMax=Math.max(bounds.yMax,...allY)+Math.max(Math.abs(mean(allY))*0.1,1);
+  }
+  const {xMin,xMax,yMin,yMax}=bounds;
+  function tc(px,py){ return toCanvas(null,px,py,xMin,xMax,yMin,yMax,W,H,margin); }
+
+  // Background grid
+  ctx.strokeStyle='#1c1c1c'; ctx.lineWidth=1;
+  const xSteps=8, ySteps=6;
+  for(let i=0;i<=xSteps;i++){
+    const x=xMin+(xMax-xMin)*i/xSteps;
+    const [cx,cy]=tc(x,yMin); const [,cy2]=tc(x,yMax);
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx,cy2);ctx.stroke();
+  }
+  for(let i=0;i<=ySteps;i++){
+    const y=yMin+(yMax-yMin)*i/ySteps;
+    const [cx,cy]=tc(xMin,y); const [cx2,]=tc(xMax,y);
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx2,cy);ctx.stroke();
+  }
+
+  // Axes
+  ctx.strokeStyle='#333'; ctx.lineWidth=1.5;
+  if(yMin<0&&yMax>0){
+    const [ax,ay]=tc(xMin,0); const [ax2,]=tc(xMax,0);
+    ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(ax2,ay);ctx.stroke();
+  }
+  if(xMin<0&&xMax>0){
+    const [ax,ay]=tc(0,yMin); const [,ay2]=tc(0,yMax);
+    ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(ax,ay2);ctx.stroke();
+  }
+
+  // Axis tick labels
+  ctx.fillStyle='#555'; ctx.font='10px Space Mono,monospace'; ctx.textAlign='center';
+  for(let i=0;i<=xSteps;i+=2){
+    const x=xMin+(xMax-xMin)*i/xSteps;
+    const [cx,cy]=tc(x,yMin);
+    ctx.fillText(fmtN(x,2),cx,cy+14);
+  }
+  ctx.textAlign='right';
+  for(let i=0;i<=ySteps;i+=2){
+    const y=yMin+(yMax-yMin)*i/ySteps;
+    const [cx,cy]=tc(xMin,y);
+    ctx.fillText(fmtN(y,2),cx-6,cy+4);
+  }
+
+  // Confidence band
+  if(fitResult && chkBands.checked && currentMode==='linear' && points.length>=3){
+    const xs=points.map(p=>p.x);
+    const xDataMin=Math.min(...xs), xDataMax=Math.max(...xs);
+    ctx.fillStyle='rgba(236,72,153,0.06)';
+    ctx.beginPath();
+    const steps=80;
+    for(let i=0;i<=steps;i++){
+      const x=xDataMin+(xDataMax-xDataMin)*i/steps;
+      const yHat=predictPoly(fitResult.beta,x);
+      const band=confBand(xs,points.map(p=>p.y),x,fitResult.beta);
+      const [cx,cy]=tc(x,yHat+band);
+      i===0?ctx.moveTo(cx,cy):ctx.lineTo(cx,cy);
+    }
+    for(let i=steps;i>=0;i--){
+      const x=xDataMin+(xDataMax-xDataMin)*i/steps;
+      const yHat=predictPoly(fitResult.beta,x);
+      const band=confBand(xs,points.map(p=>p.y),x,fitResult.beta);
+      const [cx,cy]=tc(x,yHat-band);
+      ctx.lineTo(cx,cy);
+    }
+    ctx.closePath(); ctx.fill();
+  }
+
+  // Residual lines
+  if(fitResult && chkResLines.checked){
+    ctx.strokeStyle='rgba(236,72,153,0.35)'; ctx.lineWidth=1;
+    for(let i=0;i<points.length;i++){
+      const [px,py]=tc(points[i].x,points[i].y);
+      const [px2,py2]=tc(points[i].x,fitResult.fitted[i]);
+      ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px2,py2);ctx.stroke();
+    }
+  }
+
+  // Fit line/curve
+  if(fitResult){
+    const xs=points.map(p=>p.x);
+    const xDataMin=Math.min(...xs), xDataMax=Math.max(...xs);
+    ctx.strokeStyle='#EC4899'; ctx.lineWidth=2.5;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    const steps=120;
+    for(let i=0;i<=steps;i++){
+      const x=xDataMin+(xDataMax-xDataMin)*i/steps;
+      const y=predictPoly(fitResult.beta,x);
+      const [cx,cy]=tc(x,y);
+      i===0?ctx.moveTo(cx,cy):ctx.lineTo(cx,cy);
+    }
+    ctx.stroke();
+  }
+
+  // Data points
+  for(let i=0;i<points.length;i++){
+    const [px,py]=tc(points[i].x,points[i].y);
+    ctx.beginPath();
+    ctx.arc(px,py,5,0,Math.PI*2);
+    ctx.fillStyle='#e8e8e8';
+    ctx.fill();
+    ctx.strokeStyle='#EC4899'; ctx.lineWidth=1.5;
+    ctx.stroke();
+  }
+
+  // Legend
+  ctx.font='11px Space Mono,monospace'; ctx.textAlign='left';
+  ctx.fillStyle='#555'; ctx.fillText('click to add point | right-click to remove last',margin,H-8);
+}
+
+// ---- Residual plot ----
+function drawResiduals(fitted, residuals) {
+  const ctx=residCanvas.getContext('2d');
+  const W=residCanvas.width, H=residCanvas.height;
+  ctx.clearRect(0,0,W,H);
+  const margin=30;
+  if(!residuals||!residuals.length){
+    ctx.fillStyle='#444'; ctx.font='11px Space Mono,monospace';
+    ctx.fillText('No data',margin,H/2);
+    return;
+  }
+  const yMin=Math.min(...residuals), yMax=Math.max(...residuals);
+  const xMin=Math.min(...fitted), xMax=Math.max(...fitted);
+  const yPad=Math.max((yMax-yMin)*0.2,0.5), xPad=Math.max((xMax-xMin)*0.1,0.5);
+  const yR=[yMin-yPad,yMax+yPad], xR=[xMin-xPad,xMax+xPad];
+  function tc(px,py){ return toCanvas(null,px,py,xR[0],xR[1],yR[0],yR[1],W,H,margin); }
+
+  // Grid
+  ctx.strokeStyle='#1c1c1c'; ctx.lineWidth=1;
+  const [ax,ay]=tc(xR[0],0); const [ax2,]=tc(xR[1],0);
+  ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(ax2,ay);ctx.strokeStyle='#333';ctx.lineWidth=1.5;ctx.stroke();
+
+  // Points
+  for(let i=0;i<fitted.length;i++){
+    const [px,py]=tc(fitted[i],residuals[i]);
+    ctx.beginPath(); ctx.arc(px,py,4,0,Math.PI*2);
+    ctx.fillStyle= residuals[i]>0?'#38bdf8':'#a78bfa';
+    ctx.fill();
+  }
+
+  // Zero line label
+  ctx.fillStyle='#555'; ctx.font='9px Space Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText('Residual plot (y\u0302 vs e)',4,12);
+  ctx.fillText('e=0',ax2-20,ay-4);
+}
+
+// ---- Q-Q plot ----
+function drawQQ(residuals) {
+  const ctx=qqCanvas.getContext('2d');
+  const W=qqCanvas.width, H=qqCanvas.height;
+  ctx.clearRect(0,0,W,H);
+  const margin=30;
+  if(!residuals||residuals.length<3){
+    ctx.fillStyle='#444'; ctx.font='11px Space Mono,monospace';
+    ctx.fillText('Need 3+ points',margin,H/2);
+    return;
+  }
+  const n=residuals.length;
+  const sorted=[...residuals].sort((a,b)=>a-b);
+  // Theoretical normal quantiles
+  function normQuantile(p){
+    // Rational approximation (Beasley-Springer-Moro)
+    const a=[2.50662823884,-18.61500062529,41.39119773534,-25.44106049637];
+    const b=[-8.47351093090,23.08336743743,-21.06224101826,3.13082909833];
+    const c=[0.3374754822726147,0.9761690190917186,0.1607979714918209,0.0276438810333863,0.0038405729373609,0.0003951896511349,0.0000321767881768,0.0000002888167364,0.0000003960315187];
+    if(p<0.5){
+      const r=Math.sqrt(-2*Math.log(p));
+      return -(((((((c[8]*r+c[7])*r+c[6])*r+c[5])*r+c[4])*r+c[3])*r+c[2])*r+c[1])*r+c[0])/(((((((r+b[3])*r+b[2])*r+b[1])*r+b[0]));
+    }
+    const r=Math.sqrt(-2*Math.log(1-p));
+    return (((((((c[8]*r+c[7])*r+c[6])*r+c[5])*r+c[4])*r+c[3])*r+c[2])*r+c[1])*r+c[0])/(((((((r+b[3])*r+b[2])*r+b[1])*r+b[0]));
+  }
+  // Simpler: use standard normal approximation
+  function invNorm(p){
+    // Abramowitz & Stegun approximation
+    if(p<=0) return -4; if(p>=1) return 4;
+    const sign=p<0.5?-1:1;
+    const pp=p<0.5?p:1-p;
+    const t=Math.sqrt(-2*Math.log(pp));
+    const c0=2.515517, c1=0.802853, c2=0.010328;
+    const d1=1.432788, d2=0.189269, d3=0.001308;
+    return sign*(t-(c0+c1*t+c2*t*t)/(1+d1*t+d2*t*t+d3*t*t*t));
+  }
+  const theoretical=Array.from({length:n},(_,i)=>invNorm((i+0.5)/n));
+  const sm=mean(sorted), ss=stddev(sorted);
+  const norm=sorted.map(x=>ss>1e-14?(x-sm)/ss:0);
+
+  const xVals=theoretical, yVals=norm;
+  const xMin=Math.min(...xVals), xMax=Math.max(...xVals);
+  const yMin=Math.min(...yVals), yMax=Math.max(...yVals);
+  const pad=0.3;
+  function tc(px,py){ return toCanvas(null,px,py,xMin-pad,xMax+pad,yMin-pad,yMax+pad,W,H,margin); }
+
+  // Reference line y=x
+  ctx.strokeStyle='#333'; ctx.lineWidth=1.5;
+  const r=Math.max(Math.abs(xMin-pad),Math.abs(xMax+pad),Math.abs(yMin-pad),Math.abs(yMax+pad));
+  const [lx1,ly1]=tc(-r,-r); const [lx2,ly2]=tc(r,r);
+  ctx.beginPath();ctx.moveTo(lx1,ly1);ctx.lineTo(lx2,ly2);ctx.stroke();
+
+  // Points
+  for(let i=0;i<n;i++){
+    const [px,py]=tc(xVals[i],yVals[i]);
+    ctx.beginPath(); ctx.arc(px,py,3.5,0,Math.PI*2);
+    ctx.fillStyle='#38bdf8'; ctx.fill();
+  }
+  ctx.fillStyle='#555'; ctx.font='9px Space Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText('Q-Q (normal)',4,12);
+}
+
+// ---- Main render ----
+function render() {
+  if(points.length===0){
+    fitResult=null;
+    eqDisplay.textContent='Add at least 2 points to fit a model.';
+    document.getElementById('statN').textContent='0';
+    ['statR2','statRMSE','statMAE','statSSRes'].forEach(id=>document.getElementById(id).textContent='—');
+    drawScatter();
+    drawResiduals(null,null);
+    drawQQ(null);
+    updateTable();
+    return;
+  }
+
+  const xs=points.map(p=>p.x), ys=points.map(p=>p.y);
+  const minPts = {'linear':2,'poly2':3,'poly3':4,'robust':3}[currentMode]||2;
+
+  if(points.length < minPts){
+    fitResult=null;
+    eqDisplay.textContent=`Need at least ${minPts} points for ${currentMode} mode.`;
+    drawScatter();
+    drawResiduals(null,null);
+    drawQQ(null);
+    updateTable();
+    return;
+  }
+
+  let result=null;
+  if(currentMode==='linear') result=olsFit(xs,ys,1);
+  else if(currentMode==='poly2') result=olsFit(xs,ys,2);
+  else if(currentMode==='poly3') result=olsFit(xs,ys,3);
+  else if(currentMode==='robust') result=robustFit(xs,ys,1);
+
+  if(!result){
+    eqDisplay.textContent='Could not fit model (matrix may be singular).';
+    fitResult=null;
+  } else {
+    fitResult=result;
+    const {beta,fitted}=result;
+    const stats=computeStats(ys,fitted);
+
+    // Equation string
+    let eq='y\u0302 = ';
+    if(currentMode==='linear'||currentMode==='robust'){
+      eq+=`${fmtN(beta[0],4)} + ${fmtN(beta[1],4)}x`;
+    } else if(currentMode==='poly2'){
+      eq+=`${fmtN(beta[0],4)} + ${fmtN(beta[1],4)}x + ${fmtN(beta[2],4)}x\u00B2`;
+    } else if(currentMode==='poly3'){
+      eq+=`${fmtN(beta[0],4)} + ${fmtN(beta[1],4)}x + ${fmtN(beta[2],4)}x\u00B2 + ${fmtN(beta[3],4)}x\u00B3`;
+    }
+    if(currentMode==='robust') eq+='  [Huber IRLS]';
+    eqDisplay.textContent=eq;
+
+    document.getElementById('statN').textContent=stats.n;
+    document.getElementById('statR2').textContent=fmtN(stats.r2,4);
+    document.getElementById('statRMSE').textContent=fmtN(stats.rmse,4);
+    document.getElementById('statMAE').textContent=fmtN(stats.mae,4);
+    document.getElementById('statSSRes').textContent=fmtN(stats.ssRes,4);
+
+    const residuals=ys.map((y,i)=>y-fitted[i]);
+    drawResiduals(fitted,residuals);
+    drawQQ(residuals);
+  }
+
+  drawScatter();
+  updateTable();
+}
+
+// ---- Data table ----
+function updateTable() {
+  const tbody=document.getElementById('dataTbody');
+  if(!points.length){ tbody.innerHTML='<tr><td colspan="6" style="color:#555;text-align:center;padding:0.75rem;">No data points yet. Click the scatter plot to add points.</td></tr>'; return; }
+  const xs=points.map(p=>p.x), ys=points.map(p=>p.y);
+  tbody.innerHTML=points.map((p,i)=>{
+    const fitted=fitResult?fmtN(fitResult.fitted[i],4):'—';
+    const resid=fitResult?fmtN(ys[i]-fitResult.fitted[i],4):'—';
+    return `<tr>
+      <td>${i+1}</td>
+      <td>${fmtN(p.x,4)}</td>
+      <td>${fmtN(p.y,4)}</td>
+      <td>${fitted}</td>
+      <td>${resid}</td>
+      <td><button class="del-btn" data-idx="${i}" title="Delete point">&times;</button></td>
+    </tr>`;
+  }).join('');
+  tbody.querySelectorAll('.del-btn').forEach(btn=>{
+    btn.addEventListener('click',e=>{
+      points.splice(parseInt(e.target.dataset.idx),1);
+      render();
+    });
+  });
+}
+
+// ---- Canvas click handler ----
+function canvasToData(canvas, evt) {
+  const rect=canvas.getBoundingClientRect();
+  const W=canvas.width, H=canvas.height;
+  const margin=40;
+  const bounds=dataBounds(points);
+  const {xMin,xMax,yMin,yMax}=bounds;
+  const cx=evt.clientX-rect.left;
+  const cy=evt.clientY-rect.top;
+  // Scale canvas coords to pixel coords
+  const scaleX=W/rect.width, scaleY=H/rect.height;
+  const px=cx*scaleX, py=cy*scaleY;
+  const x=xMin+(px-margin)/(W-2*margin)*(xMax-xMin);
+  const y=yMin+((H-margin)-py)/(H-2*margin)*(yMax-yMin);
+  return {x,y};
+}
+
+scatterCanvas.addEventListener('click', evt=>{
+  if(evt.button!==0) return;
+  // When no points exist, use a default coordinate space [-10,10]x[-10,10]
+  const W=scatterCanvas.width, H=scatterCanvas.height, margin=40;
+  const rect=scatterCanvas.getBoundingClientRect();
+  const cx=(evt.clientX-rect.left)*(W/rect.width);
+  const cy=(evt.clientY-rect.top)*(H/rect.height);
+  let xMin,xMax,yMin,yMax;
+  if(points.length===0){
+    xMin=-10;xMax=10;yMin=-10;yMax=10;
+  } else {
+    const b=dataBounds(points);
+    xMin=b.xMin;xMax=b.xMax;yMin=b.yMin;yMax=b.yMax;
+    // Recalculate with fit values in bounds
+    if(fitResult){
+      const allY=[...points.map(p=>p.y),...fitResult.fitted];
+      const extraPad=Math.max(Math.abs(mean(allY))*0.1,1);
+      yMin=Math.min(yMin,...allY)-extraPad;
+      yMax=Math.max(yMax,...allY)+extraPad;
+    }
+  }
+  const x=xMin+(cx-margin)/(W-2*margin)*(xMax-xMin);
+  const y=yMin+((H-margin)-cy)/(H-2*margin)*(yMax-yMin);
+  points.push({x:Math.round(x*100)/100, y:Math.round(y*100)/100});
+  render();
+});
+
+scatterCanvas.addEventListener('contextmenu', evt=>{
+  evt.preventDefault();
+  if(points.length) { points.pop(); render(); }
+});
+
+// ---- Mode buttons ----
+document.getElementById('modeBtns').addEventListener('click', evt=>{
+  const btn=evt.target.closest('.mode-btn');
+  if(!btn) return;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentMode=btn.dataset.mode;
+  render();
+});
+
+chkBands.addEventListener('change',render);
+chkResLines.addEventListener('change',render);
+
+// ---- Presets ----
+document.getElementById('btnPreset1').addEventListener('click',()=>{
+  points=[[1,2.1],[2,3.9],[3,6.2],[4,7.8],[5,10.1],[6,12.3],[7,13.9],[8,16.2],[9,18.0],[10,19.8]].map(([x,y])=>({x,y}));
+  currentMode='linear';
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode==='linear'));
+  render();
+});
+
+document.getElementById('btnPreset2').addEventListener('click',()=>{
+  points=[[-5,25.3],[-4,15.8],[-3,9.1],[-2,4.2],[-1,1.1],[0,0.2],[1,1.3],[2,3.9],[3,9.2],[4,15.6],[5,24.9]].map(([x,y])=>({x,y}));
+  currentMode='poly2';
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode==='poly2'));
+  render();
+});
+
+document.getElementById('btnPreset3').addEventListener('click',()=>{
+  points=[[1,2],[2,4],[3,5.9],[4,8],[5,10.2],[6,12],[7,13.8],[8,15.9],[9,18],[5,30],[6,-8]].map(([x,y])=>({x,y}));
+  currentMode='robust';
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode==='robust'));
+  render();
+});
+
+document.getElementById('btnClear').addEventListener('click',()=>{
+  points=[]; fitResult=null; render();
+});
+
+// Init
+window.addEventListener('resize',()=>{ resizeAll(); });
+resizeAll();
+render();
+</script>
+</body>
+</html>

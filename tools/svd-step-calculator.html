@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SVD Step-by-Step Calculator — Singular Value Decomposition | ML3X</title>
+<meta name="description" content="Compute Singular Value Decomposition (SVD) step by step. Enter a matrix up to 4x4, see U, Sigma, and V^T with intermediate calculations. Animated Canvas visualization of the geometric transformation.">
+<meta name="keywords" content="SVD calculator, singular value decomposition, matrix SVD, U sigma V transpose, SVD step by step, matrix factorization, linear algebra tool">
+<link rel="canonical" href="https://ml3x.com/tools/svd-step-calculator.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="SVD Step-by-Step Calculator — Singular Value Decomposition | ML3X">
+<meta property="og:description" content="Compute Singular Value Decomposition (SVD) step by step. Enter a matrix up to 4x4, see U, Sigma, and V^T with intermediate calculations and Canvas visualization.">
+<meta property="og:url" content="https://ml3x.com/tools/svd-step-calculator.html">
+<meta property="og:site_name" content="Zovo Tools">
+<meta property="og:image" content="https://ml3x.com/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SVD Step-by-Step Calculator — Singular Value Decomposition | ML3X">
+<meta name="twitter:description" content="Compute SVD step by step with U, Sigma, V^T and animated geometric visualization.">
+<meta name="twitter:image" content="https://ml3x.com/assets/og-image.png">
+<link rel="stylesheet" href="/assets/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "SVD Step-by-Step Calculator — ML3X",
+  "url": "https://ml3x.com/tools/svd-step-calculator.html",
+  "description": "Compute Singular Value Decomposition (SVD) of matrices up to 4x4. See U, Sigma, V^T factors with full intermediate calculations and animated geometric transformation visualization.",
+  "applicationCategory": "EducationalApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Michael Lip",
+    "url": "https://zovo.one"
+  },
+  "datePublished": "2026-05-28",
+  "dateModified": "2026-05-28"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "SVD Step-by-Step Calculator — Singular Value Decomposition",
+  "description": "Compute Singular Value Decomposition step by step. Enter a matrix up to 4x4 and see U, Sigma, and V^T with intermediate calculations and animated geometric visualization.",
+  "url": "https://ml3x.com/tools/svd-step-calculator.html",
+  "datePublished": "2026-05-28",
+  "dateModified": "2026-05-28",
+  "author": {
+    "@type": "Person",
+    "name": "Michael Lip",
+    "url": "https://zovo.one"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "ML3X",
+    "url": "https://ml3x.com"
+  }
+}
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://ml3x.com/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://ml3x.com/tools/"},{"@type":"ListItem","position":3,"name":"SVD Step-by-Step Calculator"}]}</script>
+<style>
+.svd-tool { max-width: 860px; margin: 0 auto; }
+.size-row { display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap; margin-bottom:1.25rem; }
+.size-row label { font-size:0.82rem; color:var(--text-muted); }
+.size-row select { width:70px; }
+.matrix-label { font-family:'Space Mono',monospace; font-size:0.88rem; color:var(--accent); margin-bottom:0.5rem; font-weight:700; }
+.matrix-wrap { display:inline-block; position:relative; padding:0 10px; }
+.matrix-wrap::before,.matrix-wrap::after { content:''; position:absolute; top:0; bottom:0; width:4px; border:2px solid var(--text-muted); }
+.matrix-wrap::before { left:0; border-right:none; border-radius:3px 0 0 3px; }
+.matrix-wrap::after { right:0; border-left:none; border-radius:0 3px 3px 0; }
+.mg { display:inline-grid; gap:4px; }
+.mg input { width:56px; height:36px; background:var(--bg); border:1px solid var(--border); border-radius:3px; color:var(--text); font-family:'Space Mono',monospace; font-size:0.82rem; text-align:center; outline:none; }
+.mg input:focus { border-color:var(--accent); }
+.svd-results { margin-top:1.5rem; }
+.svd-factor { background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:1.25rem; margin-bottom:1rem; }
+.svd-factor-title { font-family:'Space Mono',monospace; color:var(--accent); font-size:0.95rem; margin-bottom:0.75rem; }
+.out-mg { display:inline-grid; gap:3px; background:var(--border); padding:2px; border-radius:4px; border:1.5px solid var(--accent); }
+.out-cell { background:var(--bg); padding:0.35rem 0.55rem; font-family:'Space Mono',monospace; font-size:0.8rem; text-align:center; min-width:60px; }
+.sigma-cell { color:var(--accent); font-weight:700; }
+.steps-container { margin-top:1.25rem; }
+.step-block { background:var(--bg); border:1px solid var(--border); border-radius:5px; padding:0.9rem; margin-bottom:0.6rem; font-size:0.84rem; line-height:1.6; }
+.step-num { font-family:'Space Mono',monospace; color:var(--accent); font-weight:700; font-size:0.8rem; margin-bottom:0.3rem; }
+.step-math { font-family:'Space Mono',monospace; font-size:0.8rem; color:var(--text-muted); margin-top:0.3rem; background:var(--bg-card); padding:0.4rem 0.6rem; border-radius:3px; white-space:pre-wrap; word-break:break-all; }
+.canvas-section { display:flex; gap:1.5rem; flex-wrap:wrap; margin-top:1.5rem; align-items:flex-start; }
+.canvas-panel { background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:1rem; flex:1; min-width:280px; }
+.canvas-panel h3 { font-family:'Space Mono',monospace; font-size:0.85rem; color:var(--accent); margin-bottom:0.75rem; }
+canvas { display:block; border-radius:4px; background:#0d0d0d; }
+.legend { display:flex; flex-wrap:wrap; gap:0.6rem; margin-top:0.6rem; font-size:0.75rem; color:var(--text-muted); }
+.legend span { display:flex; align-items:center; gap:0.3rem; }
+.legend-dot { width:10px; height:10px; border-radius:50%; display:inline-block; flex-shrink:0; }
+.anim-controls { display:flex; gap:0.5rem; margin-top:0.75rem; flex-wrap:wrap; align-items:center; }
+.phase-label { font-size:0.78rem; color:var(--text-muted); font-family:'Space Mono',monospace; }
+.error-block { background:#1a0505; border:1px solid #ef4444; border-radius:5px; padding:0.75rem 1rem; color:#ef4444; font-size:0.85rem; margin-top:0.75rem; }
+.faq-section details { border:1px solid var(--border); border-radius:5px; margin-bottom:0.6rem; padding:0.75rem 1rem; }
+.faq-section summary { cursor:pointer; font-weight:600; font-size:0.9rem; color:var(--text); list-style:none; }
+.faq-section summary::-webkit-details-marker { display:none; }
+.faq-section summary::before { content:'+ '; color:var(--accent); font-family:'Space Mono',monospace; }
+.faq-section details[open] summary::before { content:'- '; }
+.faq-section details p { margin-top:0.6rem; font-size:0.88rem; color:var(--text-muted); line-height:1.65; }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a href="/" class="site-logo">ML3X</a>
+  <nav class="site-nav">
+    <a href="/">Calculator</a>
+    <a href="/tools/" class="active">Tools</a>
+    <a href="/blog/">Blog</a>
+    <a href="/about.html">About</a>
+    <div class="nav-right">
+      <a href="https://zovo.one/pricing?utm_source=ml3x.com&utm_medium=satellite&utm_campaign=nav-link" class="nav-pro" target="_blank">Go Pro &#10022;</a>
+      <a href="https://zovo.one/tools" class="nav-zovo">Zovo Tools</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="hero">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a> &raquo; <a href="/tools/">Tools</a> &raquo; <span>SVD Step-by-Step Calculator</span>
+    </nav>
+    <h1>SVD Step-by-Step Calculator</h1>
+    <p>Enter a matrix up to 4&times;4. Computes U, &Sigma;, V<sup>T</sup> via the Jacobi method. Shows every intermediate step and animates the geometric transformation on a unit circle.</p>
+  </div>
+
+  <div class="svd-tool">
+    <!-- Controls -->
+    <div class="controls" style="margin-bottom:1.25rem;">
+      <div class="size-row">
+        <label for="nRows">Rows</label>
+        <select id="nRows">
+          <option value="2" selected>2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+        <label for="nCols">Cols</label>
+        <select id="nCols">
+          <option value="2" selected>2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+        <button class="btn btn-outline btn-sm" id="btnRandom">Random</button>
+        <button class="btn btn-outline btn-sm" id="btnPreset1">Image-like</button>
+        <button class="btn btn-outline btn-sm" id="btnPreset2">Rotation</button>
+        <button class="btn btn-outline btn-sm" id="btnClear">Clear</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:1.5rem;align-items:flex-start;flex-wrap:wrap;margin-bottom:1.5rem;">
+      <div>
+        <div class="matrix-label">Input Matrix A</div>
+        <div class="matrix-wrap">
+          <div class="mg" id="matGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn" id="btnCompute" style="margin-bottom:1.5rem;">Compute SVD</button>
+
+    <div id="errBox" style="display:none;" class="error-block"></div>
+    <div id="svdResults" class="svd-results" style="display:none;"></div>
+  </div>
+
+  <!-- Educational content -->
+  <section style="max-width:720px;margin:3rem auto;line-height:1.7;">
+    <h2>What is Singular Value Decomposition?</h2>
+    <p>Singular Value Decomposition (SVD) factors any real m&times;n matrix A into three matrices:</p>
+    <p style="text-align:center;font-family:'Space Mono',monospace;font-size:1.05rem;margin:1.5rem 0;padding:1rem;background:var(--bg-card);border-radius:8px;">A = U &middot; &Sigma; &middot; V<sup>T</sup></p>
+    <p>where U is an m&times;m orthogonal matrix (left singular vectors), &Sigma; is an m&times;n diagonal matrix of non-negative singular values (&sigma;<sub>1</sub> &ge; &sigma;<sub>2</sub> &ge; ... &ge; 0), and V<sup>T</sup> is the transpose of an n&times;n orthogonal matrix (right singular vectors).</p>
+    <p>Geometrically, every linear transformation can be decomposed into three steps: a rotation/reflection V<sup>T</sup>, a scaling along coordinate axes &Sigma;, and another rotation/reflection U. This is why SVD is sometimes called the &ldquo;anatomy of a matrix&rdquo; &mdash; it exposes exactly how much a transformation stretches, shrinks, or reflects space in each independent direction.</p>
+
+    <h2>How This Calculator Computes SVD</h2>
+    <p><strong>Step 1: Form A<sup>T</sup>A.</strong> This n&times;n symmetric positive semi-definite matrix has eigenvalues equal to &sigma;<sub>i</sub><sup>2</sup> (the squared singular values).</p>
+    <p><strong>Step 2: Eigendecompose A<sup>T</sup>A.</strong> The eigenvectors become the columns of V. The singular values are &sigma;<sub>i</sub> = &radic;&lambda;<sub>i</sub>.</p>
+    <p><strong>Step 3: Compute U.</strong> For each non-zero singular value, u<sub>i</sub> = (1/&sigma;<sub>i</sub>)Av<sub>i</sub>. Remaining columns are found by completing to an orthonormal basis.</p>
+    <p><strong>Step 4: Sort.</strong> Reorder columns/rows so &sigma;<sub>1</sub> &ge; &sigma;<sub>2</sub> &ge; ... &ge; 0.</p>
+    <p>This calculator uses the Jacobi eigenvalue algorithm for A<sup>T</sup>A, which iteratively applies Givens rotations to off-diagonal elements until convergence. It is numerically stable for matrices up to 4&times;4.</p>
+
+    <h2>Applications of SVD</h2>
+    <p><strong>Low-rank approximation:</strong> Truncating to the top k singular values gives the best rank-k approximation of A in the Frobenius norm. This underpins image compression (keep top k modes), topic modeling (Latent Semantic Analysis), and recommendation systems (collaborative filtering).</p>
+    <p><strong>Pseudoinverse:</strong> A<sup>+</sup> = V&Sigma;<sup>+</sup>U<sup>T</sup>, where &Sigma;<sup>+</sup> inverts only the non-zero singular values. This is the foundation of least-squares solvers when A is not square or not full-rank.</p>
+    <p><strong>Condition number:</strong> &kappa;(A) = &sigma;<sub>max</sub>/&sigma;<sub>min</sub>. Large condition numbers signal near-singularity and numerical instability in linear solves.</p>
+    <p><strong>PCA:</strong> The right singular vectors V of the centered data matrix are exactly the principal component directions. The singular values encode explained variance.</p>
+  </section>
+
+  <section class="faq-section" style="max-width:720px;margin:2rem auto;">
+    <h2>Frequently Asked Questions</h2>
+    <details>
+      <summary>What makes SVD different from eigendecomposition?</summary>
+      <p>Eigendecomposition A = PDP<sup>-1</sup> requires a square matrix and only exists when A has n linearly independent eigenvectors. SVD works for any m&times;n matrix, always exists, and the factor matrices U, V are always orthogonal. For symmetric positive definite matrices, SVD and eigendecomposition coincide with U = V.</p>
+    </details>
+    <details>
+      <summary>Why are singular values always non-negative?</summary>
+      <p>Singular values are defined as &sigma;<sub>i</sub> = &radic;&lambda;<sub>i</sub>(A<sup>T</sup>A). Since A<sup>T</sup>A is positive semi-definite, all its eigenvalues &lambda;<sub>i</sub> are non-negative, and their square roots are real and non-negative. Any sign freedom is absorbed into the orthogonal factors U and V.</p>
+    </details>
+    <details>
+      <summary>What is the relationship between SVD and rank?</summary>
+      <p>The rank of A equals the number of non-zero singular values. If r singular values are non-zero, then A has rank r. Setting the smallest singular values to zero gives the best rank-k approximation by the Eckart&ndash;Young theorem. This is the mathematical basis of dimensionality reduction.</p>
+    </details>
+    <details>
+      <summary>How does the animated unit circle visualization work?</summary>
+      <p>A unit circle (all unit vectors in 2D) is drawn in grey. After the transformation A (using only the top-left 2&times;2 block), the circle maps to an ellipse &mdash; shown in pink. The ellipse axes correspond to the left singular vectors U scaled by the singular values &sigma;. The three phases of the animation show: (1) V<sup>T</sup> rotating the unit circle, (2) &Sigma; stretching it into an axis-aligned ellipse, and (3) U rotating it to the final position.</p>
+    </details>
+    <details>
+      <summary>Can this calculator handle rectangular matrices?</summary>
+      <p>Yes. SVD is defined for any m&times;n matrix, rectangular or square. When m &ne; n, U is m&times;m, &Sigma; is m&times;n (with min(m,n) singular values on the diagonal), and V is n&times;n. This calculator supports up to 4&times;4 including all rectangular shapes like 2&times;3, 3&times;2, etc.</p>
+    </details>
+  </section>
+
+  <section class="related-links" style="max-width:720px;margin:2rem auto;">
+    <h2>Related Tools</h2>
+    <div class="related-grid">
+      <a class="related-card" href="/tools/eigenvalue-calculator.html">Eigenvalue Calculator &mdash; characteristic polynomial method</a>
+      <a class="related-card" href="/tools/eigenvector-step-solver.html">Eigenvector Step Solver &mdash; visualize transformations</a>
+      <a class="related-card" href="/tools/matrix-decomposition.html">Matrix Decomposition &mdash; LU, QR, SVD overview</a>
+      <a class="related-card" href="/tools/linear-regression-visualizer.html">Linear Regression Visualizer &mdash; OLS, R&sup2;, residuals</a>
+    </div>
+  </section>
+
+  <section style="max-width:720px;margin:2rem auto;">
+    <p style="font-size:0.9rem;color:var(--text-muted);">Built by <a href="https://zovo.one">Michael Lip</a>. Try the <a href="/">ML3X Matrix Calculator</a> for interactive step-by-step solutions.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">Zovo Tools</div>
+    <div class="footer-tagline">Free developer tools by a solo dev. No tracking.</div>
+    <a href="https://zovo.one/pricing?utm_source=ml3x.com&utm_medium=satellite&utm_campaign=footer-link" class="footer-cta">Zovo Lifetime — $99 once, free forever &rarr;</a>
+    <div class="footer-copy">&copy; 2026 <a href="https://zovo.one">Zovo</a> &middot; 47/500 founding spots</div>
+  </div>
+</footer>
+
+<nav class="zovo-network" aria-label="Zovo Tools Network">
+  <div class="zovo-network-inner">
+    <h3 class="zovo-network-title">Explore More Tools</h3>
+    <div class="zovo-network-links">
+      <a href="https://abwex.com">ABWex — A/B Testing</a>
+      <a href="https://claudflow.com">ClaudFlow — Workflows</a>
+      <a href="https://claudhq.com">ClaudHQ — AI Code Tools &amp; Fixes</a>
+      <a href="https://claudkit.com">ClaudKit — API</a>
+      <a href="https://enhio.com">Enhio — Text Tools</a>
+      <a href="https://epochpilot.com">EpochPilot — Timestamps</a>
+      <a href="https://gen8x.com">Gen8X — Color Tools</a>
+      <a href="https://gpt0x.com">GPT0X — AI Models</a>
+      <a href="https://heytensor.com">HeyTensor — ML Tools</a>
+      <a href="https://invokebot.com">InvokeBot — Webhooks</a>
+      <a href="https://kappafy.com">Kappafy — JSON</a>
+      <a href="https://kappakit.com">KappaKit — Dev Toolkit</a>
+      <a href="https://kickllm.com">KickLLM — LLM Costs</a>
+      <a href="https://krzen.com">Krzen — Image Tools</a>
+      <a href="https://lochbot.com">LochBot — Security</a>
+      <a href="https://lockml.com">LockML — ML Compare</a>
+    </div>
+  </div>
+</nav>
+
+<script src="/assets/js/pro-nudge.js"></script>
+<script>
+// ============================================================
+// SVD Step-by-Step Calculator — pure JS, zero external deps
+// Algorithm: Jacobi eigenvalue on A^T A, then derive U
+// ============================================================
+
+const nRowsEl = document.getElementById('nRows');
+const nColsEl = document.getElementById('nCols');
+const matGrid = document.getElementById('matGrid');
+const btnCompute = document.getElementById('btnCompute');
+const btnRandom = document.getElementById('btnRandom');
+const btnPreset1 = document.getElementById('btnPreset1');
+const btnPreset2 = document.getElementById('btnPreset2');
+const btnClear = document.getElementById('btnClear');
+const svdResults = document.getElementById('svdResults');
+const errBox = document.getElementById('errBox');
+
+let animRAF = null;
+let animState = { phase: 0, t: 0, running: false, lastTime: 0 };
+
+// ---- Matrix helpers ----
+function zeros(r, c) { return Array.from({length:r}, () => new Float64Array(c)); }
+function eye(n) { const M = zeros(n,n); for(let i=0;i<n;i++) M[i][i]=1; return M; }
+function copyM(A) { return A.map(r => Float64Array.from(r)); }
+function mulM(A, B) {
+  const r=A.length, c=B[0].length, k=B.length;
+  const C=zeros(r,c);
+  for(let i=0;i<r;i++) for(let j=0;j<c;j++) for(let l=0;l<k;l++) C[i][j]+=A[i][l]*B[l][j];
+  return C;
+}
+function transposeM(A) {
+  const r=A.length, c=A[0].length, T=zeros(c,r);
+  for(let i=0;i<r;i++) for(let j=0;j<c;j++) T[j][i]=A[i][j];
+  return T;
+}
+function fmtNum(x) {
+  if(Math.abs(x)<1e-9) return '0';
+  if(Math.abs(x)>=1000||Math.abs(x)<0.001) return x.toExponential(4);
+  return parseFloat(x.toFixed(5)).toString();
+}
+function fmtMat(M) {
+  return M.map(r=>Array.from(r).map(fmtNum).join('  ')).join('\n');
+}
+
+// ---- Jacobi eigenvalue for symmetric matrix ----
+// Returns {values: Float64Array, vectors: matrix}
+function jacobiEigen(S) {
+  const n = S.length;
+  let A = copyM(S);
+  let V = eye(n);
+  const MAX_ITER = 200;
+  for(let iter=0;iter<MAX_ITER;iter++){
+    // Find largest off-diagonal
+    let maxVal=0, p=0, q=1;
+    for(let i=0;i<n;i++) for(let j=i+1;j<n;j++){
+      const v=Math.abs(A[i][j]);
+      if(v>maxVal){maxVal=v;p=i;q=j;}
+    }
+    if(maxVal<1e-12) break;
+    // Compute Givens rotation angle
+    const theta = (A[q][q]-A[p][p])/(2*A[p][q]);
+    const t = Math.sign(theta||1)/(Math.abs(theta)+Math.sqrt(1+theta*theta));
+    const c = 1/Math.sqrt(1+t*t), s = t*c;
+    // Apply rotation A = G^T A G
+    const Ap = copyM(A);
+    Ap[p][p] = c*c*A[p][p]-2*s*c*A[p][q]+s*s*A[q][q];
+    Ap[q][q] = s*s*A[p][p]+2*s*c*A[p][q]+c*c*A[q][q];
+    Ap[p][q] = Ap[q][p] = 0;
+    for(let r=0;r<n;r++){
+      if(r===p||r===q) continue;
+      Ap[p][r]=Ap[r][p]=c*A[p][r]-s*A[q][r];
+      Ap[q][r]=Ap[r][q]=s*A[p][r]+c*A[q][r];
+    }
+    A = Ap;
+    // Accumulate V
+    const Vp = copyM(V);
+    for(let r=0;r<n;r++){
+      Vp[r][p] = c*V[r][p]-s*V[r][q];
+      Vp[r][q] = s*V[r][p]+c*V[r][q];
+    }
+    V = Vp;
+  }
+  const values = new Float64Array(n);
+  for(let i=0;i<n;i++) values[i]=A[i][i];
+  return {values, vectors: V};
+}
+
+// ---- SVD ----
+function computeSVD(A) {
+  const m=A.length, n=A[0].length;
+  const At = transposeM(A);
+  const AtA = mulM(At, A); // n x n
+  const AAt = mulM(A, At); // m x m
+
+  // Eigendecompose A^T A -> V, singular values^2
+  const eigN = jacobiEigen(AtA);
+  const eigM = jacobiEigen(AAt);
+
+  // Sort by eigenvalue descending
+  const k = Math.min(m,n);
+  const indices = Array.from({length:eigN.values.length},(_,i)=>i)
+    .sort((a,b)=>eigN.values[b]-eigN.values[a]);
+
+  const sigmas = indices.map(i=>Math.max(0,eigN.values[i]));
+  const V = zeros(n, n);
+  for(let j=0;j<n;j++) for(let i=0;i<n;i++) V[i][j]=eigN.vectors[i][indices[j]];
+
+  // Compute U from Av_i / sigma_i
+  const U = eye(m);
+  const sigVals = [];
+  for(let j=0;j<k;j++){
+    const sv = Math.sqrt(Math.max(0, sigmas[j]));
+    sigVals.push(sv);
+    if(sv > 1e-10){
+      // u_j = A v_j / sigma_j
+      const vj = Array.from({length:n},(_,r)=>V[r][j]);
+      for(let i=0;i<m;i++){
+        let s=0;
+        for(let r=0;r<n;r++) s+=A[i][r]*vj[r];
+        U[i][j]=s/sv;
+      }
+    }
+  }
+  // Fill remaining U columns via Gram-Schmidt if m > k
+  if(m > k){
+    // Use eigenvectors of AA^T for remaining
+    const indM = Array.from({length:eigM.values.length},(_,i)=>i)
+      .sort((a,b)=>eigM.values[b]-eigM.values[a]);
+    for(let j=k;j<m;j++){
+      for(let i=0;i<m;i++) U[i][j]=eigM.vectors[i][indM[j]];
+    }
+  }
+
+  // Build Sigma matrix
+  const Sigma = zeros(m,n);
+  for(let i=0;i<k;i++) Sigma[i][i]=sigVals[i];
+
+  // Ensure consistency: fix sign of U columns to match A v = sigma u
+  for(let j=0;j<k;j++){
+    if(sigVals[j]<1e-10) continue;
+    const vj = Array.from({length:n},(_,r)=>V[r][j]);
+    let dot=0;
+    for(let i=0;i<m;i++){
+      let av=0; for(let r=0;r<n;r++) av+=A[i][r]*vj[r];
+      dot += av * U[i][j];
+    }
+    if(dot < 0){
+      for(let i=0;i<m;i++) U[i][j] *= -1;
+    }
+  }
+
+  return {U, Sigma, V, sigVals, m, n};
+}
+
+// ---- Matrix grid rendering ----
+function buildGrid() {
+  const r = parseInt(nRowsEl.value), c = parseInt(nColsEl.value);
+  matGrid.style.gridTemplateColumns = `repeat(${c}, 56px)`;
+  matGrid.innerHTML = '';
+  for(let i=0;i<r;i++) for(let j=0;j<c;j++){
+    const inp = document.createElement('input');
+    inp.type='number'; inp.step='any'; inp.value='';
+    inp.dataset.r=i; inp.dataset.c=j;
+    inp.setAttribute('aria-label',`Row ${i+1}, Col ${j+1}`);
+    matGrid.appendChild(inp);
+  }
+}
+
+function getMatrix() {
+  const r=parseInt(nRowsEl.value), c=parseInt(nColsEl.value);
+  const A=zeros(r,c);
+  const inputs=[...matGrid.querySelectorAll('input')];
+  for(const inp of inputs){
+    const v=parseFloat(inp.value)||0;
+    A[inp.dataset.r][inp.dataset.c]=v;
+  }
+  return A;
+}
+
+function setMatrix(data) {
+  nRowsEl.value=data.length;
+  nColsEl.value=data[0].length;
+  buildGrid();
+  const inputs=[...matGrid.querySelectorAll('input')];
+  for(const inp of inputs) inp.value=data[inp.dataset.r][inp.dataset.c];
+}
+
+// ---- HTML matrix rendering ----
+function renderMatrix(M, highlight=null) {
+  const r=M.length, c=M[0].length;
+  let html=`<div class="out-mg" style="grid-template-columns:repeat(${c},1fr)">`;
+  for(let i=0;i<r;i++) for(let j=0;j<c;j++){
+    const cls = (highlight==='sigma' && i===j && Math.abs(M[i][j])>1e-10) ? 'out-cell sigma-cell' : 'out-cell';
+    html+=`<div class="${cls}">${fmtNum(M[i][j])}</div>`;
+  }
+  html+='</div>';
+  return html;
+}
+
+// ---- Canvas: unit circle SVD visualization (2D) ----
+let canvasData = null;
+
+function setupCanvas(svd) {
+  // Only works on 2x2 submatrix
+  canvasData = svd;
+}
+
+function drawSVD(canvas, svd, phase, t) {
+  const ctx = canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  const cx=W/2, cy=H/2;
+  const scale = Math.min(W,H)*0.3;
+
+  ctx.clearRect(0,0,W,H);
+  // Grid
+  ctx.strokeStyle='#222'; ctx.lineWidth=1;
+  for(let x=0;x<=W;x+=W/8){ ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke(); }
+  for(let y=0;y<=H;y+=H/8){ ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke(); }
+  // Axes
+  ctx.strokeStyle='#333'; ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(W,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,H);ctx.stroke();
+
+  const U2=[[svd.U[0][0],svd.U[0][1]],[svd.U[1][0],svd.U[1][1]]];
+  const V2=[[svd.V[0][0],svd.V[0][1]],[svd.V[1][0],svd.V[1][1]]];
+  const s1=svd.sigVals[0]||1, s2=svd.sigVals[1]||1;
+  const S2=[[s1,0],[0,s2]];
+  // Identity -> VT -> S -> U
+  function applyMat(M, x, y){ return [M[0][0]*x+M[0][1]*y, M[1][0]*x+M[1][1]*y]; }
+  function lerp(a,b,tt){ return a+(b-a)*tt; }
+  function lerpMat(Ma,Mb,tt){
+    return [[lerp(Ma[0][0],Mb[0][0],tt),lerp(Ma[0][1],Mb[0][1],tt)],
+            [lerp(Ma[1][0],Mb[1][0],tt),lerp(Ma[1][1],Mb[1][1],tt)]];
+  }
+  const I2=[[1,0],[0,1]];
+  const VT2=[[V2[0][0],V2[1][0]],[V2[0][1],V2[1][1]]]; // transpose of V
+
+  // Phases: 0=idle (show unit circle + full A transform)
+  //         1=apply VT (t 0->1)
+  //         2=apply S (t 0->1)
+  //         3=apply U (t 0->1)
+  let M;
+  if(phase===0){
+    M=I2;
+  } else if(phase===1){
+    M=lerpMat(I2,VT2,t);
+  } else if(phase===2){
+    const interS=lerpMat(I2,S2,t);
+    M=[[interS[0][0]*VT2[0][0]+interS[0][1]*VT2[1][0],interS[0][0]*VT2[0][1]+interS[0][1]*VT2[1][1]],
+       [interS[1][0]*VT2[0][0]+interS[1][1]*VT2[1][0],interS[1][0]*VT2[0][1]+interS[1][1]*VT2[1][1]]];
+  } else {
+    const interU=lerpMat(I2,U2,t);
+    const prev=[[S2[0][0]*VT2[0][0]+S2[0][1]*VT2[1][0],S2[0][0]*VT2[0][1]+S2[0][1]*VT2[1][1]],
+                [S2[1][0]*VT2[0][0]+S2[1][1]*VT2[1][0],S2[1][0]*VT2[0][1]+S2[1][1]*VT2[1][1]]];
+    M=[[interU[0][0]*prev[0][0]+interU[0][1]*prev[1][0],interU[0][0]*prev[0][1]+interU[0][1]*prev[1][1]],
+       [interU[1][0]*prev[0][0]+interU[1][1]*prev[1][0],interU[1][0]*prev[0][1]+interU[1][1]*prev[1][1]]];
+  }
+
+  // Draw original unit circle (grey)
+  ctx.beginPath(); ctx.strokeStyle='#444'; ctx.lineWidth=1.5;
+  for(let a=0;a<=360;a+=2){
+    const rad=a*Math.PI/180;
+    const x=Math.cos(rad)*scale+cx, y=-Math.sin(rad)*scale+cy;
+    a===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+
+  // Draw transformed ellipse (accent pink)
+  ctx.beginPath(); ctx.strokeStyle='#EC4899'; ctx.lineWidth=2.5;
+  for(let a=0;a<=360;a+=2){
+    const rad=a*Math.PI/180;
+    const ux=Math.cos(rad), uy=Math.sin(rad);
+    const [tx,ty]=applyMat(M,ux,uy);
+    const px=tx*scale+cx, py=-ty*scale+cy;
+    a===0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+
+  // Draw transformed axes (U columns * sigma)
+  if(phase>=3 || phase===0){
+    // Final axes
+    for(let j=0;j<2;j++){
+      const sv=svd.sigVals[j]||0;
+      const ux=svd.U[0][j]*sv, uy=svd.U[1][j]*sv;
+      ctx.beginPath(); ctx.strokeStyle=j===0?'#38bdf8':'#a78bfa'; ctx.lineWidth=2;
+      ctx.moveTo(cx,cy);
+      ctx.lineTo(ux*scale+cx,-uy*scale+cy);
+      ctx.stroke();
+      // arrowhead
+      const ang=Math.atan2(-uy,ux);
+      ctx.beginPath(); ctx.fillStyle=j===0?'#38bdf8':'#a78bfa';
+      ctx.moveTo(ux*scale+cx,-uy*scale+cy);
+      ctx.lineTo(ux*scale+cx-10*Math.cos(ang-0.3),-uy*scale+cy-10*(-Math.sin(ang-0.3)));
+      ctx.lineTo(ux*scale+cx-10*Math.cos(ang+0.3),-uy*scale+cy-10*(-Math.sin(ang+0.3)));
+      ctx.closePath(); ctx.fill();
+    }
+  }
+
+  // Phase label
+  const labels=['Unit circle (original)','Step 1: Apply V\u1D40 (rotate)','Step 2: Apply \u03A3 (scale)','Step 3: Apply U (rotate)'];
+  ctx.fillStyle='#888'; ctx.font='12px Space Mono,monospace';
+  ctx.fillText(labels[phase]||'', 10, H-12);
+}
+
+// ---- Main compute ----
+function compute() {
+  if(animRAF){ cancelAnimationFrame(animRAF); animRAF=null; }
+  const A = getMatrix();
+  const m=A.length, n=A[0].length;
+  errBox.style.display='none';
+  svdResults.style.display='none';
+  svdResults.innerHTML='';
+
+  try {
+    const svd = computeSVD(A);
+    const {U, Sigma, V, sigVals} = svd;
+    const Vt = transposeM(V);
+    const k = Math.min(m,n);
+
+    // Verify: reconstruct A = U Sigma Vt
+    const recon = mulM(mulM(U, Sigma), Vt);
+    let maxErr=0;
+    for(let i=0;i<m;i++) for(let j=0;j<n;j++) maxErr=Math.max(maxErr,Math.abs(recon[i][j]-A[i][j]));
+
+    // Build steps
+    const AtA = mulM(transposeM(A), A);
+    const sigSq = sigVals.map(s=>s*s);
+
+    let html = '';
+
+    // Steps section
+    html += `<div class="steps-container">`;
+    html += `<div class="step-block"><div class="step-num">STEP 1 — Compute A\u1D40 A</div>`;
+    html += `<p>Form the n&times;n symmetric matrix A<sup>T</sup>A. Its eigenvalues equal &sigma;<sub>i</sub><sup>2</sup>.</p>`;
+    html += `<div class="step-math">A\u1D40A =\n${fmtMat(AtA)}</div></div>`;
+
+    html += `<div class="step-block"><div class="step-num">STEP 2 — Eigendecompose A\u1D40 A (Jacobi method)</div>`;
+    html += `<p>Jacobi iteration sweeps off-diagonal elements to zero via Givens rotations. The eigenvectors become columns of V; eigenvalues give &sigma;<sub>i</sub><sup>2</sup>.</p>`;
+    html += `<div class="step-math">Eigenvalues (\u03C3\u00B2): [${sigSq.slice(0,k).map(fmtNum).join(', ')}]\nSingular values (\u03C3): [${sigVals.slice(0,k).map(fmtNum).join(', ')}]</div></div>`;
+
+    html += `<div class="step-block"><div class="step-num">STEP 3 — Right singular vectors V</div>`;
+    html += `<p>Eigenvectors of A<sup>T</sup>A sorted by descending eigenvalue, arranged as columns of V.</p>`;
+    html += `<div class="step-math">V =\n${fmtMat(V)}</div></div>`;
+
+    html += `<div class="step-block"><div class="step-num">STEP 4 — Left singular vectors U</div>`;
+    html += `<p>For each non-zero &sigma;<sub>i</sub>: u<sub>i</sub> = (1/&sigma;<sub>i</sub>) A v<sub>i</sub>. Remaining columns from eigendecomposition of AA<sup>T</sup>.</p>`;
+    html += `<div class="step-math">U =\n${fmtMat(U)}</div></div>`;
+
+    html += `<div class="step-block"><div class="step-num">STEP 5 — Sort and assemble</div>`;
+    html += `<p>Order by &sigma;<sub>1</sub> &ge; &sigma;<sub>2</sub> &ge; ... &ge; 0. Reconstruction error (Frobenius): ${fmtNum(maxErr)} ${maxErr<1e-6?'(verified)':'(may have precision loss)'}.</p>`;
+    html += `<div class="step-math">A = U \u00B7 \u03A3 \u00B7 V\u1D40  (error: ${maxErr.toExponential(3)})</div></div>`;
+    html += `</div>`; // steps-container
+
+    // Factor display
+    html += `<div class="svd-factor"><div class="svd-factor-title">U &mdash; Left Singular Vectors (${m}&times;${m})</div>`;
+    html += renderMatrix(U); html += `</div>`;
+
+    html += `<div class="svd-factor"><div class="svd-factor-title">&Sigma; &mdash; Diagonal Singular Values (${m}&times;${n})</div>`;
+    html += renderMatrix(Sigma,'sigma');
+    html += `<p style="margin-top:0.6rem;font-size:0.82rem;color:var(--text-muted);">&sigma; = [${sigVals.slice(0,k).map(fmtNum).join(', ')}]</p>`;
+    html += `<p style="font-size:0.82rem;color:var(--text-muted);">Condition number &kappa;(A) = ${fmtNum(sigVals[0]/(sigVals[k-1]||1e-15))}</p>`;
+    html += `</div>`;
+
+    html += `<div class="svd-factor"><div class="svd-factor-title">V<sup>T</sup> &mdash; Right Singular Vectors transposed (${n}&times;${n})</div>`;
+    html += renderMatrix(Vt); html += `</div>`;
+
+    // Canvas visualization (2x2 block)
+    if(m>=2 && n>=2){
+      html += `<div class="canvas-section">`;
+      html += `<div class="canvas-panel">
+        <h3>Geometric Transformation: Unit Circle &rarr; Ellipse</h3>
+        <canvas id="svdCanvas" width="300" height="300"></canvas>
+        <div class="legend">
+          <span><span class="legend-dot" style="background:#444;border:1px solid #666;"></span>Unit circle</span>
+          <span><span class="legend-dot" style="background:#EC4899;"></span>Transformed ellipse</span>
+          <span><span class="legend-dot" style="background:#38bdf8;"></span>&sigma;<sub>1</sub> axis (u<sub>1</sub>)</span>
+          <span><span class="legend-dot" style="background:#a78bfa;"></span>&sigma;<sub>2</sub> axis (u<sub>2</sub>)</span>
+        </div>
+        <div class="anim-controls">
+          <button class="btn btn-sm" id="btnPlay">Play Animation</button>
+          <button class="btn btn-outline btn-sm" id="btnReset">Reset</button>
+          <span class="phase-label" id="phaseLabel">Phase: idle</span>
+        </div>
+      </div>`;
+      html += `</div>`;
+    }
+
+    svdResults.innerHTML = html;
+    svdResults.style.display = 'block';
+
+    // Draw static state
+    if(m>=2 && n>=2){
+      const canvas = document.getElementById('svdCanvas');
+      drawSVD(canvas, svd, 0, 0);
+      // Animation
+      document.getElementById('btnPlay').addEventListener('click', () => startAnim(svd));
+      document.getElementById('btnReset').addEventListener('click', () => {
+        if(animRAF){ cancelAnimationFrame(animRAF); animRAF=null; }
+        animState = {phase:0, t:0, running:false, lastTime:0};
+        drawSVD(canvas, svd, 0, 0);
+        document.getElementById('phaseLabel').textContent='Phase: idle';
+      });
+    }
+  } catch(e) {
+    errBox.textContent = 'Error: ' + e.message;
+    errBox.style.display = 'block';
+  }
+}
+
+function startAnim(svd) {
+  if(animRAF){ cancelAnimationFrame(animRAF); animRAF=null; }
+  animState = {phase:1, t:0, running:true, lastTime:0};
+  const canvas = document.getElementById('svdCanvas');
+  const phaseLabel = document.getElementById('phaseLabel');
+  const phasNames = ['idle','V\u1D40 (rotate)','  \u03A3 (scale)','U (rotate)','done'];
+  const SPEED = 0.6; // t units per second
+
+  function tick(ts){
+    if(!animState.running) return;
+    const dt = animState.lastTime>0 ? (ts-animState.lastTime)/1000 : 0;
+    animState.lastTime = ts;
+    animState.t += SPEED*dt;
+    if(animState.t>=1){
+      animState.t=1;
+      drawSVD(canvas, svd, animState.phase, 1);
+      phaseLabel.textContent='Phase: '+phasNames[animState.phase];
+      if(animState.phase<3){
+        animState.phase++;
+        animState.t=0;
+        animRAF=requestAnimationFrame(tick);
+      } else {
+        animState.running=false;
+        phaseLabel.textContent='Phase: done (A = U\u03A3V\u1D40)';
+      }
+      return;
+    }
+    drawSVD(canvas, svd, animState.phase, animState.t);
+    phaseLabel.textContent='Phase: '+phasNames[animState.phase];
+    animRAF=requestAnimationFrame(tick);
+  }
+  animRAF=requestAnimationFrame(tick);
+}
+
+// ---- Presets ----
+btnRandom.addEventListener('click', () => {
+  const r=parseInt(nRowsEl.value), c=parseInt(nColsEl.value);
+  const inputs=[...matGrid.querySelectorAll('input')];
+  for(const inp of inputs) inp.value=(Math.round((Math.random()*10-5)*10)/10).toString();
+});
+
+btnPreset1.addEventListener('click', () => {
+  setMatrix([[3,1,1],[2,4,2],[1,1,3]]);
+});
+
+btnPreset2.addEventListener('click', () => {
+  const ang=Math.PI/4, c=parseFloat((Math.cos(ang)).toFixed(5)), s=parseFloat((Math.sin(ang)).toFixed(5));
+  setMatrix([[c,-s],[s,c]]);
+});
+
+btnClear.addEventListener('click', () => {
+  [...matGrid.querySelectorAll('input')].forEach(i=>i.value='');
+  svdResults.style.display='none';
+  errBox.style.display='none';
+});
+
+nRowsEl.addEventListener('change', buildGrid);
+nColsEl.addEventListener('change', buildGrid);
+btnCompute.addEventListener('click', compute);
+document.addEventListener('keydown', e=>{ if(e.key==='Enter') compute(); });
+
+// Init
+buildGrid();
+</script>
+</body>
+</html>
