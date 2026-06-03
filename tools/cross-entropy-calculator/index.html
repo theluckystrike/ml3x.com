@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>Cross-Entropy Loss Calculator — Binary & Categorical</title>
+  <meta name="description" content="Interactive cross-entropy loss calculator for binary and categorical classification. Compute loss per sample, average loss, compare with MSE, and...">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://ml3x.com/tools/cross-entropy-calculator">
+  <!-- JSON-LD FAQ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is cross-entropy loss?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Cross-entropy loss measures the difference between predicted probability distribution and true labels. It is widely used in classification tasks."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How is binary cross-entropy calculated?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Binary cross-entropy = -[ y_true * log(p) + (1 - y_true) * log(1 - p) ], where y_true is 0 or 1 and p is predicted probability."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is categorical cross-entropy?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Categorical cross-entropy = - sum( y_true_i * log(p_i) ) over all classes, where y_true is one-hot encoded and p_i are predicted probabilities."
+        }
+      }
+    ]
+  }
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      padding: 1.5rem 1rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      max-width: 1200px;
+      width: 100%;
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.25rem;
+      color: #f1f5f9;
+    }
+    .subhead {
+      color: #94a3b8;
+      margin-bottom: 2rem;
+      border-left: 4px solid #38bdf8;
+      padding-left: 1rem;
+    }
+    .card {
+      background: #1e293b;
+      border-radius: 1.25rem;
+      padding: 1.5rem 1.8rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      border: 1px solid #334155;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.8rem;
+    }
+    @media (max-width: 700px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
+      }
+      .card {
+        padding: 1.2rem;
+      }
+      h1 { font-size: 1.6rem; }
+    }
+    label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 0.3rem;
+      color: #cbd5e1;
+    }
+    select, input, textarea {
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      padding: 0.6rem 0.8rem;
+      border-radius: 0.75rem;
+      font-size: 1rem;
+      width: 100%;
+      transition: 0.2s;
+    }
+    select:focus, input:focus, textarea:focus {
+      outline: none;
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+    .btn {
+      background: #38bdf8;
+      color: #0f172a;
+      font-weight: 600;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.15s;
+      box-shadow: 0 2px 8px rgba(56,189,248,0.3);
+    }
+    .btn:hover {
+      background: #7dd3fc;
+      transform: scale(1.02);
+    }
+    .btn-secondary {
+      background: #334155;
+      color: #e2e8f0;
+      box-shadow: none;
+    }
+    .btn-secondary:hover {
+      background: #475569;
+    }
+    .flex-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      align-items: center;
+    }
+    .mt-2 { margin-top: 1.2rem; }
+    .mb-1 { margin-bottom: 0.8rem; }
+    .badge {
+      background: #1e293b;
+      border: 1px solid #38bdf8;
+      color: #bae6fd;
+      padding: 0.2rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+    .formula-box {
+      background: #0f172a;
+      padding: 1rem 1.2rem;
+      border-radius: 1rem;
+      font-family: 'Courier New', monospace;
+      font-size: 0.95rem;
+      border-left: 4px solid #38bdf8;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .loss-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #38bdf8;
+    }
+    .canvas-wrapper {
+      background: #0f172a;
+      border-radius: 1rem;
+      padding: 0.5rem;
+      margin-top: 0.8rem;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #0f172a;
+      border-radius: 0.8rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th {
+      text-align: left;
+      color: #94a3b8;
+      font-weight: 500;
+      border-bottom: 1px solid #334155;
+      padding: 0.5rem 0.3rem;
+    }
+    td {
+      padding: 0.4rem 0.3rem;
+      border-bottom: 1px solid #1e293b;
+    }
+    .footer {
+      margin-top: 3rem;
+      text-align: center;
+      color: #475569;
+      font-size: 0.9rem;
+      border-top: 1px solid #1e293b;
+      padding-top: 1.5rem;
+    }
+    .inline-code {
+      background: #1e293b;
+      padding: 0.1rem 0.4rem;
+      border-radius: 6px;
+      font-family: monospace;
+    }
+    .text-accent { color: #38bdf8; }
+    .text-muted { color: #94a3b8; }
+    .small { font-size: 0.8rem; }
+  </style>
+
+    <meta property="og:title" content="Cross-Entropy Loss Calculator — Binary & Categorical">
+    <meta property="og:description" content="Interactive cross-entropy loss calculator for binary and categorical classification. Compute loss per sample, average loss, compare with MSE, and...">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ml3x.com/tools/cross-entropy-calculator">
+</head>
+<body>
+<div class="container">
+  <h1>⚡ Cross-Entropy Loss Calculator</h1>
+  <div class="subhead">Binary & Categorical · per-sample & average · loss curve · MSE comparison</div>
+
+  <!-- Mode selection -->
+  <div class="card">
+    <div class="flex-row mb-1">
+      <label style="min-width: 100px;">Mode</label>
+      <select id="modeSelect" style="max-width: 260px;">
+        <option value="binary">Binary cross-entropy</option>
+        <option value="categorical">Categorical cross-entropy</option>
+      </select>
+      <span class="badge" id="modeBadge">binary</span>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <!-- Input panel -->
+    <div class="card">
+      <h3 style="margin-bottom: 0.8rem; font-weight: 500;">📥 Input</h3>
+      <div id="inputArea">
+        <!-- dynamic content -->
+      </div>
+      <div class="flex-row mt-2">
+        <button class="btn" id="computeBtn">Compute loss</button>
+        <button class="btn btn-secondary" id="resetBtn">Reset</button>
+      </div>
+      <div id="batchInfo" class="small text-muted mt-2"></div>
+    </div>
+
+    <!-- Results panel -->
+    <div class="card">
+      <h3 style="margin-bottom: 0.8rem; font-weight: 500;">📊 Results</h3>
+      <div id="resultsArea">
+        <div class="formula-box" id="formulaDisplay">Loss formula will appear here</div>
+        <div class="flex-row mt-2" style="justify-content: space-between;">
+          <span>Loss per sample</span>
+          <span class="loss-value" id="lossPerSample">—</span>
+        </div>
+        <div class="flex-row" style="justify-content: space-between;">
+          <span>Average loss</span>
+          <span class="loss-value" id="averageLoss">—</span>
+        </div>
+        <div class="flex-row" style="justify-content: space-between;">
+          <span>MSE loss (comparison)</span>
+          <span class="loss-value" id="mseLoss">—</span>
+        </div>
+      </div>
+      <!-- Loss curve canvas -->
+      <div class="canvas-wrapper">
+        <canvas id="lossCurveCanvas" width="400" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Batch table -->
+  <div class="card" id="batchTableCard">
+    <h3 style="margin-bottom: 0.8rem; font-weight: 500;">📋 Batch results</h3>
+    <div id="batchTableContainer"><p class="text-muted">Enter multiple samples to see per-sample loss.</p></div>
+  </div>
+
+  <div class="footer">© 2025 ml3x.com</div>
+</div>
+
+<script>
+  (function() {
+    // DOM refs
+    const modeSelect = document.getElementById('modeSelect');
+    const modeBadge = document.getElementById('modeBadge');
+    const inputArea = document.getElementById('inputArea');
+    const computeBtn = document.getElementById('computeBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const formulaDisplay = document.getElementById('formulaDisplay');
+    const lossPerSample = document.getElementById('lossPerSample');
+    const averageLoss = document.getElementById('averageLoss');
+    const mseLoss = document.getElementById('mseLoss');
+    const batchInfo = document.getElementById('batchInfo');
+    const batchTableContainer = document.getElementById('batchTableContainer');
+    const canvas = document.getElementById('lossCurveCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // state
+    let currentMode = 'binary';
+
+    // ---------- render inputs ----------
+    function renderInputs() {
+      const mode = modeSelect.value;
+      currentMode = mode;
+      modeBadge.textContent = mode === 'binary' ? 'binary' : 'categorical';
+
+      if (mode === 'binary') {
+        inputArea.innerHTML = `
+          <div style="margin-bottom: 1rem;">
+            <label>True label (y_true)</label>
+            <select id="binaryLabel" style="max-width: 120px;">
+              <option value="0">0</option>
+              <option value="1" selected>1</option>
+            </select>
+          </div>
+          <div style="margin-bottom: 0.5rem;">
+            <label>Predicted probability (p) — single or batch (comma separated)</label>
+            <input type="text" id="binaryPred" value="0.8" placeholder="e.g. 0.8 or 0.9, 0.3, 0.2">
+          </div>
+          <div class="small text-muted">Batch: separate probabilities with commas. One label applies to all.</div>
+        `;
+      } else {
+        // categorical
+        inputArea.innerHTML = `
+          <div style="margin-bottom: 0.8rem;">
+            <label>True class indices (comma separated, one per sample)</label>
+            <input type="text" id="catLabels" value="0, 2, 1" placeholder="e.g. 0,2,1">
+          </div>
+          <div style="margin-bottom: 0.5rem;">
+            <label>Predicted distributions (each row: p1,p2,p3 ...)</label>
+            <textarea id="catProbs" rows="3" placeholder="e.g. 0.7,0.2,0.1&#10;0.1,0.2,0.7&#10;0.2,0.6,0.2">0.7,0.2,0.1
+0.1,0.2,0.7
+0.2,0.6,0.2</textarea>
+          </div>
+          <div class="small text-muted">Each line = one sample. Number of classes inferred from first line.</div>
+        `;
+      }
+    }
+
+    // ---------- compute ----------
+    function compute() {
+      const mode = currentMode;
+      let results = [];
+      let avgLoss = 0, mseAvg = 0;
+      let formulaStr = '';
+      let lossPerSampleStr = '—', avgStr = '—', mseStr = '—';
+
+      try {
+        if (mode === 'binary') {
+          const labelEl = document.getElementById('binaryLabel');
+          const predEl = document.getElementById('binaryPred');
+          if (!labelEl || !predEl) return;
+          const yTrue = parseInt(labelEl.value, 10);
+          const raw = predEl.value.trim();
+          if (!raw) throw new Error('Enter predicted probability');
+          // parse batch
+          const parts = raw.split(',').map(s => s.trim()).filter(s => s.length > 0);
+          const probs = parts.map(p => {
+            const v = parseFloat(p);
+            if (isNaN(v) || v < 0 || v > 1) throw new Error(`Invalid probability: ${p}`);
+            return v;
+          });
+          if (probs.length === 0) throw new Error('No predictions');
+
+          // compute binary CE
+          results = probs.map(p => {
+            const loss = - (yTrue * Math.log(p + 1e-12) + (1 - yTrue) * Math.log(1 - p + 1e-12));
+            const mse = (yTrue - p) ** 2;
+            return { loss, mse, pred: p, true: yTrue };
+          });
+          const n = results.length;
+          avgLoss = results.reduce((s, r) => s + r.loss, 0) / n;
+          mseAvg = results.reduce((s, r) => s + r.mse, 0) / n;
+
+          // formula
+          const pVals = probs.map(p => p.toFixed(4)).join(', ');
+          formulaStr = `Binary CE = -[ y·log(p) + (1-y)·log(1-p) ]\ny = ${yTrue}, p = [${pVals}]`;
+          lossPerSampleStr = results.map(r => r.loss.toFixed(4)).join(', ');
+          avgStr = avgLoss.toFixed(6);
+          mseStr = mseAvg.toFixed(6);
+
+          // batch table
+          let tableHtml = `<table><tr><th>#</th><th>y_true</th><th>p</th><th>CE loss</th><th>MSE</th></tr>`;
+          results.forEach((r, i) => {
+            tableHtml += `<tr><td>${i+1}</td><td>${r.true}</td><td>${r.pred.toFixed(4)}</td><td>${r.loss.toFixed(4)}</td><td>${r.mse.toFixed(4)}</td></tr>`;
+          });
+          tableHtml += `</table>`;
+          batchTableContainer.innerHTML = tableHtml;
+          batchInfo.textContent = `${results.length} sample(s) · binary`;
+        } 
+        else { // categorical
+          const labelsEl = document.getElementById('catLabels');
+          const probsEl = document.getElementById('catProbs');
+          if (!labelsEl || !probsEl) return;
+          const labelStr = labelsEl.value.trim();
+          const probStr = probsEl.value.trim();
+          if (!labelStr || !probStr) throw new Error('Fill true labels and probabilities');
+
+          const labels = labelStr.split(',').map(s => parseInt(s.trim(), 10));
+          const lines = probStr.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+          if (lines.length !== labels.length) throw new Error(`Mismatch: ${labels.length} labels, ${lines.length} distributions`);
+
+          // parse first line to get num classes
+          const firstProbs = lines[0].split(',').map(s => parseFloat(s.trim()));
+          const numClasses = firstProbs.length;
+          if (numClasses < 2) throw new Error('Need at least 2 classes');
+
+          results = [];
+          for (let i = 0; i < lines.length; i++) {
+            const probs = lines[i].split(',').map(s => parseFloat(s.trim()));
+            if (probs.length !== numClasses) throw new Error(`Line ${i+1}: expected ${numClasses} probs, got ${probs.length}`);
+            const sum = probs.reduce((a,b) => a+b, 0);
+            if (Math.abs(sum - 1) > 0.001) throw new Error(`Line ${i+1}: probabilities sum to ${sum.toFixed(3)} (should be 1)`);
+            const yTrue = labels[i];
+            if (yTrue < 0 || yTrue >= numClasses) throw new Error(`Label ${yTrue} out of range (0-${numClasses-1})`);
+            // one-hot
+            let loss = 0;
+            for (let c = 0; c < numClasses; c++) {
+              if (c === yTrue) {
+                loss -= Math.log(probs[c] + 1e-12);
+              }
+            }
+            // mse: treat one-hot
+            let mse = 0;
+            for (let c = 0; c < numClasses; c++) {
+              const target = (c === yTrue) ? 1 : 0;
+              mse += (target - probs[c]) ** 2;
+            }
+            mse /= numClasses;
+            results.push({ loss, mse, pred: probs, true: yTrue });
+          }
+          const n = results.length;
+          avgLoss = results.reduce((s, r) => s + r.loss, 0) / n;
+          mseAvg = results.reduce((s, r) => s + r.mse, 0) / n;
+
+          const labelStrShow = labels.join(', ');
+          formulaStr = `Categorical CE = -Σ y_true·log(p)\nclasses=${numClasses}, y_true=[${labelStrShow}]`;
+          lossPerSampleStr = results.map(r => r.loss.toFixed(4)).join(', ');
+          avgStr = avgLoss.toFixed(6);
+          mseStr = mseAvg.toFixed(6);
+
+          // batch table
+          let tableHtml = `<table><tr><th>#</th><th>y_true</th><th>probs</th><th>CE loss</th><th>MSE</th></tr>`;
+          results.forEach((r, i) => {
+            const probStr = r.pred.map(v => v.toFixed(3)).join(', ');
+            tableHtml += `<tr><td>${i+1}</td><td>${r.true}</td><td>[${probStr}]</td><td>${r.loss.toFixed(4)}</td><td>${r.mse.toFixed(4)}</td></tr>`;
+          });
+          tableHtml += `</table>`;
+          batchTableContainer.innerHTML = tableHtml;
+          batchInfo.textContent = `${results.length} sample(s) · categorical (${numClasses} classes)`;
+        }
+
+        // update UI
+        formulaDisplay.textContent = formulaStr;
+        lossPerSample.textContent = lossPerSampleStr;
+        averageLoss.textContent = avgStr;
+        mseLoss.textContent = mseStr;
+
+        // draw curve (binary only)
+        if (mode === 'binary') {
+          drawBinaryCurve(results.length > 0 ? results[0].true : 1);
+        } else {
+          drawCategoricalCurve();
+        }
+      } catch (err) {
+        formulaDisplay.textContent = '⚠️ ' + err.message;
+        lossPerSample.textContent = 'error';
+        averageLoss.textContent = 'error';
+        mseLoss.textContent = 'error';
+        batchTableContainer.innerHTML = `<p class="text-muted">Error: ${err.message}</p>`;
+        batchInfo.textContent = 'error';
+      }
+    }
+
+    // ---------- draw binary curve ----------
+    function drawBinaryCurve(yTrue = 1) {
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      // background
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, w, h);
+      // grid
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 0.5;
+      for (let i = 0; i <= 10; i++) {
+        const x = (i/10)*w;
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, h);
+        ctx.stroke();
+        const y = (i/10)*h;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+      }
+      // draw CE curve
+      ctx.beginPath();
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2.5;
+      for (let px = 0; px <= w; px++) {
+        const p = px / w;
+        const eps = 1e-12;
+        let loss = - (yTrue * Math.log(p + eps) + (1 - yTrue) * Math.log(1 - p + eps));
+        if (!isFinite(loss)) loss = 10;
+        const yPos = h - (loss / 8) * h; // scale
+        if (px === 0) ctx.moveTo(px, Math.min(h, Math.max(0, yPos)));
+        else ctx.lineTo(px, Math.min(h, Math.max(0, yPos)));
+      }
+      ctx.stroke();
+
+      // MSE curve (dashed)
+      ctx.beginPath();
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.8;
+      ctx.setLineDash([4, 4]);
+      for (let px = 0; px <= w; px++) {
+        const p = px / w;
+        const mse = (yTrue - p) ** 2;
+        const yPos = h - (mse / 1.2) * h;
+        if (px === 0) ctx.moveTo(px, Math.min(h, Math.max(0, yPos)));
+        else ctx.lineTo(px, Math.min(h, Math.max(0, yPos)));
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+      // labels
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '10px monospace';
+      ctx.fillText('p=0', 4, h-4);
+      ctx.fillText('p=1', w-24, h-4);
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillText('CE', w-40, 14);
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillText('MSE', w-40, 28);
+    }
+
+    function drawCategoricalCurve() {
+      // placeholder: show info
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = '#475569';
+      ctx.font = '14px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText('Categorical: loss curve not available', w/2, h/2);
+    }
+
+    // ---------- reset ----------
+    function resetUI() {
+      modeSelect.value = 'binary';
+      renderInputs();
+      compute();
+    }
+
+    // ---------- init ----------
+    function init() {
+      renderInputs();
+      compute();
+      // events
+      modeSelect.addEventListener('change', () => {
+        renderInputs();
+        compute();
+      });
+      computeBtn.addEventListener('click', compute);
+      resetBtn.addEventListener('click', resetUI);
+      // redraw on resize
+      window.addEventListener('resize', () => {
+        if (currentMode === 'binary') {
+          const labelEl = document.getElementById('binaryLabel');
+          if (labelEl) drawBinaryCurve(parseInt(labelEl.value, 10));
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  })();
+</script>
+</body>
+</html>
