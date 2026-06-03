@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>Softmax Calculator — Convert Logits to Probabilities | ml3x.com</title>
+  <meta name="description" content="Interactive softmax calculator: convert logits to probabilities with temperature scaling. See real-time bar chart, step-by-step calculation, and numerical stability.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://ml3x.com/tools/softmax-calculator">
+  <!-- JSON-LD FAQ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is softmax?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Softmax converts a vector of raw scores (logits) into probabilities that sum to 1. It applies exponentiation and normalization."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does temperature affect softmax?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Low temperature (e.g., 0.1) makes the distribution sharper (more confident, peaky). High temperature (e.g., 5.0) makes it flatter (more uniform)."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Why subtract max for numerical stability?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Subtracting the maximum logit before exponentiation prevents overflow and keeps values numerically stable."
+        }
+      }
+    ]
+  }
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      padding: 1.5rem 1rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      max-width: 1100px;
+      width: 100%;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.3rem;
+    }
+    .subhead {
+      color: #94a3b8;
+      font-size: 1rem;
+    }
+    .card {
+      background: #1e293b;
+      border-radius: 24px;
+      padding: 1.8rem 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      border: 1px solid #334155;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.8rem;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    label {
+      font-weight: 500;
+      color: #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+    }
+    input[type="text"] {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 40px;
+      padding: 0.8rem 1.2rem;
+      color: #f1f5f9;
+      font-size: 1rem;
+      width: 100%;
+      transition: 0.2s;
+    }
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.3);
+    }
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    input[type="range"] {
+      flex: 1;
+      min-width: 140px;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: #334155;
+      border-radius: 10px;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #38bdf8;
+      cursor: pointer;
+      border: 2px solid #0f172a;
+      box-shadow: 0 2px 8px rgba(56,189,248,0.4);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #38bdf8;
+      cursor: pointer;
+      border: 2px solid #0f172a;
+    }
+    .temp-value {
+      background: #0f172a;
+      padding: 0.3rem 1rem;
+      border-radius: 40px;
+      font-weight: 600;
+      color: #38bdf8;
+      min-width: 60px;
+      text-align: center;
+      border: 1px solid #334155;
+    }
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem 1.5rem;
+      background: #0f172a;
+      padding: 1rem 1.2rem;
+      border-radius: 40px;
+      margin-top: 0.5rem;
+    }
+    .stat-item {
+      display: flex;
+      align-items: baseline;
+      gap: 0.4rem;
+    }
+    .stat-label {
+      color: #94a3b8;
+      font-size: 0.85rem;
+    }
+    .stat-number {
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+    .chart-wrapper {
+      position: relative;
+      width: 100%;
+      min-height: 200px;
+    }
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+      background: #0f172a;
+      border-radius: 20px;
+      display: block;
+      max-height: 260px;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      margin: 1.2rem 0 0.5rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th {
+      text-align: left;
+      padding: 0.5rem 0.3rem;
+      color: #94a3b8;
+      font-weight: 500;
+      border-bottom: 1px solid #334155;
+    }
+    td {
+      padding: 0.5rem 0.3rem;
+      border-bottom: 1px solid #1e293b;
+      font-family: 'JetBrains Mono', monospace, system-ui;
+    }
+    .footnote {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-top: 1rem;
+      border-top: 1px solid #334155;
+      padding-top: 0.8rem;
+    }
+    .formula-box {
+      background: #0f172a;
+      border-radius: 20px;
+      padding: 1rem 1.2rem;
+      margin: 1rem 0 0.5rem;
+      border-left: 4px solid #38bdf8;
+    }
+    .formula-box code {
+      color: #f1f5f9;
+      background: #1e293b;
+      padding: 0.1rem 0.4rem;
+      border-radius: 12px;
+    }
+    .step-list {
+      list-style: none;
+      margin: 0.5rem 0;
+    }
+    .step-list li {
+      padding: 0.2rem 0;
+      color: #cbd5e1;
+    }
+    .step-list li::before {
+      content: "▹ ";
+      color: #38bdf8;
+    }
+    footer {
+      margin-top: 2.5rem;
+      text-align: center;
+      color: #475569;
+      font-size: 0.9rem;
+      border-top: 1px solid #1e293b;
+      padding-top: 1.5rem;
+      width: 100%;
+    }
+    @media (max-width: 700px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
+      }
+      h1 { font-size: 1.8rem; }
+      .card { padding: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>⚡ Softmax Calculator</h1>
+    <div class="subhead">Logits → Probabilities · with temperature scaling</div>
+  </header>
+
+  <div class="card">
+    <div class="grid-2">
+      <!-- left: inputs -->
+      <div class="input-group">
+        <label>
+          <span class="label-row"><span>Logits (comma separated)</span> <span style="color:#94a3b8;font-size:0.8rem;">e.g. 2.0, 1.0, 0.1</span></span>
+          <input type="text" id="logitsInput" value="2.0, 1.0, 0.1" placeholder="2.0, 1.0, 0.1">
+        </label>
+        <label>
+          <span class="label-row"><span>Temperature (τ)</span> <span style="color:#94a3b8;font-size:0.8rem;">low = sharp · high = flat</span></span>
+          <div class="slider-container">
+            <input type="range" id="tempSlider" min="0.01" max="10.0" step="0.01" value="1.0">
+            <span class="temp-value" id="tempDisplay">1.00</span>
+          </div>
+        </label>
+        <div class="stats">
+          <div class="stat-item"><span class="stat-label"># classes</span> <span class="stat-number" id="numClasses">3</span></div>
+          <div class="stat-item"><span class="stat-label">max logit</span> <span class="stat-number" id="maxLogit">2.00</span></div>
+          <div class="stat-item"><span class="stat-label">∑ exp</span> <span class="stat-number" id="sumExp">8.89</span></div>
+        </div>
+        <div class="formula-box">
+          <div style="font-weight:500; margin-bottom:4px;">📐 Softmax (with temperature)</div>
+          <code>P(xᵢ) = exp( (xᵢ - max) / τ ) / Σⱼ exp( (xⱼ - max) / τ )</code>
+          <ul class="step-list" id="stepDetails">
+            <li>Subtract max for stability</li>
+            <li>Divide by temperature</li>
+            <li>Exponentiate & normalize</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- right: chart + table -->
+      <div>
+        <div class="chart-wrapper">
+          <canvas id="barChart" width="400" height="200"></canvas>
+        </div>
+        <div class="table-wrap">
+          <table id="probTable">
+            <thead><tr><th>#</th><th>Raw logit</th><th>exp( (logit - max)/τ )</th><th>Probability</th></tr></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="footnote">
+      <span>🔁 Real-time update · Numerical stability: subtract max logit before exponentiation.</span>
+    </div>
+  </div>
+
+  <footer>© 2025 ml3x.com</footer>
+</div>
+
+<script>
+  (function() {
+    // DOM refs
+    const logitsInput = document.getElementById('logitsInput');
+    const tempSlider = document.getElementById('tempSlider');
+    const tempDisplay = document.getElementById('tempDisplay');
+    const numClassesSpan = document.getElementById('numClasses');
+    const maxLogitSpan = document.getElementById('maxLogit');
+    const sumExpSpan = document.getElementById('sumExp');
+    const tableBody = document.getElementById('tableBody');
+    const canvas = document.getElementById('barChart');
+    const ctx = canvas.getContext('2d');
+    const stepDetails = document.getElementById('stepDetails');
+
+    // initial
+    let currentLogits = [2.0, 1.0, 0.1];
+    let currentTemp = 1.0;
+
+    // ---- helpers ----
+    function parseLogits(str) {
+      const parts = str.split(',').map(s => s.trim()).filter(s => s !== '');
+      const nums = parts.map(s => Number(s)).filter(n => !isNaN(n));
+      return nums.length > 0 ? nums : null;
+    }
+
+    function softmaxWithTemp(logits, temperature) {
+      if (logits.length === 0) return { shifted: [], exps: [], sumExp: 1, probs: [] };
+      const max = Math.max(...logits);
+      const shifted = logits.map(l => (l - max) / temperature);
+      const exps = shifted.map(v => Math.exp(v));
+      const sumExp = exps.reduce((a, b) => a + b, 0);
+      const probs = exps.map(e => (sumExp > 0 ? e / sumExp : 0));
+      return { shifted, exps, sumExp, probs, max };
+    }
+
+    // ---- render table & chart ----
+    function updateDisplay() {
+      const raw = currentLogits;
+      const temp = currentTemp;
+      const result = softmaxWithTemp(raw, temp);
+      const { exps, sumExp, probs, max } = result;
+
+      // update stats
+      numClassesSpan.textContent = raw.length;
+      maxLogitSpan.textContent = max.toFixed(4);
+      sumExpSpan.textContent = sumExp.toFixed(4);
+
+      // update table
+      let html = '';
+      for (let i = 0; i < raw.length; i++) {
+        html += `<tr>
+          <td>${i+1}</td>
+          <td>${raw[i].toFixed(4)}</td>
+          <td>${exps[i].toFixed(6)}</td>
+          <td>${probs[i].toFixed(6)}</td>
+        </tr>`;
+      }
+      tableBody.innerHTML = html;
+
+      // update step details
+      let stepHtml = '';
+      if (raw.length > 0) {
+        stepHtml = `<li>Max logit = ${max.toFixed(4)} (subtracted for stability)</li>
+                    <li>Scaled logits = (x - max) / τ → [${raw.map((v,i)=>((v-max)/temp).toFixed(4)).join(', ')}]</li>
+                    <li>exp(·) = [${exps.map(e=>e.toFixed(4)).join(', ')}]</li>
+                    <li>Sum exp = ${sumExp.toFixed(4)}</li>
+                    <li>Probabilities = [${probs.map(p=>p.toFixed(6)).join(', ')}]</li>`;
+      } else {
+        stepHtml = '<li>Enter valid logits</li>';
+      }
+      stepDetails.innerHTML = stepHtml;
+
+      // draw chart
+      drawChart(raw, probs);
+    }
+
+    // ---- canvas bar chart (logits vs probs) ----
+    function drawChart(logits, probs) {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      const w = rect.width;
+      const h = 200;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
+      const n = logits.length;
+      if (n === 0) {
+        ctx.fillStyle = '#64748b';
+        ctx.font = '14px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText('No data', w/2, h/2);
+        return;
+      }
+
+      const padding = { top: 16, bottom: 28, left: 8, right: 8 };
+      const chartW = w - padding.left - padding.right;
+      const chartH = h - padding.top - padding.bottom;
+      const groupWidth = chartW / n;
+      const barWidth = groupWidth * 0.35;
+      const gap = groupWidth * 0.1;
+
+      // find max for scaling
+      const maxVal = Math.max(1e-8, ...logits.map(Math.abs), ...probs);
+      const scale = chartH / (maxVal * 1.25);
+
+      // draw axes
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(padding.left, padding.top);
+      ctx.lineTo(padding.left, h - padding.bottom);
+      ctx.lineTo(w - padding.right, h - padding.bottom);
+      ctx.stroke();
+
+      // draw bars: logits (blue) and probs (cyan)
+      for (let i = 0; i < n; i++) {
+        const xCenter = padding.left + i * groupWidth + groupWidth/2;
+        const xLeftLogit = xCenter - barWidth - gap/2;
+        const xLeftProb = xCenter + gap/2;
+
+        const logitH = Math.abs(logits[i]) * scale;
+        const probH = probs[i] * scale;
+
+        // logit bar (blue)
+        ctx.fillStyle = '#38bdf8';
+        ctx.fillRect(xLeftLogit, h - padding.bottom - logitH, barWidth, logitH);
+
+        // prob bar (cyan / accent)
+        ctx.fillStyle = '#2dd4bf';
+        ctx.fillRect(xLeftProb, h - padding.bottom - probH, barWidth, probH);
+
+        // label under axis
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '10px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${i+1}`, xCenter, h - padding.bottom + 16);
+      }
+
+      // legend
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillRect(w - 120, 8, 12, 12);
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '11px system-ui';
+      ctx.textAlign = 'left';
+      ctx.fillText('logit', w - 104, 20);
+      ctx.fillStyle = '#2dd4bf';
+      ctx.fillRect(w - 50, 8, 12, 12);
+      ctx.fillStyle = '#e2e8f0';
+      ctx.fillText('prob', w - 34, 20);
+    }
+
+    // ---- event handlers ----
+    function onLogitsChange() {
+      const raw = parseLogits(logitsInput.value);
+      if (raw && raw.length > 0) {
+        currentLogits = raw;
+      } else {
+        // fallback: show previous but indicate issue? keep previous
+        // but if empty, set empty
+        if (logitsInput.value.trim() === '') {
+          currentLogits = [];
+        }
+      }
+      updateDisplay();
+    }
+
+    function onTempChange() {
+      const val = parseFloat(tempSlider.value);
+      currentTemp = Math.min(10, Math.max(0.01, val));
+      tempDisplay.textContent = currentTemp.toFixed(2);
+      updateDisplay();
+    }
+
+    // ---- resize canvas ----
+    function resizeCanvas() {
+      const parent = canvas.parentElement;
+      const w = parent.clientWidth;
+      if (w > 0) {
+        canvas.style.width = w + 'px';
+        canvas.style.height = '200px';
+        updateDisplay();
+      }
+    }
+
+    // ---- init ----
+    function init() {
+      // set initial values
+      logitsInput.value = '2.0, 1.0, 0.1';
+      tempSlider.value = '1.0';
+      tempDisplay.textContent = '1.00';
+      currentLogits = [2.0, 1.0, 0.1];
+      currentTemp = 1.0;
+
+      // listeners
+      logitsInput.addEventListener('input', onLogitsChange);
+      tempSlider.addEventListener('input', onTempChange);
+      window.addEventListener('resize', resizeCanvas);
+
+      // initial render
+      resizeCanvas();
+      updateDisplay();
+    }
+
+    init();
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>PCA Step-by-Step Calculator — Principal Component Analysis Solver</title>
+  <meta name="description" content="Interactive PCA solver: center data, covariance matrix, eigenvalues, eigenvectors, explained variance, scree plot, and transformed data. Step-by-step with dark theme.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://ml3x.com/tools/pca-calculator">
+  <!-- JSON-LD FAQ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is PCA?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Principal Component Analysis (PCA) is a dimensionality reduction technique that transforms data into a new coordinate system by finding eigenvectors of the covariance matrix."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How is the covariance matrix computed?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "First center the data by subtracting the mean of each feature, then compute the matrix product (X_centered^T * X_centered) / (n-1)."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What does explained variance ratio mean?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Each eigenvalue divided by the sum of all eigenvalues gives the proportion of variance explained by that principal component."
+        }
+      }
+    ]
+  }
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      padding: 1.5rem 1rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      max-width: 1200px;
+      width: 100%;
+    }
+    h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.25rem;
+      color: #f1f5f9;
+    }
+    .subhead {
+      color: #94a3b8;
+      margin-bottom: 2rem;
+      border-left: 4px solid #38bdf8;
+      padding-left: 1rem;
+      font-size: 1rem;
+    }
+    .card {
+      background: #1e293b;
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      border: 1px solid #334155;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 700px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+    }
+    label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+      color: #cbd5e1;
+    }
+    textarea, input, select {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      color: #e2e8f0;
+      font-size: 0.95rem;
+      width: 100%;
+      transition: border 0.2s;
+    }
+    textarea:focus, input:focus, select:focus {
+      outline: none;
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+    textarea {
+      font-family: 'Fira Code', 'Cascadia Code', monospace;
+      resize: vertical;
+      min-height: 140px;
+    }
+    .btn {
+      background: #38bdf8;
+      color: #0f172a;
+      font-weight: 600;
+      padding: 0.75rem 2rem;
+      border: none;
+      border-radius: 2rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 12px rgba(56,189,248,0.3);
+    }
+    .btn:hover {
+      background: #7dd3fc;
+      transform: scale(1.02);
+      box-shadow: 0 6px 16px rgba(56,189,248,0.5);
+    }
+    .btn:active {
+      transform: scale(0.98);
+    }
+    .btn-secondary {
+      background: #334155;
+      color: #e2e8f0;
+      box-shadow: none;
+    }
+    .btn-secondary:hover {
+      background: #475569;
+    }
+    .flex-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .step-box {
+      background: #0f172a;
+      border-radius: 1rem;
+      padding: 1.2rem;
+      margin-top: 1.5rem;
+      border-left: 4px solid #38bdf8;
+      overflow-x: auto;
+    }
+    .step-title {
+      font-weight: 600;
+      color: #38bdf8;
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      margin: 0.5rem 0;
+    }
+    th {
+      background: #1e293b;
+      color: #94a3b8;
+      font-weight: 500;
+      padding: 0.5rem 0.75rem;
+      text-align: right;
+      border-bottom: 1px solid #334155;
+    }
+    td {
+      padding: 0.4rem 0.75rem;
+      text-align: right;
+      border-bottom: 1px solid #1e293b;
+    }
+    .matrix-wrap {
+      display: inline-block;
+      min-width: 100%;
+    }
+    .eigen-pair {
+      background: #1e293b;
+      border-radius: 0.75rem;
+      padding: 0.5rem 1rem;
+      margin: 0.25rem 0;
+      font-family: monospace;
+    }
+    .chip {
+      background: #334155;
+      border-radius: 999px;
+      padding: 0.2rem 0.8rem;
+      font-size: 0.8rem;
+      color: #cbd5e1;
+    }
+    canvas {
+      max-width: 100%;
+      height: auto;
+      background: #0f172a;
+      border-radius: 0.75rem;
+      margin: 1rem 0;
+      display: block;
+      width: 100%;
+    }
+    .inline-code {
+      background: #1e293b;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.4rem;
+      font-family: monospace;
+      font-size: 0.85rem;
+    }
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      color: #475569;
+      font-size: 0.9rem;
+      border-top: 1px solid #1e293b;
+      padding-top: 2rem;
+    }
+    .badge {
+      background: #38bdf8;
+      color: #0f172a;
+      border-radius: 1rem;
+      padding: 0.2rem 0.8rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .select-k {
+      max-width: 120px;
+    }
+    .variance-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .bar-bg {
+      background: #1e293b;
+      height: 8px;
+      border-radius: 8px;
+      flex: 1;
+    }
+    .bar-fill {
+      height: 8px;
+      border-radius: 8px;
+      background: #38bdf8;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>🧪 PCA Step-by-Step</h1>
+  <div class="subhead">Principal Component Analysis Solver — center, covariance, eigenvectors, scree plot &amp; projection</div>
+
+  <div class="card">
+    <div class="flex-row" style="margin-bottom: 1rem;">
+      <label style="flex:2;"><span class="badge">📐 Data matrix</span> rows (samples) × cols (features) — max 10×10</label>
+      <button class="btn btn-secondary" id="loadExampleBtn" style="padding:0.5rem 1.2rem;">📂 Load example (5×3)</button>
+    </div>
+    <textarea id="dataMatrixInput" rows="6" placeholder="e.g. 2.5 2.4&#10;0.5 0.7&#10;2.2 2.9&#10;1.9 2.2&#10;3.1 3.0&#10;2.3 2.7&#10;2.0 1.6&#10;1.0 1.1&#10;1.5 1.6&#10;1.1 0.9">2.5 2.4
+0.5 0.7
+2.2 2.9
+1.9 2.2
+3.1 3.0
+2.3 2.7
+2.0 1.6
+1.0 1.1
+1.5 1.6
+1.1 0.9</textarea>
+    <div class="flex-row" style="margin-top: 1rem;">
+      <div style="display:flex; gap:0.8rem; align-items:center;">
+        <button class="btn" id="calculateBtn">⚡ Calculate PCA</button>
+        <span style="color:#94a3b8; font-size:0.9rem;">max 10×10</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:0.5rem;">
+        <label for="kSelect" style="margin:0;">Components to keep:</label>
+        <select id="kSelect" class="select-k" style="width:auto;">
+          <option value="1">1</option>
+          <option value="2" selected>2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step-by-step output -->
+  <div id="outputArea"></div>
+
+  <footer>© 2025 ml3x.com</footer>
+</div>
+
+<script>
+  (function() {
+    const textarea = document.getElementById('dataMatrixInput');
+    const calcBtn = document.getElementById('calculateBtn');
+    const loadExampleBtn = document.getElementById('loadExampleBtn');
+    const outputDiv = document.getElementById('outputArea');
+    const kSelect = document.getElementById('kSelect');
+
+    // Example dataset (5 samples, 3 features)
+    const exampleData = `4 2 1\n0 3 5\n1 4 2\n3 2 3\n5 1 4`;
+
+    loadExampleBtn.addEventListener('click', function() {
+      textarea.value = exampleData;
+      // trigger calculation automatically? optional, but we just load.
+    });
+
+    // Helper: parse matrix from text
+    function parseMatrix(text) {
+      const lines = text.trim().split('\n').filter(l => l.trim() !== '');
+      const rows = [];
+      for (let line of lines) {
+        const nums = line.trim().split(/\s+/).map(Number);
+        if (nums.length === 0) continue;
+        if (nums.some(isNaN)) throw new Error('Invalid number in row: ' + line);
+        rows.push(nums);
+      }
+      if (rows.length === 0) throw new Error('Empty matrix');
+      const cols = rows[0].length;
+      if (cols < 1 || rows.length < 1) throw new Error('Need at least 1 row and 1 column');
+      if (rows.length > 10 || cols > 10) throw new Error('Max 10 rows and 10 columns');
+      for (let r of rows) {
+        if (r.length !== cols) throw new Error('Inconsistent column count');
+      }
+      return { data: rows, n: rows.length, p: cols };
+    }
+
+    // matrix transpose
+    function transpose(mat) {
+      const rows = mat.length, cols = mat[0].length;
+      const t = Array.from({ length: cols }, () => Array(rows).fill(0));
+      for (let i=0; i<rows; i++)
+        for (let j=0; j<cols; j++)
+          t[j][i] = mat[i][j];
+      return t;
+    }
+
+    // matrix multiply
+    function matMul(A, B) {
+      const m = A.length, n = A[0].length, p = B[0].length;
+      const res = Array.from({ length: m }, () => Array(p).fill(0));
+      for (let i=0; i<m; i++)
+        for (let j=0; j<p; j++)
+          for (let k=0; k<n; k++)
+            res[i][j] += A[i][k] * B[k][j];
+      return res;
+    }
+
+    // mean of columns
+    function colMeans(mat) {
+      const n = mat.length, p = mat[0].length;
+      const means = Array(p).fill(0);
+      for (let i=0; i<n; i++)
+        for (let j=0; j<p; j++)
+          means[j] += mat[i][j];
+      return means.map(v => v / n);
+    }
+
+    // center matrix
+    function centerMatrix(mat, means) {
+      return mat.map(row => row.map((v, j) => v - means[j]));
+    }
+
+    // covariance matrix (sample)
+    function covarianceMatrix(centered) {
+      const n = centered.length, p = centered[0].length;
+      const cov = Array.from({ length: p }, () => Array(p).fill(0));
+      for (let i=0; i<p; i++) {
+        for (let j=i; j<p; j++) {
+          let s = 0;
+          for (let k=0; k<n; k++) s += centered[k][i] * centered[k][j];
+          cov[i][j] = s / (n - 1);
+          cov[j][i] = cov[i][j];
+        }
+      }
+      return cov;
+    }
+
+    // eigenvalue decomposition for symmetric 2x2 / 3x3 ... up to 10x10 using Jacobi iteration
+    function eigenDecompositionSymmetric(mat, maxIter = 100) {
+      const n = mat.length;
+      let A = mat.map(row => [...row]);
+      let V = Array.from({ length: n }, (_, i) => {
+        const v = Array(n).fill(0);
+        v[i] = 1;
+        return v;
+      });
+
+      for (let iter = 0; iter < maxIter; iter++) {
+        let maxOff = 0, p = 0, q = 0;
+        for (let i = 0; i < n; i++) {
+          for (let j = i+1; j < n; j++) {
+            const val = Math.abs(A[i][j]);
+            if (val > maxOff) {
+              maxOff = val;
+              p = i; q = j;
+            }
+          }
+        }
+        if (maxOff < 1e-12) break;
+
+        const App = A[p][p], Aqq = A[q][q], Apq = A[p][q];
+        const theta = (Aqq - App) / (2 * Apq);
+        const t = Math.sign(theta) / (Math.abs(theta) + Math.sqrt(theta*theta + 1));
+        const c = 1 / Math.sqrt(1 + t*t);
+        const s = t * c;
+
+        // rotate A
+        const Anew = A.map(row => [...row]);
+        for (let i = 0; i < n; i++) {
+          if (i !== p && i !== q) {
+            Anew[i][p] = c * A[i][p] + s * A[i][q];
+            Anew[p][i] = Anew[i][p];
+            Anew[i][q] = -s * A[i][p] + c * A[i][q];
+            Anew[q][i] = Anew[i][q];
+          }
+        }
+        Anew[p][p] = c*c*App + 2*c*s*Apq + s*s*Aqq;
+        Anew[q][q] = s*s*App - 2*c*s*Apq + c*c*Aqq;
+        Anew[p][q] = 0; Anew[q][p] = 0;
+        A = Anew;
+
+        // update V
+        for (let i = 0; i < n; i++) {
+          const vip = V[i][p], viq = V[i][q];
+          V[i][p] = c * vip + s * viq;
+          V[i][q] = -s * vip + c * viq;
+        }
+      }
+
+      const eigenvalues = Array(n).fill(0);
+      for (let i = 0; i < n; i++) eigenvalues[i] = A[i][i];
+      // eigenvectors are columns of V
+      const eigenvectors = V; // each column is eigenvector
+      return { eigenvalues, eigenvectors: transpose(eigenvectors) }; // return as list of vectors (each length n)
+    }
+
+    // sort descending by eigenvalue
+    function sortEigen(eigenvalues, eigenvectors) {
+      const n = eigenvalues.length;
+      const indices = Array.from({ length: n }, (_, i) => i);
+      indices.sort((a, b) => eigenvalues[b] - eigenvalues[a]);
+      const sortedEigvals = indices.map(i => eigenvalues[i]);
+      const sortedEigvecs = indices.map(i => eigenvectors[i]);
+      return { eigenvalues: sortedEigvals, eigenvectors: sortedEigvecs };
+    }
+
+    // explained variance
+    function explainedVariance(eigenvalues) {
+      const total = eigenvalues.reduce((a,b) => a+b, 0);
+      const ratio = eigenvalues.map(v => v / total);
+      const cumulative = [];
+      let cum = 0;
+      for (let r of ratio) { cum += r; cumulative.push(cum); }
+      return { ratio, cumulative, total };
+    }
+
+    // projection: data (centered) * eigenvectors (first k)
+    function projectData(centered, eigenvectors, k) {
+      const n = centered.length;
+      const p = eigenvectors[0].length; // number of features
+      const proj = Array.from({ length: n }, () => Array(k).fill(0));
+      for (let i=0; i<n; i++) {
+        for (let j=0; j<k; j++) {
+          let sum = 0;
+          for (let f=0; f<p; f++) sum += centered[i][f] * eigenvectors[j][f];
+          proj[i][j] = sum;
+        }
+      }
+      return proj;
+    }
+
+    // render scree + cumulative line
+    function renderScreePlot(eigenvalues, cumulative) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 500; canvas.height = 280;
+      canvas.style.width = '100%'; canvas.style.height = 'auto';
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height;
+      const padding = { top: 30, bottom: 40, left: 50, right: 20 };
+      const plotW = w - padding.left - padding.right;
+      const plotH = h - padding.top - padding.bottom;
+
+      ctx.clearRect(0, 0, w, h);
+      // background
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, w, h);
+
+      const n = eigenvalues.length;
+      if (n === 0) return canvas;
+
+      const maxVal = Math.max(...eigenvalues, 0.1);
+      const barWidth = plotW / (n * 1.8);
+      const gap = plotW / (n + 1);
+
+      // bars
+      ctx.fillStyle = '#38bdf8';
+      for (let i=0; i<n; i++) {
+        const x = padding.left + (i+0.5) * gap - barWidth/2;
+        const barH = (eigenvalues[i] / maxVal) * plotH;
+        ctx.fillRect(x, padding.top + plotH - barH, barWidth, barH);
+      }
+
+      // cumulative line
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      for (let i=0; i<n; i++) {
+        const x = padding.left + (i+0.5) * gap;
+        const y = padding.top + plotH - (cumulative[i] * plotH);
+        if (i===0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      // labels
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '11px sans-serif';
+      ctx.textAlign = 'center';
+      for (let i=0; i<n; i++) {
+        const x = padding.left + (i+0.5) * gap;
+        ctx.fillText(`PC${i+1}`, x, h - 8);
+      }
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '12px sans-serif';
+      ctx.fillText('Eigenvalue (bar) & Cumul. variance (line)', w/2, 18);
+
+      return canvas;
+    }
+
+    // main calculation
+    function calculate() {
+      try {
+        const raw = textarea.value;
+        const { data, n, p } = parseMatrix(raw);
+        // update k select max
+        const maxK = Math.min(p, 5);
+        kSelect.innerHTML = '';
+        for (let i=1; i<=maxK; i++) {
+          const opt = document.createElement('option');
+          opt.value = i;
+          opt.textContent = i;
+          if (i === Math.min(2, maxK)) opt.selected = true;
+          kSelect.appendChild(opt);
+        }
+        const k = parseInt(kSelect.value) || Math.min(2, p);
+
+        // Step A: center
+        const means = colMeans(data);
+        const centered = centerMatrix(data, means);
+
+        // Step B: covariance
+        const cov = covarianceMatrix(centered);
+
+        // Step C: eigen
+        const { eigenvalues, eigenvectors } = eigenDecompositionSymmetric(cov);
+
+        // Step D: sort
+        const sorted = sortEigen(eigenvalues, eigenvectors);
+
+        // Step E: explained variance
+        const { ratio, cumulative, total } = explainedVariance(sorted.eigenvalues);
+
+        // Step F: projection
+        const transformed = projectData(centered, sorted.eigenvectors, k);
+
+        // Build output HTML
+        let html = `<div class="card"><h3 style="display:flex; gap:0.5rem; align-items:center;">📊 Results <span class="chip">${n} samples × ${p} features</span></h3>`;
+
+        // a) centered data
+        html += `<div class="step-box"><div class="step-title">① Centered data (mean subtracted)</div><div class="matrix-wrap"><table><tr><th></th>`;
+        for (let j=0; j<p; j++) html += `<th>F${j+1}</th>`;
+        html += `</tr>`;
+        for (let i=0; i<n; i++) {
+          html += `<tr><td style="color:#94a3b8;">S${i+1}</td>`;
+          for (let j=0; j<p; j++) html += `<td>${centered[i][j].toFixed(4)}</td>`;
+          html += `</tr>`;
+        }
+        html += `</table></div></div>`;
+
+        // b) covariance
+        html += `<div class="step-box"><div class="step-title">② Covariance matrix (${p}×${p})</div><div class="matrix-wrap"><table><tr><th></th>`;
+        for (let j=0; j<p; j++) html += `<th>F${j+1}</th>`;
+        html += `</tr>`;
+        for (let i=0; i<p; i++) {
+          html += `<tr><td style="color:#94a3b8;">F${i+1}</td>`;
+          for (let j=0; j<p; j++) html += `<td>${cov[i][j].toFixed(4)}</td>`;
+          html += `</tr>`;
+        }
+        html += `</table></div></div>`;
+
+        // c) eigenvalues & vectors
+        html += `<div class="step-box"><div class="step-title">③ Eigenvalues & Eigenvectors (sorted ↓)</div>`;
+        for (let i=0; i<p; i++) {
+          const ev = sorted.eigenvalues[i];
+          const vec = sorted.eigenvectors[i].map(v => v.toFixed(4)).join(', ');
+          html += `<div class="eigen-pair"><span style="color:#38bdf8;">λ${i+1} = ${ev.toFixed(4)}</span> &nbsp; [${vec}]</div>`;
+        }
+        html += `</div>`;
+
+        // d) explained variance
+        html += `<div class="step-box"><div class="step-title">④ Explained variance ratio & cumulative</div>`;
+        for (let i=0; i<p; i++) {
+          const perc = (ratio[i]*100).toFixed(2);
+          const cumPerc = (cumulative[i]*100).toFixed(2);
+          html += `<div class="variance-bar"><span style="min-width:4rem;">PC${i+1}</span><div class="bar-bg"><div class="bar-fill" style="width:${perc}%;"></div></div><span style="min-width:4rem;">${perc}%</span><span style="color:#94a3b8;">cum: ${cumPerc}%</span></div>`;
+        }
+        html += `</div>`;
+
+        // e) scree plot
+        const canvas = renderScreePlot(sorted.eigenvalues, cumulative);
+        html += `<div class="step-box"><div class="step-title">⑤ Scree plot & cumulative variance line</div>`;
+        const canvasContainer = document.createElement('div');
+        canvasContainer.appendChild(canvas);
+        html += canvasContainer.outerHTML;
+        html += `</div>`;
+
+        // f) transformed data
+        html += `<div class="step-box"><div class="step-title">⑥ Transformed data (first ${k} components)</div><div class="matrix-wrap"><table><tr><th></th>`;
+        for (let j=0; j<k; j++) html += `<th>PC${j+1}</th>`;
+        html += `</tr>`;
+        for (let i=0; i<n; i++) {
+          html += `<tr><td style="color:#94a3b8;">S${i+1}</td>`;
+          for (let j=0; j<k; j++) html += `<td>${transformed[i][j].toFixed(4)}</td>`;
+          html += `</tr>`;
+        }
+        html += `</table></div></div>`;
+
+        html += `</div>`;
+        outputDiv.innerHTML = html;
+        // re-append canvas (since innerHTML breaks it)
+        const stepBoxes = outputDiv.querySelectorAll('.step-box');
+        const lastBox = stepBoxes[stepBoxes.length - 2]; // scree box
+        if (lastBox && canvas) {
+          lastBox.appendChild(canvas);
+        }
+      } catch (e) {
+        outputDiv.innerHTML = `<div class="card" style="border-left: 4px solid #ef4444; padding:1rem;">⚠️ Error: ${e.message}</div>`;
+      }
+    }
+
+    calcBtn.addEventListener('click', calculate);
+    // initial calculation
+    calculate();
+
+    // re-calc on k change
+    kSelect.addEventListener('change', calculate);
+  })();
+</script>
+</body>
+</html>

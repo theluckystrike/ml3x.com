@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>Cosine Similarity Calculator — Compare Vectors & Text | ml3x.com</title>
+  <meta name="description" content="Interactive cosine similarity calculator with vector & text modes, Euclidean/Manhattan distance, dot product, TF matrix, 2D/3D angle visualization, batch matrix. Dark theme.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://ml3x.com/tools/cosine-similarity-calculator">
+  <!-- JSON-LD FAQ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is cosine similarity?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Cosine similarity measures the cosine of the angle between two vectors, ranging from -1 (opposite) through 0 (orthogonal) to 1 (identical)."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How is cosine similarity calculated?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "cos(θ) = (A·B) / (||A|| ||B||). The dot product divided by the product of the Euclidean norms."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the difference between vector and text mode?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Vector mode accepts numeric vectors. Text mode converts text to term-frequency vectors before computing similarity."
+        }
+      }
+    ]
+  }
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      padding: 1.5rem 1rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      max-width: 1280px;
+      width: 100%;
+    }
+    h1, h2, h3 {
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 0.25rem;
+      color: #f1f5f9;
+    }
+    .subhead {
+      color: #94a3b8;
+      margin-bottom: 2rem;
+      border-left: 3px solid #38bdf8;
+      padding-left: 1rem;
+    }
+    .card {
+      background: #1e293b;
+      border-radius: 1.25rem;
+      padding: 1.5rem 1.8rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      border: 1px solid #2d3a52;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.8rem;
+    }
+    @media (max-width: 720px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      .card {
+        padding: 1.2rem;
+      }
+      h1 { font-size: 1.8rem; }
+    }
+    label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #cbd5e1;
+      margin-bottom: 0.3rem;
+    }
+    textarea, input {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #e2e8f0;
+      padding: 0.7rem 1rem;
+      border-radius: 0.75rem;
+      font-size: 0.95rem;
+      transition: 0.2s;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+    textarea:focus, input:focus {
+      outline: none;
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+    textarea {
+      min-height: 70px;
+      resize: vertical;
+    }
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin: 1.2rem 0 0.8rem;
+    }
+    .btn {
+      background: #2d3a52;
+      border: none;
+      color: #e2e8f0;
+      padding: 0.6rem 1.4rem;
+      border-radius: 2rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 1px solid #3b4a66;
+    }
+    .btn-primary {
+      background: #38bdf8;
+      color: #0f172a;
+      border-color: #38bdf8;
+    }
+    .btn-primary:hover {
+      background: #7dd3fc;
+      border-color: #7dd3fc;
+    }
+    .btn:hover {
+      background: #3b4a66;
+    }
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.8rem;
+      margin: 1rem 0;
+    }
+    .stat {
+      background: #0f172a;
+      border-radius: 1rem;
+      padding: 0.8rem 0.6rem;
+      text-align: center;
+      border: 1px solid #2a3a50;
+    }
+    .stat .value {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #38bdf8;
+    }
+    .stat .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #94a3b8;
+    }
+    .formula-box {
+      background: #0f172a;
+      border-radius: 0.8rem;
+      padding: 0.8rem 1rem;
+      font-family: 'SF Mono', monospace;
+      font-size: 0.9rem;
+      border-left: 4px solid #38bdf8;
+      margin: 0.8rem 0;
+      color: #cbd5e1;
+      overflow-x: auto;
+    }
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin: 0.8rem 0;
+    }
+    .matrix-table th, .matrix-table td {
+      border: 1px solid #2d3a52;
+      padding: 0.4rem 0.6rem;
+      text-align: center;
+    }
+    .matrix-table th {
+      background: #1e293b;
+      color: #94a3b8;
+    }
+    canvas {
+      width: 100%;
+      max-width: 360px;
+      height: auto;
+      aspect-ratio: 1/1;
+      background: #0f172a;
+      border-radius: 1rem;
+      border: 1px solid #2d3a52;
+      display: block;
+      margin: 0.5rem auto;
+    }
+    .badge {
+      display: inline-block;
+      background: #2d3a52;
+      padding: 0.2rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      color: #94a3b8;
+    }
+    .footer {
+      margin-top: 2.5rem;
+      text-align: center;
+      color: #475569;
+      font-size: 0.9rem;
+      border-top: 1px solid #1e293b;
+      padding-top: 1.8rem;
+    }
+    .batch-output {
+      max-height: 300px;
+      overflow: auto;
+    }
+    .inline-code {
+      background: #0f172a;
+      padding: 0.1rem 0.4rem;
+      border-radius: 6px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🧮 Cosine Similarity Calculator</h1>
+    <div class="subhead">Compare Vectors &middot; Text &middot; Batch &middot; Angle visualization</div>
+  </header>
+
+  <!-- MODE TOGGLE -->
+  <div class="card" style="padding: 0.8rem 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
+    <span style="font-weight: 500;">Mode:</span>
+    <button id="modeVectorBtn" class="btn btn-primary">🔢 Vector mode</button>
+    <button id="modeTextBtn" class="btn">📝 Text mode</button>
+    <span class="badge" id="modeIndicator">Vector</span>
+  </div>
+
+  <!-- MAIN INPUT CARD -->
+  <div class="card">
+    <div id="vectorInputArea">
+      <div class="grid-2">
+        <div><label>Vector A (comma‑separated)</label><textarea id="vecA" rows="2">1, 2, 3</textarea></div>
+        <div><label>Vector B (comma‑separated)</label><textarea id="vecB" rows="2">4, 5, 6</textarea></div>
+      </div>
+    </div>
+    <div id="textInputArea" style="display: none;">
+      <div class="grid-2">
+        <div><label>Text string A</label><textarea id="textA" rows="2">machine learning</textarea></div>
+        <div><label>Text string B</label><textarea id="textB" rows="2">deep learning</textarea></div>
+      </div>
+    </div>
+    <div class="btn-group">
+      <button id="computeBtn" class="btn btn-primary">⚡ Compute similarity</button>
+      <button id="batchBtn" class="btn">📊 Batch matrix (paste pairs)</button>
+    </div>
+    <div id="batchArea" style="display: none; margin-top: 0.8rem;">
+      <label>Paste multiple vector pairs (one per line, format: A | B)</label>
+      <textarea id="batchInput" rows="4" placeholder="1,2,3 | 4,5,6&#10;0,1,0 | 1,0,1&#10;2,2 | 2,2"></textarea>
+      <button id="runBatchBtn" class="btn btn-primary" style="margin-top: 0.5rem;">▶ Compute matrix</button>
+    </div>
+  </div>
+
+  <!-- RESULTS + VISUALIZATION -->
+  <div class="grid-2">
+    <div class="card">
+      <h3 style="display: flex; justify-content: space-between;">📊 Results <span id="interpretation" style="font-weight: 400; font-size: 0.8rem; color:#94a3b8;"></span></h3>
+      <div id="resultsContainer">
+        <div class="result-grid" id="metricGrid">
+          <div class="stat"><div class="value" id="cosVal">—</div><div class="label">Cosine</div></div>
+          <div class="stat"><div class="value" id="dotVal">—</div><div class="label">Dot product</div></div>
+          <div class="stat"><div class="value" id="eucVal">—</div><div class="label">Euclidean</div></div>
+          <div class="stat"><div class="value" id="manhVal">—</div><div class="label">Manhattan</div></div>
+        </div>
+        <div id="formulaBreakdown" class="formula-box">cos(θ) = (A·B) / (||A||·||B||)</div>
+        <div id="tfMatrixArea" style="display: none; margin-top: 0.5rem;">
+          <label style="margin-bottom: 0.3rem;">📋 Term‑Frequency matrix</label>
+          <div id="tfMatrixDiv"></div>
+        </div>
+      </div>
+      <div style="margin-top: 0.8rem; font-size: 0.8rem; color:#64748b;">
+        <span>Interpretation: </span><span style="color:#38bdf8;">1.0 identical</span> · <span style="color:#94a3b8;">0 orthogonal</span> · <span style="color:#f87171;">-1 opposite</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>📐 Angle visualization</h3>
+      <canvas id="angleCanvas" width="300" height="300"></canvas>
+      <div style="text-align: center; font-size: 0.8rem; color:#94a3b8;">2D projection (first two dimensions)</div>
+    </div>
+  </div>
+
+  <!-- BATCH OUTPUT -->
+  <div class="card" id="batchOutputCard" style="display: none;">
+    <h3>📊 Similarity matrix</h3>
+    <div id="batchMatrixOutput" class="batch-output"></div>
+  </div>
+
+  <footer class="footer">© 2025 ml3x.com</footer>
+</div>
+
+<script>
+  (function() {
+    // DOM refs
+    const modeVectorBtn = document.getElementById('modeVectorBtn');
+    const modeTextBtn = document.getElementById('modeTextBtn');
+    const modeIndicator = document.getElementById('modeIndicator');
+    const vectorInputArea = document.getElementById('vectorInputArea');
+    const textInputArea = document.getElementById('textInputArea');
+    const computeBtn = document.getElementById('computeBtn');
+    const batchBtn = document.getElementById('batchBtn');
+    const batchArea = document.getElementById('batchArea');
+    const batchInput = document.getElementById('batchInput');
+    const runBatchBtn = document.getElementById('runBatchBtn');
+    const batchOutputCard = document.getElementById('batchOutputCard');
+    const batchMatrixOutput = document.getElementById('batchMatrixOutput');
+
+    const vecA = document.getElementById('vecA');
+    const vecB = document.getElementById('vecB');
+    const textA = document.getElementById('textA');
+    const textB = document.getElementById('textB');
+
+    const cosVal = document.getElementById('cosVal');
+    const dotVal = document.getElementById('dotVal');
+    const eucVal = document.getElementById('eucVal');
+    const manhVal = document.getElementById('manhVal');
+    const formulaBreakdown = document.getElementById('formulaBreakdown');
+    const interpretation = document.getElementById('interpretation');
+    const tfMatrixArea = document.getElementById('tfMatrixArea');
+    const tfMatrixDiv = document.getElementById('tfMatrixDiv');
+
+    const canvas = document.getElementById('angleCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let currentMode = 'vector'; // 'vector' | 'text'
+
+    // --- helpers ---
+    function parseVector(str) {
+      return str.split(',').map(s => s.trim()).filter(s => s !== '').map(Number).filter(n => !isNaN(n));
+    }
+
+    // TF from text (simple word split)
+    function getTermFreq(text) {
+      const words = text.toLowerCase().split(/\W+/).filter(w => w.length > 0);
+      const freq = {};
+      words.forEach(w => { freq[w] = (freq[w] || 0) + 1; });
+      return freq;
+    }
+
+    function buildTFVectors(textA, textB) {
+      const freqA = getTermFreq(textA);
+      const freqB = getTermFreq(textB);
+      const allTerms = new Set([...Object.keys(freqA), ...Object.keys(freqB)]);
+      const sorted = Array.from(allTerms).sort();
+      const vecA = sorted.map(t => freqA[t] || 0);
+      const vecB = sorted.map(t => freqB[t] || 0);
+      return { vecA, vecB, terms: sorted, freqA, freqB };
+    }
+
+    // metrics
+    function computeMetrics(a, b) {
+      if (a.length !== b.length || a.length === 0) return null;
+      const n = a.length;
+      let dot = 0, normA = 0, normB = 0, eucl = 0, manh = 0;
+      for (let i = 0; i < n; i++) {
+        dot += a[i] * b[i];
+        normA += a[i] * a[i];
+        normB += b[i] * b[i];
+        const diff = a[i] - b[i];
+        eucl += diff * diff;
+        manh += Math.abs(diff);
+      }
+      normA = Math.sqrt(normA);
+      normB = Math.sqrt(normB);
+      eucl = Math.sqrt(eucl);
+      const cos = (normA === 0 || normB === 0) ? 0 : dot / (normA * normB);
+      return { cos, dot, eucl, manh, normA, normB };
+    }
+
+    // render canvas 2D angle
+    function drawAngle(a, b, cosVal) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const w = canvas.width, h = canvas.height;
+      const cx = w/2, cy = h/2;
+      const scale = Math.min(w, h) * 0.35;
+
+      // pick first two dimensions (or zero)
+      const v1 = [a[0] || 0, a[1] || 0];
+      const v2 = [b[0] || 0, b[1] || 0];
+      const len1 = Math.hypot(v1[0], v1[1]) || 1;
+      const len2 = Math.hypot(v2[0], v2[1]) || 1;
+      const u1 = [v1[0]/len1, v1[1]/len1];
+      const u2 = [v2[0]/len2, v2[1]/len2];
+
+      const p1x = cx + u1[0]*scale, p1y = cy - u1[1]*scale;
+      const p2x = cx + u2[0]*scale, p2y = cy - u2[1]*scale;
+
+      // axes
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(20, cy); ctx.lineTo(w-20, cy);
+      ctx.moveTo(cx, 20); ctx.lineTo(cx, h-20);
+      ctx.stroke();
+
+      // vectors
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(p1x, p1y);
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(p2x, p2y);
+      ctx.strokeStyle = '#f472b6';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // arc
+      const angle = Math.acos(Math.max(-1, Math.min(1, cosVal)));
+      ctx.beginPath();
+      ctx.arc(cx, cy, scale*0.25, -Math.atan2(u1[1], u1[0]), -Math.atan2(u2[1], u2[0]));
+      ctx.strokeStyle = '#a78bfa';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // labels
+      ctx.fillStyle = '#e2e8f0';
+      ctx.font = '12px system-ui';
+      ctx.fillText('A', p1x+6, p1y-4);
+      ctx.fillText('B', p2x+6, p2y-4);
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText('θ = ' + (cosVal !== null ? (Math.acos(Math.max(-1, Math.min(1, cosVal)))*180/Math.PI).toFixed(1)+'°' : '—'), 10, 20);
+    }
+
+    // update UI with metrics
+    function updateResults(metrics, a, b, mode, extra) {
+      if (!metrics) {
+        ['cosVal','dotVal','eucVal','manhVal'].forEach(id => document.getElementById(id).textContent = '—');
+        interpretation.textContent = '';
+        formulaBreakdown.textContent = 'cos(θ) = (A·B) / (||A||·||B||)';
+        drawAngle([1,0], [0,1], 0);
+        tfMatrixArea.style.display = 'none';
+        return;
+      }
+      cosVal.textContent = metrics.cos.toFixed(5);
+      dotVal.textContent = metrics.dot.toFixed(3);
+      eucVal.textContent = metrics.eucl.toFixed(3);
+      manhVal.textContent = metrics.manh.toFixed(3);
+
+      let interp = '';
+      if (metrics.cos > 0.999) interp = '≈ identical';
+      else if (metrics.cos > 0.5) interp = 'similar direction';
+      else if (metrics.cos > -0.1 && metrics.cos < 0.1) interp = '≈ orthogonal';
+      else if (metrics.cos < -0.5) interp = 'opposite direction';
+      else interp = 'moderate';
+      interpretation.textContent = interp;
+
+      formulaBreakdown.innerHTML = `cos(θ) = ${metrics.dot.toFixed(3)} / (${metrics.normA.toFixed(3)}·${metrics.normB.toFixed(3)}) = <strong>${metrics.cos.toFixed(5)}</strong>`;
+
+      drawAngle(a, b, metrics.cos);
+
+      // TF matrix for text mode
+      if (mode === 'text' && extra) {
+        tfMatrixArea.style.display = 'block';
+        const { terms, freqA, freqB } = extra;
+        let html = `<table class="matrix-table"><thead><tr><th>term</th><th>A</th><th>B</th></tr></thead><tbody>`;
+        terms.forEach(t => {
+          html += `<tr><td>${t}</td><td>${freqA[t]||0}</td><td>${freqB[t]||0}</td></tr>`;
+        });
+        html += `</tbody></table>`;
+        tfMatrixDiv.innerHTML = html;
+      } else {
+        tfMatrixArea.style.display = 'none';
+      }
+    }
+
+    // main compute
+    function compute() {
+      if (currentMode === 'vector') {
+        const a = parseVector(vecA.value);
+        const b = parseVector(vecB.value);
+        if (a.length === 0 || b.length === 0) { alert('Please enter valid numeric vectors.'); return; }
+        if (a.length !== b.length) { alert('Vectors must have same length.'); return; }
+        const metrics = computeMetrics(a, b);
+        updateResults(metrics, a, b, 'vector', null);
+      } else {
+        const ta = textA.value.trim();
+        const tb = textB.value.trim();
+        if (!ta || !tb) { alert('Please enter two text strings.'); return; }
+        const { vecA, vecB, terms, freqA, freqB } = buildTFVectors(ta, tb);
+        if (vecA.length === 0) { alert('No words found.'); return; }
+        const metrics = computeMetrics(vecA, vecB);
+        updateResults(metrics, vecA, vecB, 'text', { terms, freqA, freqB });
+      }
+    }
+
+    // batch matrix
+    function computeBatch() {
+      const lines = batchInput.value.split('\n').filter(l => l.trim() !== '');
+      const pairs = lines.map(line => {
+        const parts = line.split('|').map(s => s.trim());
+        if (parts.length !== 2) return null;
+        const a = parseVector(parts[0]);
+        const b = parseVector(parts[1]);
+        if (a.length === 0 || b.length === 0 || a.length !== b.length) return null;
+        return { a, b };
+      }).filter(p => p !== null);
+      if (pairs.length === 0) { alert('No valid pairs found. Use format: 1,2,3 | 4,5,6'); return; }
+      let html = `<table class="matrix-table"><thead><tr><th>Pair</th><th>Cosine</th><th>Dot</th><th>Euclidean</th><th>Manhattan</th></tr></thead><tbody>`;
+      pairs.forEach((p, idx) => {
+        const m = computeMetrics(p.a, p.b);
+        if (m) html += `<tr><td>${idx+1}</td><td>${m.cos.toFixed(4)}</td><td>${m.dot.toFixed(3)}</td><td>${m.eucl.toFixed(3)}</td><td>${m.manh.toFixed(3)}</td></tr>`;
+      });
+      html += `</tbody></table>`;
+      batchMatrixOutput.innerHTML = html;
+      batchOutputCard.style.display = 'block';
+    }
+
+    // mode switching
+    function setMode(mode) {
+      currentMode = mode;
+      if (mode === 'vector') {
+        vectorInputArea.style.display = 'block';
+        textInputArea.style.display = 'none';
+        modeVectorBtn.className = 'btn btn-primary';
+        modeTextBtn.className = 'btn';
+        modeIndicator.textContent = 'Vector';
+      } else {
+        vectorInputArea.style.display = 'none';
+        textInputArea.style.display = 'block';
+        modeVectorBtn.className = 'btn';
+        modeTextBtn.className = 'btn btn-primary';
+        modeIndicator.textContent = 'Text';
+      }
+      // clear results
+      updateResults(null, [0], [0], 'vector', null);
+      tfMatrixArea.style.display = 'none';
+    }
+
+    // event listeners
+    modeVectorBtn.addEventListener('click', () => setMode('vector'));
+    modeTextBtn.addEventListener('click', () => setMode('text'));
+    computeBtn.addEventListener('click', compute);
+    batchBtn.addEventListener('click', () => {
+      batchArea.style.display = batchArea.style.display === 'none' ? 'block' : 'none';
+    });
+    runBatchBtn.addEventListener('click', computeBatch);
+
+    // initial
+    setMode('vector');
+    // default compute
+    setTimeout(() => compute(), 100);
+  })();
+</script>
+</body>
+</html>
