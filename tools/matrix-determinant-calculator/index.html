@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>Matrix Determinant Calculator · ml3x.com</title>
+  <meta name="description" content="Compute determinant of 2×2 to 6×6 matrices with step-by-step cofactor expansion, Sarrus rule, LU decomposition, trace, rank, inverse, Frobenius norm,...">
+  <link rel="canonical" href="https://ml3x.com/tools/matrix-determinant-calculator">
+  <meta name="theme-color" content="#0f0f1a">
+  <!-- JSON-LD: WebApplication + FAQPage + BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "name": "Matrix Determinant Calculator",
+        "url": "https://ml3x.com/tools/matrix-determinant-calculator",
+        "applicationCategory": "Educational Application",
+        "operatingSystem": "All",
+        "browserRequirements": "JavaScript"
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How is the determinant calculated step by step?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Cofactor expansion along row 1: for each element a₁ⱼ, compute the minor matrix (delete row1, column j), then cofactor = (-1)^(1+j) * det(minor). Sum a₁ⱼ * cofactor. For 3×3, Sarrus rule is also shown."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What does a zero determinant mean?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "A zero determinant indicates a singular matrix: no unique inverse, linearly dependent rows/columns, null space dimension = n - rank. The system Ax=b may have zero or infinite solutions."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How is the inverse matrix computed?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Using the adjugate method: A⁻¹ = adj(A) / det(A). The adjugate is the transpose of the cofactor matrix. Only for n ≤ 4 and non‑singular matrices."
+            }
+          }
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://ml3x.com" },
+          { "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://ml3x.com/tools" },
+          { "@type": "ListItem", "position": 3, "name": "Matrix Determinant Calculator", "item": "https://ml3x.com/tools/matrix-determinant-calculator" }
+        ]
+      }
+    ]
+  }
+  </script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0f0f1a;
+      color: #e8e8f0;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      padding: 1rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      max-width: 1200px;
+      width: 100%;
+    }
+    h1, h2, h3 {
+      color: #eab308;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+    }
+    h1 { font-size: 2rem; margin: 0.5rem 0 0.2rem; border-left: 6px solid #eab308; padding-left: 1rem; }
+    h2 { font-size: 1.5rem; margin-top: 1.8rem; border-bottom: 1px solid #2a2a3e; padding-bottom: 0.3rem; }
+    h3 { font-size: 1.2rem; margin: 1rem 0 0.5rem; }
+    .accent { color: #eab308; }
+    .card {
+      background: #1a1a2e;
+      border-radius: 20px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+    }
+    .flex-row { display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: flex-start; }
+    .flex-col { flex: 1 1 280px; }
+    label { font-weight: 400; color: #cacae0; display: block; margin: 0.5rem 0 0.2rem; }
+    select, input[type="number"] {
+      background: #12121f;
+      border: 1px solid #3a3a5a;
+      color: #f0f0ff;
+      padding: 0.5rem 0.8rem;
+      border-radius: 12px;
+      font-size: 1rem;
+      width: 100%;
+      max-width: 200px;
+      transition: 0.2s;
+    }
+    select:focus, input:focus { outline: none; border-color: #eab308; box-shadow: 0 0 0 2px rgba(234,179,8,0.3); }
+    .matrix-grid {
+      display: grid;
+      gap: 0.5rem;
+      margin: 0.8rem 0;
+    }
+    .matrix-grid input {
+      width: 100%;
+      min-width: 60px;
+      padding: 0.5rem;
+      text-align: center;
+      background: #12121f;
+      border: 1px solid #3a3a5a;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 1rem;
+    }
+    .matrix-grid input:focus { border-color: #eab308; }
+    .btn {
+      background: #eab308;
+      color: #0f0f1a;
+      border: none;
+      padding: 0.7rem 1.8rem;
+      font-weight: 600;
+      font-size: 1.1rem;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 4px 12px rgba(234,179,8,0.3);
+      margin: 0.5rem 0.5rem 0 0;
+    }
+    .btn:hover { background: #f5c518; transform: scale(1.02); }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #eab308;
+      color: #eab308;
+    }
+    .btn-outline:hover { background: #2a2a3e; }
+    .result-box {
+      background: #12121f;
+      border-radius: 16px;
+      padding: 1rem 1.2rem;
+      margin: 0.8rem 0;
+      border-left: 4px solid #eab308;
+      overflow-x: auto;
+    }
+    .step-item {
+      background: #1e1e34;
+      border-radius: 12px;
+      padding: 0.6rem 1rem;
+      margin: 0.4rem 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+    }
+    table.minor-matrix { 
+      display: inline-block; 
+      margin: 0.3rem 0.8rem 0.3rem 0; 
+      border-collapse: collapse; 
+      vertical-align: middle;
+    }
+    table.minor-matrix td {
+      border: 1px solid #4a4a6a;
+      padding: 0.2rem 0.6rem;
+      text-align: center;
+      background: #1a1a30;
+      color: #ddd;
+    }
+    .warning { color: #facc15; background: #2a2a1a; padding: 0.5rem 1rem; border-radius: 30px; }
+    .error { color: #f87171; }
+    .success { color: #4ade80; }
+    table.properties { width: 100%; border-collapse: collapse; }
+    table.properties td { padding: 0.4rem 0.8rem; border-bottom: 1px solid #2a2a3e; }
+    table.properties tr:last-child td { border: none; }
+    .footer { margin-top: 3rem; text-align: center; color: #6a6a8a; font-size: 0.9rem; border-top: 1px solid #2a2a3e; padding-top: 1.5rem; }
+    .badge { background: #2a2a4a; border-radius: 30px; padding: 0.2rem 0.8rem; font-size: 0.8rem; }
+    @media (max-width: 600px) {
+      h1 { font-size: 1.6rem; }
+      .card { padding: 1rem; }
+    }
+  </style>
+
+<meta property="og:title" content="Matrix Determinant Calculator · ml3x.com">
+<meta property="og:description" content="Compute determinant of 2×2 to 6×6 matrices with step-by-step cofactor expansion, Sarrus rule, LU decomposition, trace, rank, inverse, Frobenius norm,...">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ml3x.com/tools/matrix-determinant-calculator">
+</head>
+<body>
+<div class="container">
+  <h1>🧮 Matrix Determinant Calculator</h1>
+  <p style="color:#b0b0c8;">Full step-by-step · Cofactor · Sarrus · LU · Inverse · Rank · Norm · Condition</p>
+
+  <div class="card">
+    <div class="flex-row">
+      <div class="flex-col">
+        <label for="matrixSize">Matrix size (n × n)</label>
+        <select id="matrixSize" aria-label="Matrix dimension">
+          <option value="2">2 × 2</option>
+          <option value="3" selected>3 × 3</option>
+          <option value="4">4 × 4</option>
+          <option value="5">5 × 5</option>
+          <option value="6">6 × 6</option>
+        </select>
+      </div>
+      <div class="flex-col">
+        <label> </label>
+        <div>
+          <button class="btn" id="computeBtn">▶ Compute</button>
+          <button class="btn btn-outline" id="resetBtn">↺ Reset</button>
+        </div>
+      </div>
+    </div>
+    <div id="matrixInputContainer" style="margin-top:1rem;"></div>
+  </div>
+
+  <div id="resultsContainer">
+    <div class="card" id="methodResultCard">
+      <h2>📐 Determinant & method</h2>
+      <div id="methodResult">Adjust matrix and click Compute.</div>
+    </div>
+
+    <div class="flex-row">
+      <div class="flex-col" style="flex:2;">
+        <div class="card" id="propertiesCard">
+          <h2>📊 Matrix properties</h2>
+          <div id="propertiesContent">—</div>
+        </div>
+      </div>
+      <div class="flex-col" style="flex:1.5;">
+        <div class="card" id="inverseCard">
+          <h2>🔄 Inverse (adjugate) n≤4</h2>
+          <div id="inverseContent">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="luCard">
+      <h2>🧩 LU decomposition (Doolittle)</h2>
+      <div id="luContent">—</div>
+    </div>
+  </div>
+
+  <div class="footer">© 2025 ml3x.com</div>
+</div>
+<script>
+  (function() {
+    "use strict";
+
+    const sizeSelect = document.getElementById('matrixSize');
+    const container = document.getElementById('matrixInputContainer');
+    const computeBtn = document.getElementById('computeBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    const methodResultDiv = document.getElementById('methodResult');
+    const propertiesDiv = document.getElementById('propertiesContent');
+    const inverseDiv = document.getElementById('inverseContent');
+    const luDiv = document.getElementById('luContent');
+
+    let currentSize = 3;
+    let matrixData = [];
+
+    // ---------- render grid ----------
+    function renderGrid(n) {
+      container.innerHTML = '';
+      const grid = document.createElement('div');
+      grid.className = 'matrix-grid';
+      grid.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
+      grid.id = 'matrixGrid';
+      for (let i = 0; i < n; i++) {
+        for (let j = 0; j < n; j++) {
+          const inp = document.createElement('input');
+          inp.type = 'number';
+          inp.step = 'any';
+          inp.value = (i === j) ? '1' : '0';
+          inp.dataset.row = i;
+          inp.dataset.col = j;
+          inp.ariaLabel = `a${i+1}${j+1}`;
+          grid.appendChild(inp);
+        }
+      }
+      container.appendChild(grid);
+      // fill 3x3 default with interesting values
+      if (n === 3) {
+        const vals = [2, -1, 0, -1, 2, -1, 0, -1, 2];
+        const inputs = grid.querySelectorAll('input');
+        inputs.forEach((inp, idx) => { if (idx < vals.length) inp.value = vals[idx]; });
+      }
+      if (n === 2) {
+        const inputs = grid.querySelectorAll('input');
+        if (inputs.length >= 4) { inputs[0].value=3; inputs[1].value=1; inputs[2].value=2; inputs[3].value=4; }
+      }
+      if (n === 4) {
+        const inputs = grid.querySelectorAll('input');
+        const vals = [1,2,3,4, 5,6,7,8, 9,10,11,12, 13,14,15,16];
+        inputs.forEach((inp,i)=> { if(i<vals.length) inp.value=vals[i]; });
+      }
+    }
+
+    function getMatrixFromGrid() {
+      const grid = document.getElementById('matrixGrid');
+      if (!grid) return null;
+      const inputs = grid.querySelectorAll('input');
+      const n = Math.round(Math.sqrt(inputs.length));
+      if (n*n !== inputs.length) return null;
+      const mat = [];
+      for (let i=0; i<n; i++) {
+        const row = [];
+        for (let j=0; j<n; j++) {
+          const val = parseFloat(inputs[i*n + j].value);
+          row.push(isNaN(val) ? 0 : val);
+        }
+        mat.push(row);
+      }
+      return mat;
+    }
+
+    // ---------- math helpers ----------
+    function cloneMatrix(m) { return m.map(r=>[...r]); }
+    function makeZero(n) { return Array.from({length:n},()=>Array(n).fill(0)); }
+
+    function determinantCofactor(mat) {
+      const n = mat.length;
+      if (n === 1) return mat[0][0];
+      if (n === 2) return mat[0][0]*mat[1][1] - mat[0][1]*mat[1][0];
+      let det = 0;
+      for (let j=0; j<n; j++) {
+        const minor = getMinor(mat, 0, j);
+        const cof = ((j % 2 === 0) ? 1 : -1) * mat[0][j] * determinantCofactor(minor);
+        det += cof;
+      }
+      return det;
+    }
+
+    function getMinor(mat, r, c) {
+      const n = mat.length;
+      const m = [];
+      for (let i=0; i<n; i++) {
+        if (i===r) continue;
+        const row = [];
+        for (let j=0; j<n; j++) {
+          if (j===c) continue;
+          row.push(mat[i][j]);
+        }
+        m.push(row);
+      }
+      return m;
+    }
+
+    // Sarrus for 3x3
+    function sarrusDet(mat) {
+      if (mat.length !== 3) return null;
+      const a = mat[0][0], b = mat[0][1], c = mat[0][2];
+      const d = mat[1][0], e = mat[1][1], f = mat[1][2];
+      const g = mat[2][0], h = mat[2][1], i = mat[2][2];
+      return a*e*i + b*f*g + c*d*h - c*e*g - b*d*i - a*f*h;
+    }
+
+    // LU Doolittle
+    function luDecomposition(mat) {
+      const n = mat.length;
+      const L = makeZero(n);
+      const U = makeZero(n);
+      for (let i=0; i<n; i++) {
+        for (let j=0; j<n; j++) {
+          if (i <= j) {
+            U[i][j] = mat[i][j];
+            for (let k=0; k<i; k++) U[i][j] -= L[i][k] * U[k][j];
+          } else {
+            L[i][j] = mat[i][j];
+            for (let k=0; k<j; k++) L[i][j] -= L[i][k] * U[k][j];
+            if (Math.abs(U[j][j]) < 1e-12) { L[i][j] = 0; }
+            else L[i][j] /= U[j][j];
+          }
+        }
+      }
+      for (let i=0; i<n; i++) L[i][i] = 1;
+      return { L, U };
+    }
+
+    // rank via row reduction
+    function matrixRank(mat) {
+      const m = cloneMatrix(mat);
+      const rows = m.length, cols = m[0].length;
+      let rank = 0;
+      for (let col=0; col<cols; col++) {
+        let pivot = -1;
+        for (let i=rank; i<rows; i++) {
+          if (Math.abs(m[i][col]) > 1e-10) { pivot = i; break; }
+        }
+        if (pivot === -1) continue;
+        [m[rank], m[pivot]] = [m[pivot], m[rank]];
+        const pivVal = m[rank][col];
+        for (let j=col; j<cols; j++) m[rank][j] /= pivVal;
+        for (let i=0; i<rows; i++) {
+          if (i !== rank && Math.abs(m[i][col]) > 1e-10) {
+            const factor = m[i][col];
+            for (let j=col; j<cols; j++) m[i][j] -= factor * m[rank][j];
+          }
+        }
+        rank++;
+      }
+      return rank;
+    }
+
+    function frobeniusNorm(mat) {
+      let sum = 0;
+      for (let row of mat) for (let v of row) sum += v*v;
+      return Math.sqrt(sum);
+    }
+
+    function inverseAdjugate(mat) {
+      const n = mat.length;
+      if (n > 4) return null;
+      const det = determinantCofactor(mat);
+      if (Math.abs(det) < 1e-12) return null;
+      const cofactors = makeZero(n);
+      for (let i=0; i<n; i++) {
+        for (let j=0; j<n; j++) {
+          const minor = getMinor(mat, i, j);
+          const minorDet = determinantCofactor(minor);
+          cofactors[i][j] = ((i+j) % 2 === 0 ? 1 : -1) * minorDet;
+        }
+      }
+      // adjugate = transpose
+      const adj = makeZero(n);
+      for (let i=0; i<n; i++) for (let j=0; j<n; j++) adj[j][i] = cofactors[i][j];
+      const inv = makeZero(n);
+      for (let i=0; i<n; i++) for (let j=0; j<n; j++) inv[i][j] = adj[i][j] / det;
+      return inv;
+    }
+
+    // condition number estimate: ||A|| * ||A^-1|| (Frobenius)
+    function conditionEstimate(mat) {
+      const inv = inverseAdjugate(mat);
+      if (!inv) return null;
+      const nA = frobeniusNorm(mat);
+      const nInv = frobeniusNorm(inv);
+      return nA * nInv;
+    }
+
+    // ---------- main compute ----------
+    function computeAll() {
+      const mat = getMatrixFromGrid();
+      if (!mat) { methodResultDiv.innerHTML = '<span class="error">Invalid matrix</span>'; return; }
+      const n = mat.length;
+      const det = determinantCofactor(mat);
+      const isSingular = Math.abs(det) < 1e-12;
+
+      // --- method result with steps (cofactor expansion row1) ---
+      let methodHtml = `<h3>🔹 Determinant = <span class="accent">${det.toFixed(6)}</span></h3>`;
+      if (n === 3) {
+        const sDet = sarrusDet(mat);
+        methodHtml += `<div class="step-item">Sarrus rule: det = ${sDet.toFixed(6)} (diagonal products)</div>`;
+      }
+      // cofactor steps
+      methodHtml += `<div style="margin-top:0.5rem;"><strong>Cofactor expansion (row 1):</strong></div>`;
+      for (let j=0; j<n; j++) {
+        const minor = getMinor(mat, 0, j);
+        const minorDet = determinantCofactor(minor);
+        const sign = (j % 2 === 0) ? '+' : '−';
+        const cof = ((j % 2 === 0) ? 1 : -1) * minorDet;
+        methodHtml += `<div class="step-item">a₁₍${j+1}₎ = ${mat[0][j].toFixed(2)} · cofactor (${sign}${Math.abs(cof).toFixed(4)})  minor: [${minor.map(r=>'['+r.map(v=>v.toFixed(1)).join(',')+']').join(', ')}] det(minor)=${minorDet.toFixed(4)}</div>`;
+      }
+      if (isSingular) {
+        methodHtml += `<div class="warning">⚠️ Singular matrix (det = 0). Null space dimension = ${n - matrixRank(mat)}</div>`;
+      }
+      methodResultDiv.innerHTML = methodHtml;
+
+      // --- properties ---
+      const trace = mat.reduce((s,row,i)=> s+row[i], 0);
+      const rank = matrixRank(mat);
+      const norm = frobeniusNorm(mat);
+      const cond = conditionEstimate(mat);
+      let propHtml = `<table class="properties"><tr><td>Trace</td><td>${trace.toFixed(4)}</td></tr>`;
+      propHtml += `<tr><td>Rank</td><td>${rank} / ${n}</td></tr>`;
+      propHtml += `<tr><td>Frobenius norm</td><td>${norm.toFixed(4)}</td></tr>`;
+      propHtml += `<tr><td>Condition estimate</td><td>${cond !== null ? cond.toFixed(4) : 'N/A (singular)'}</td></tr>`;
+      if (isSingular) propHtml += `<tr><td>Null space dim</td><td>${n - rank}</td></tr>`;
+      propHtml += `</table>`;
+      if (cond !== null && cond > 1e8) propHtml += `<div class="warning">⚠️ Ill-conditioned matrix (condition number very large)</div>`;
+      propertiesDiv.innerHTML = propHtml;
+
+      // --- inverse ---
+      if (n <= 4 && !isSingular) {
+        const inv = inverseAdjugate(mat);
+        if (inv) {
+          let invHtml = `<div style="display:grid; grid-template-columns: repeat(${n}, 1fr); gap:0.3rem;">`;
+          for (let i=0; i<n; i++) {
+            for (let j=0; j<n; j++) {
+              invHtml += `<div style="background:#12121f; padding:0.3rem; text-align:center; border-radius:6px;">${inv[i][j].toFixed(4)}</div>`;
+            }
+          }
+          invHtml += `</div>`;
+          inverseDiv.innerHTML = invHtml;
+        } else { inverseDiv.innerHTML = '<span class="error">Inverse failed</span>'; }
+      } else {
+        inverseDiv.innerHTML = (n>4) ? '<span>Inverse only for n≤4</span>' : '<span>Singular, no inverse</span>';
+      }
+
+      // --- LU ---
+      const lu = luDecomposition(mat);
+      let luHtml = `<div style="display:flex; flex-wrap:wrap; gap:2rem;"><div><strong>L</strong><div style="display:grid; grid-template-columns: repeat(${n}, 1fr); gap:0.2rem;">`;
+      for (let i=0; i<n; i++) for (let j=0; j<n; j++) luHtml += `<div style="background:#12121f; padding:0.2rem 0.5rem;">${lu.L[i][j].toFixed(3)}</div>`;
+      luHtml += `</div></div><div><strong>U</strong><div style="display:grid; grid-template-columns: repeat(${n}, 1fr); gap:0.2rem;">`;
+      for (let i=0; i<n; i++) for (let j=0; j<n; j++) luHtml += `<div style="background:#12121f; padding:0.2rem 0.5rem;">${lu.U[i][j].toFixed(3)}</div>`;
+      let uDet = 1;
+      for (let i=0; i<n; i++) uDet *= lu.U[i][i];
+      luHtml += `</div></div></div><div style="margin-top:0.5rem;">det = product(U<sub>ii</sub>) = ${uDet.toFixed(6)}</div>`;
+      luDiv.innerHTML = luHtml;
+    }
+
+    // --- event handlers ---
+    function onSizeChange() {
+      currentSize = parseInt(sizeSelect.value);
+      renderGrid(currentSize);
+      // auto compute after short delay
+      setTimeout(computeAll, 20);
+    }
+
+    sizeSelect.addEventListener('change', onSizeChange);
+    computeBtn.addEventListener('click', computeAll);
+    resetBtn.addEventListener('click', function() {
+      sizeSelect.value = '3';
+      onSizeChange();
+    });
+
+    // init
+    renderGrid(3);
+    setTimeout(computeAll, 30);
+  })();
+</script>
+</body>
+</html>

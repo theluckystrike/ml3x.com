@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>Gradient Descent Visualizer · ml3x.com</title>
+  <meta name="description" content="Interactive gradient descent optimizer: visualize loss landscapes, compare SGD/Adam/RMSProp/AdaGrad, real-time contour & loss curves.">
+  <link rel="canonical" href="https://ml3x.com/tools/gradient-descent-visualizer">
+  <!-- JSON-LD Schema: WebApplication + FAQPage + BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "name": "Gradient Descent Visualizer",
+        "url": "https://ml3x.com/tools/gradient-descent-visualizer",
+        "applicationCategory": "Educational Application",
+        "operatingSystem": "All",
+        "browserRequirements": "JavaScript enabled",
+        "description": "Interactive tool to visualize gradient descent optimization on 2D loss functions with multiple optimizers."
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What loss functions are available?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Quadratic bowl, elongated bowl, saddle, Rosenbrock, Rastrigin, and Beale functions."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Which optimizers are implemented?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "SGD (with optional momentum), Adam, RMSProp, and AdaGrad."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can I compare two optimizers side by side?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes, enable Compare mode to run two optimizers simultaneously on the same function."
+            }
+          }
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "ml3x.com", "item": "https://ml3x.com" },
+          { "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://ml3x.com/tools" },
+          { "@type": "ListItem", "position": 3, "name": "Gradient Descent Visualizer", "item": "https://ml3x.com/tools/gradient-descent-visualizer" }
+        ]
+      }
+    ]
+  }
+  </script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0f0f1a;
+      color: #e0e0e0;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      padding: 1rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      max-width: 1200px;
+      width: 100%;
+    }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 2px solid #eab308;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    h1 {
+      font-weight: 600;
+      font-size: 1.8rem;
+      letter-spacing: -0.02em;
+      color: #eab308;
+    }
+    .subhead { color: #aaa; font-size: 0.9rem; }
+    .card {
+      background: #1a1a2e;
+      border-radius: 1rem;
+      padding: 1.2rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+      border: 1px solid #2a2a40;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 720px) {
+      .grid-2 { grid-template-columns: 1fr; gap: 1rem; }
+      h1 { font-size: 1.4rem; }
+    }
+    .flex-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.8rem 1.2rem;
+    }
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    label { font-size: 0.85rem; color: #ccc; display: flex; align-items: center; gap: 0.4rem; }
+    select, input[type="number"], input[type="range"] {
+      background: #0f0f1a;
+      border: 1px solid #333;
+      color: #eee;
+      padding: 0.3rem 0.6rem;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+    }
+    select { min-width: 100px; }
+    input[type="range"] { width: 100px; accent-color: #eab308; }
+    input[type="number"] { width: 70px; }
+    button {
+      background: #eab308;
+      color: #0f0f1a;
+      border: none;
+      font-weight: 600;
+      padding: 0.4rem 1.2rem;
+      border-radius: 2rem;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: 0.15s;
+      box-shadow: 0 2px 6px rgba(234,179,8,0.3);
+    }
+    button:hover { background: #facc15; transform: scale(1.02); }
+    button.secondary {
+      background: transparent;
+      border: 1px solid #eab308;
+      color: #eab308;
+      box-shadow: none;
+    }
+    button.secondary:hover { background: #2a2a40; }
+    button.small { padding: 0.2rem 0.8rem; font-size: 0.75rem; }
+    .badge {
+      background: #2a2a40;
+      padding: 0.2rem 0.8rem;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      color: #eab308;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1 / 1;
+      background: #0b0b18;
+      border-radius: 0.8rem;
+      border: 1px solid #2f2f50;
+      touch-action: none;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 0.5rem;
+      margin: 0.5rem 0;
+    }
+    .stat-box {
+      background: #12121f;
+      padding: 0.3rem 0.6rem;
+      border-radius: 0.5rem;
+      font-size: 0.8rem;
+      border-left: 3px solid #eab308;
+    }
+    .stat-box span { color: #eab308; font-weight: 600; }
+    .compare-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .footer {
+      margin-top: 2rem;
+      text-align: center;
+      color: #666;
+      font-size: 0.8rem;
+      border-top: 1px solid #222;
+      padding-top: 1rem;
+    }
+    .loss-curve-wrap { margin-top: 0.8rem; }
+    #lossCanvas { aspect-ratio: 3/1; height: auto; }
+    .accent { color: #eab308; }
+    .mt-1 { margin-top: 0.6rem; }
+    .mb-1 { margin-bottom: 0.6rem; }
+  </style>
+
+<meta property="og:title" content="Gradient Descent Visualizer · ml3x.com">
+<meta property="og:description" content="Interactive gradient descent optimizer: visualize loss landscapes, compare SGD/Adam/RMSProp/AdaGrad, real-time contour & loss curves.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ml3x.com/tools/gradient-descent-visualizer">
+</head>
+<body>
+<div class="container">
+  <header>
+    <div>
+      <h1>⬇️ Gradient Descent Visualizer</h1>
+      <span class="subhead">ml3x.com · interactive optimization</span>
+    </div>
+    <div class="badge">v1.0</div>
+  </header>
+
+  <!-- main card -->
+  <div class="card">
+    <div class="flex-row mb-1">
+      <label>Function
+        <select id="funcSelect">
+          <option value="0">Quadratic bowl</option>
+          <option value="1">Elongated bowl</option>
+          <option value="2">Saddle</option>
+          <option value="3">Rosenbrock</option>
+          <option value="4">Rastrigin</option>
+          <option value="5">Beale</option>
+        </select>
+      </label>
+      <label>Optimizer
+        <select id="optimSelect">
+          <option value="sgd">SGD</option>
+          <option value="adam">Adam</option>
+          <option value="rmsprop">RMSProp</option>
+          <option value="adagrad">AdaGrad</option>
+        </select>
+      </label>
+      <label>LR <input type="number" id="lrInput" value="0.1" step="0.01" min="0.001" max="2"></label>
+      <label>Momentum β <input type="number" id="momentumInput" value="0.9" step="0.01" min="0" max="0.999"></label>
+      <label>Max iter <input type="number" id="maxIterInput" value="80" step="5" min="5" max="500"></label>
+    </div>
+    <div class="flex-row">
+      <label>Start X <input type="number" id="startX" value="2.0" step="0.1"></label>
+      <label>Start Y <input type="number" id="startY" value="1.5" step="0.1"></label>
+      <button id="resetBtn">↺ Reset</button>
+      <button id="playBtn">▶ Play</button>
+      <button id="pauseBtn">⏸ Pause</button>
+      <button id="stepBtn" class="secondary small">⏭ Step</button>
+      <div class="compare-toggle">
+        <input type="checkbox" id="compareMode">
+        <label for="compareMode">Compare</label>
+      </div>
+    </div>
+    <!-- stats row -->
+    <div class="stats" id="statsRow">
+      <div class="stat-box">Steps: <span id="stepCount">0</span></div>
+      <div class="stat-box">Loss: <span id="lossVal">—</span></div>
+      <div class="stat-box">Pos: <span id="posVal">(2.0, 1.5)</span></div>
+      <div class="stat-box">Gradient: <span id="gradVal">(—)</span></div>
+    </div>
+  </div>
+
+  <!-- canvas grid -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="flex-between"><span>🔵 Contour & trajectory</span><span class="badge" id="trajLabel">SGD</span></div>
+      <canvas id="contourCanvas" width="500" height="500"></canvas>
+    </div>
+    <div class="card">
+      <div class="flex-between"><span>📉 Loss curve</span><span class="badge">real-time</span></div>
+      <canvas id="lossCanvas" width="500" height="160"></canvas>
+      <!-- second optimizer compare info -->
+      <div id="compareInfo" style="display:none;" class="mt-1 flex-row">
+        <span class="badge">⚡ Compare: <span id="opt2Label">Adam</span></span>
+        <span class="stat-box" style="border-left-color:#6b8cff;">Steps2: <span id="stepCount2">0</span> Loss2: <span id="lossVal2">—</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- footer -->
+  <div class="footer">© 2025 ml3x.com</div>
+</div>
+
+<script>
+  (function() {
+    // ---------- loss functions & gradients ----------
+    const funcs = [
+      // quadratic bowl
+      { f: (x,y) => x*x + y*y, grad: (x,y) => [2*x, 2*y] },
+      // elongated bowl
+      { f: (x,y) => x*x/10 + y*y, grad: (x,y) => [x/5, 2*y] },
+      // saddle
+      { f: (x,y) => x*x - y*y, grad: (x,y) => [2*x, -2*y] },
+      // rosenbrock
+      { f: (x,y) => (1-x)*(1-x) + 100*(y-x*x)*(y-x*x), grad: (x,y) => {
+        const dx = -2*(1-x) - 400*x*(y-x*x);
+        const dy = 200*(y-x*x);
+        return [dx, dy];
+      }},
+      // rastrigin
+      { f: (x,y) => 20 + x*x - 10*Math.cos(2*Math.PI*x) + y*y - 10*Math.cos(2*Math.PI*y), grad: (x,y) => {
+        const dx = 2*x + 20*Math.PI*Math.sin(2*Math.PI*x);
+        const dy = 2*y + 20*Math.PI*Math.sin(2*Math.PI*y);
+        return [dx, dy];
+      }},
+      // beale
+      { f: (x,y) => {
+        const t1 = (1.5 - x + x*y); const t2 = (2.25 - x + x*y*y); const t3 = (2.625 - x + x*y*y*y);
+        return t1*t1 + t2*t2 + t3*t3;
+      }, grad: (x,y) => {
+        const t1 = (1.5 - x + x*y); const t2 = (2.25 - x + x*y*y); const t3 = (2.625 - x + x*y*y*y);
+        const dx = 2*t1*(-1+y) + 2*t2*(-1+y*y) + 2*t3*(-1+y*y*y);
+        const dy = 2*t1*x + 2*t2*(2*x*y) + 2*t3*(3*x*y*y);
+        return [dx, dy];
+      }}
+    ];
+
+    // DOM refs
+    const contourCanvas = document.getElementById('contourCanvas');
+    const ctx = contourCanvas.getContext('2d');
+    const lossCanvas = document.getElementById('lossCanvas');
+    const lossCtx = lossCanvas.getContext('2d');
+
+    const funcSelect = document.getElementById('funcSelect');
+    const optimSelect = document.getElementById('optimSelect');
+    const lrInput = document.getElementById('lrInput');
+    const momentumInput = document.getElementById('momentumInput');
+    const maxIterInput = document.getElementById('maxIterInput');
+    const startX = document.getElementById('startX');
+    const startY = document.getElementById('startY');
+    const resetBtn = document.getElementById('resetBtn');
+    const playBtn = document.getElementById('playBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const stepBtn = document.getElementById('stepBtn');
+    const compareMode = document.getElementById('compareMode');
+    const compareInfo = document.getElementById('compareInfo');
+    const opt2Label = document.getElementById('opt2Label');
+    const stepCount2 = document.getElementById('stepCount2');
+    const lossVal2 = document.getElementById('lossVal2');
+
+    const stepCountEl = document.getElementById('stepCount');
+    const lossValEl = document.getElementById('lossVal');
+    const posValEl = document.getElementById('posVal');
+    const gradValEl = document.getElementById('gradVal');
+    const trajLabel = document.getElementById('trajLabel');
+
+    // state
+    let funcIdx = 0;
+    let optimizer = 'sgd';
+    let lr = 0.1, momentum = 0.9, maxIter = 80;
+    let pos = [2.0, 1.5];
+    let trail = [];          // array of [x,y]
+    let lossHistory = [];
+    let iteration = 0;
+    let running = false;
+    let animId = null;
+
+    // compare state (second optimizer)
+    let pos2 = [2.0, 1.5];
+    let trail2 = [];
+    let lossHistory2 = [];
+    let iteration2 = 0;
+    let opt2 = 'adam';
+
+    // optimizer state
+    let optState = {}; // for momentum, adam, etc
+    let optState2 = {};
+
+    function initOptState() { return { m: [0,0], v: [0,0], t:0, gsum:[0,0] }; }
+
+    function resetState() {
+      const x = parseFloat(startX.value) || 2.0;
+      const y = parseFloat(startY.value) || 1.5;
+      pos = [x, y]; trail = [[x,y]]; lossHistory = [funcs[funcIdx].f(x,y)]; iteration = 0;
+      pos2 = [x, y]; trail2 = [[x,y]]; lossHistory2 = [funcs[funcIdx].f(x,y)]; iteration2 = 0;
+      optState = initOptState(); optState2 = initOptState();
+      updateStats();
+      drawContour(); drawLoss();
+    }
+
+    // gradient step
+    function stepOptim(pos, grad, lr, optim, state, mom) {
+      const [gx, gy] = grad;
+      let dx, dy;
+      if (optim === 'sgd') {
+        if (mom > 0) {
+          state.m[0] = mom * state.m[0] - lr * gx;
+          state.m[1] = mom * state.m[1] - lr * gy;
+          dx = state.m[0]; dy = state.m[1];
+        } else { dx = -lr * gx; dy = -lr * gy; }
+      } else if (optim === 'adam') {
+        state.t += 1;
+        const b1 = 0.9, b2 = 0.999, eps = 1e-8;
+        state.m[0] = b1 * state.m[0] + (1-b1) * gx;
+        state.m[1] = b1 * state.m[1] + (1-b1) * gy;
+        state.v[0] = b2 * state.v[0] + (1-b2) * gx*gx;
+        state.v[1] = b2 * state.v[1] + (1-b2) * gy*gy;
+        const mh0 = state.m[0] / (1 - Math.pow(b1, state.t));
+        const mh1 = state.m[1] / (1 - Math.pow(b1, state.t));
+        const vh0 = state.v[0] / (1 - Math.pow(b2, state.t));
+        const vh1 = state.v[1] / (1 - Math.pow(b2, state.t));
+        dx = -lr * mh0 / (Math.sqrt(vh0) + eps);
+        dy = -lr * mh1 / (Math.sqrt(vh1) + eps);
+      } else if (optim === 'rmsprop') {
+        const beta = 0.9, eps = 1e-8;
+        state.v[0] = beta * state.v[0] + (1-beta) * gx*gx;
+        state.v[1] = beta * state.v[1] + (1-beta) * gy*gy;
+        dx = -lr * gx / (Math.sqrt(state.v[0]) + eps);
+        dy = -lr * gy / (Math.sqrt(state.v[1]) + eps);
+      } else if (optim === 'adagrad') {
+        const eps = 1e-8;
+        state.gsum[0] += gx*gx; state.gsum[1] += gy*gy;
+        dx = -lr * gx / (Math.sqrt(state.gsum[0]) + eps);
+        dy = -lr * gy / (Math.sqrt(state.gsum[1]) + eps);
+      } else { dx = -lr*gx; dy = -lr*gy; }
+      return [pos[0] + dx, pos[1] + dy];
+    }
+
+    function performStep() {
+      if (iteration >= maxIter) { running = false; return; }
+      const func = funcs[funcIdx];
+      const grad = func.grad(pos[0], pos[1]);
+      const newPos = stepOptim(pos, grad, lr, optimizer, optState, momentum);
+      pos = newPos; trail.push([pos[0], pos[1]]); iteration++;
+      lossHistory.push(func.f(pos[0], pos[1]));
+      // compare
+      if (compareMode.checked) {
+        const grad2 = func.grad(pos2[0], pos2[1]);
+        const newPos2 = stepOptim(pos2, grad2, lr, opt2, optState2, momentum);
+        pos2 = newPos2; trail2.push([pos2[0], pos2[1]]); iteration2++;
+        lossHistory2.push(func.f(pos2[0], pos2[1]));
+      }
+      updateStats();
+      drawContour(); drawLoss();
+    }
+
+    function updateStats() {
+      const func = funcs[funcIdx];
+      stepCountEl.textContent = iteration;
+      lossValEl.textContent = lossHistory.length ? lossHistory[lossHistory.length-1].toFixed(4) : '—';
+      posValEl.textContent = `(${pos[0].toFixed(2)}, ${pos[1].toFixed(2)})`;
+      const g = func.grad(pos[0], pos[1]);
+      gradValEl.textContent = `(${g[0].toFixed(2)}, ${g[1].toFixed(2)})`;
+      if (compareMode.checked) {
+        compareInfo.style.display = 'flex';
+        stepCount2.textContent = iteration2;
+        lossVal2.textContent = lossHistory2.length ? lossHistory2[lossHistory2.length-1].toFixed(4) : '—';
+      } else { compareInfo.style.display = 'none'; }
+    }
+
+    // drawing
+    function drawContour() {
+      const w = contourCanvas.width, h = contourCanvas.height;
+      ctx.clearRect(0,0,w,h);
+      const func = funcs[funcIdx];
+      // draw contour (simple grid heatmap)
+      const steps = 40;
+      const minX = -3, maxX = 3, minY = -3, maxY = 3;
+      const cellW = w/steps, cellH = h/steps;
+      for (let i=0; i<steps; i++) {
+        for (let j=0; j<steps; j++) {
+          const x = minX + (i+0.5)*(maxX-minX)/steps;
+          const y = minY + (j+0.5)*(maxY-minY)/steps;
+          const val = func.f(x,y);
+          const norm = Math.min(1, val / 30);
+          const r = 20 + 180 * norm;
+          const g_ = 20 + 60 * (1-norm);
+          const b = 40 + 80 * (1-norm);
+          ctx.fillStyle = `rgb(${Math.min(255,r)},${Math.min(255,g_)},${Math.min(255,b)})`;
+          ctx.fillRect(i*cellW, h - (j+1)*cellH, cellW+0.5, cellH+0.5);
+        }
+      }
+      // draw trail
+      if (trail.length>1) {
+        ctx.beginPath(); ctx.strokeStyle = '#eab308'; ctx.lineWidth = 2.5;
+        for (let k=0; k<trail.length; k++) {
+          const px = (trail[k][0] - minX)/(maxX-minX)*w;
+          const py = h - (trail[k][1] - minY)/(maxY-minY)*h;
+          k===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
+        }
+        ctx.stroke();
+        // current point
+        const last = trail[trail.length-1];
+        const lx = (last[0]-minX)/(maxX-minX)*w, ly = h - (last[1]-minY)/(maxY-minY)*h;
+        ctx.beginPath(); ctx.arc(lx,ly,5,0,2*Math.PI); ctx.fillStyle='#eab308'; ctx.fill();
+        ctx.strokeStyle='white'; ctx.lineWidth=1.5; ctx.stroke();
+      }
+      // compare trail
+      if (compareMode.checked && trail2.length>1) {
+        ctx.beginPath(); ctx.strokeStyle = '#6b8cff'; ctx.lineWidth = 2;
+        for (let k=0; k<trail2.length; k++) {
+          const px = (trail2[k][0] - minX)/(maxX-minX)*w;
+          const py = h - (trail2[k][1] - minY)/(maxY-minY)*h;
+          k===0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
+        }
+        ctx.stroke();
+        const last2 = trail2[trail2.length-1];
+        const lx2 = (last2[0]-minX)/(maxX-minX)*w, ly2 = h - (last2[1]-minY)/(maxY-minY)*h;
+        ctx.beginPath(); ctx.arc(lx2,ly2,5,0,2*Math.PI); ctx.fillStyle='#6b8cff'; ctx.fill();
+        ctx.strokeStyle='white'; ctx.lineWidth=1.5; ctx.stroke();
+      }
+      trajLabel.textContent = optimizer.toUpperCase() + (compareMode.checked ? ' + '+opt2.toUpperCase() : '');
+    }
+
+    function drawLoss() {
+      const w = lossCanvas.width, h = lossCanvas.height;
+      lossCtx.clearRect(0,0,w,h);
+      lossCtx.fillStyle='#0b0b18'; lossCtx.fillRect(0,0,w,h);
+      if (lossHistory.length<2) return;
+      const maxVal = Math.max(...lossHistory, 1e-3);
+      const minVal = Math.min(...lossHistory);
+      const range = maxVal - minVal || 1;
+      // main loss
+      lossCtx.beginPath(); lossCtx.strokeStyle='#eab308'; lossCtx.lineWidth=2;
+      for (let i=0; i<lossHistory.length; i++) {
+        const x = (i/(maxIter-1))*w;
+        const y = h - ((lossHistory[i]-minVal)/range)*(h-10) - 5;
+        i===0 ? lossCtx.moveTo(x,y) : lossCtx.lineTo(x,y);
+      }
+      lossCtx.stroke();
+      // compare loss
+      if (compareMode.checked && lossHistory2.length>1) {
+        lossCtx.beginPath(); lossCtx.strokeStyle='#6b8cff'; lossCtx.lineWidth=2;
+        for (let i=0; i<lossHistory2.length; i++) {
+          const x = (i/(maxIter-1))*w;
+          const y = h - ((lossHistory2[i]-minVal)/range)*(h-10) - 5;
+          i===0 ? lossCtx.moveTo(x,y) : lossCtx.lineTo(x,y);
+        }
+        lossCtx.stroke();
+      }
+    }
+
+    // animation loop
+    function animate() {
+      if (!running) return;
+      if (iteration < maxIter) {
+        performStep();
+        animId = requestAnimationFrame(animate);
+      } else { running = false; }
+    }
+
+    // event handlers
+    function resetAll() {
+      if (animId) cancelAnimationFrame(animId);
+      running = false;
+      funcIdx = parseInt(funcSelect.value);
+      optimizer = optimSelect.value;
+      lr = parseFloat(lrInput.value) || 0.1;
+      momentum = parseFloat(momentumInput.value) || 0.9;
+      maxIter = parseInt(maxIterInput.value) || 80;
+      opt2 = (optimizer === 'adam') ? 'sgd' : 'adam';
+      opt2Label.textContent = opt2.toUpperCase();
+      resetState();
+    }
+
+    resetBtn.addEventListener('click', resetAll);
+    playBtn.addEventListener('click', ()=>{
+      if (running) return;
+      if (iteration >= maxIter) resetAll();
+      running = true;
+      animate();
+    });
+    pauseBtn.addEventListener('click', ()=>{ running = false; if(animId) cancelAnimationFrame(animId); });
+    stepBtn.addEventListener('click', ()=>{ if (iteration < maxIter) performStep(); });
+
+    // click on contour to set start
+    contourCanvas.addEventListener('click', (e)=>{
+      const rect = contourCanvas.getBoundingClientRect();
+      const scaleX = contourCanvas.width / rect.width;
+      const scaleY = contourCanvas.height / rect.height;
+      const mx = (e.clientX - rect.left) * scaleX;
+      const my = (e.clientY - rect.top) * scaleY;
+      const minX=-3,maxX=3,minY=-3,maxY=3;
+      const x = minX + (mx/contourCanvas.width)*(maxX-minX);
+      const y = maxY - (my/contourCanvas.height)*(maxY-minY);
+      startX.value = x.toFixed(2); startY.value = y.toFixed(2);
+      resetAll();
+    });
+
+    // compare mode toggle
+    compareMode.addEventListener('change', ()=>{
+      resetAll();
+    });
+
+    // init
+    resetAll();
+    // extra: redraw on resize
+    window.addEventListener('resize', ()=>{ drawContour(); drawLoss(); });
+  })();
+</script>
+</body>
+</html>

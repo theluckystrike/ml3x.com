@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>Information Entropy Calculator · ml3x.com</title>
+  <meta name="description" content="Comprehensive information theory tool: Shannon entropy, cross-entropy, KL divergence, mutual information, perplexity. Dark theme with yellow accent.">
+  <meta name="keywords" content="entropy, shannon, cross-entropy, KL divergence, mutual information, perplexity, information theory, calculator">
+  <link rel="canonical" href="https://ml3x.com/tools/information-entropy-calculator">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Information Entropy Calculator",
+      "url": "https://ml3x.com/tools/information-entropy-calculator",
+      "description": "Compute Shannon entropy, cross-entropy, KL divergence, mutual information, and perplexity. Interactive probability distribution visualizer.",
+      "applicationCategory": "Educational Application",
+      "operatingSystem": "All",
+      "browserRequirements": "JavaScript"
+    }
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What does entropy H(X) mean?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Shannon entropy measures the average uncertainty of a random variable. H=0 means deterministic, maximum H = log2(n) for uniform distribution."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How is KL divergence asymmetric?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "KL(P||Q) measures information lost when Q approximates P, while KL(Q||P) is generally different. Both are non-negative and zero only if P=Q."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is perplexity?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Perplexity is 2^H (bits) or e^H (nats). It represents the weighted average number of choices a model is uncertain about."
+          }
+        }
+      ]
+    }
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://ml3x.com" },
+        { "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://ml3x.com/tools" },
+        { "@type": "ListItem", "position": 3, "name": "Information Entropy Calculator", "item": "https://ml3x.com/tools/information-entropy-calculator" }
+      ]
+    }
+  </script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: #0f0f1a;
+      color: #e5e5e5;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      padding: 1rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      max-width: 1100px;
+      width: 100%;
+      background: #1a1a2e;
+      border-radius: 2rem;
+      padding: 1.8rem 1.5rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      border: 1px solid #2a2a44;
+    }
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: #eab308;
+      margin-bottom: 0.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    h1 small {
+      font-size: 1rem;
+      font-weight: 400;
+      color: #aaa;
+      margin-left: auto;
+    }
+    .subhead {
+      color: #b0b0c0;
+      margin-bottom: 1.8rem;
+      border-left: 4px solid #eab308;
+      padding-left: 1rem;
+      font-style: italic;
+    }
+    .mode-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 0.3rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid #2f2f4a;
+      padding-bottom: 0.75rem;
+    }
+    .mode-btn {
+      background: transparent;
+      border: 1px solid #3a3a5a;
+      color: #ccc;
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mode-btn.active {
+      background: #eab308;
+      border-color: #eab308;
+      color: #0f0f1a;
+      font-weight: 600;
+      box-shadow: 0 0 12px rgba(234,179,8,0.3);
+    }
+    .mode-btn:hover {
+      background: #2a2a44;
+      color: #fff;
+    }
+    .mode-content {
+      display: none;
+      animation: fade 0.25s ease;
+    }
+    .mode-content.active {
+      display: block;
+    }
+    @keyframes fade { from { opacity: 0.3; } to { opacity: 1; } }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.8rem;
+    }
+    @media (max-width: 700px) {
+      .grid-2 { grid-template-columns: 1fr; gap: 1.2rem; }
+      h1 { font-size: 1.8rem; }
+      .container { padding: 1rem; }
+    }
+    .card {
+      background: #12121f;
+      border-radius: 1.5rem;
+      padding: 1.2rem 1.2rem 1.5rem;
+      border: 1px solid #2a2a44;
+    }
+    .card h3 {
+      color: #eab308;
+      font-weight: 500;
+      font-size: 1.2rem;
+      margin-bottom: 0.75rem;
+      border-bottom: 1px dashed #2f2f4a;
+      padding-bottom: 0.3rem;
+    }
+    label {
+      display: block;
+      font-size: 0.9rem;
+      color: #b8b8d0;
+      margin: 0.6rem 0 0.2rem;
+    }
+    input, textarea {
+      width: 100%;
+      background: #0a0a14;
+      border: 1px solid #33335a;
+      color: #f0f0f0;
+      padding: 0.6rem 0.8rem;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      transition: 0.2s;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #eab308;
+      box-shadow: 0 0 0 2px rgba(234,179,8,0.2);
+    }
+    textarea {
+      min-height: 70px;
+      resize: vertical;
+      font-family: monospace;
+    }
+    .btn-calc {
+      background: #eab308;
+      border: none;
+      color: #0f0f1a;
+      font-weight: 600;
+      padding: 0.6rem 1.5rem;
+      border-radius: 40px;
+      margin: 0.8rem 0 0.2rem;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: 0.2s;
+      box-shadow: 0 4px 10px rgba(234,179,8,0.2);
+    }
+    .btn-calc:hover {
+      background: #facc15;
+      transform: scale(1.02);
+    }
+    .result-box {
+      background: #0a0a18;
+      border-radius: 16px;
+      padding: 0.8rem 1rem;
+      margin-top: 0.8rem;
+      border-left: 4px solid #eab308;
+    }
+    .result-box .val {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #eab308;
+      word-break: break-all;
+    }
+    .result-box .sub {
+      font-size: 0.85rem;
+      color: #a0a0c0;
+    }
+    .formula {
+      background: #1a1a30;
+      padding: 0.4rem 0.8rem;
+      border-radius: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      color: #eab308;
+      margin: 0.5rem 0;
+      display: inline-block;
+    }
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+      max-height: 180px;
+      background: #0a0a14;
+      border-radius: 16px;
+      margin: 0.5rem 0;
+      border: 1px solid #2a2a44;
+    }
+    .flex-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      align-items: center;
+    }
+    .mt-1 { margin-top: 0.6rem; }
+    .text-yellow { color: #eab308; }
+    .footer {
+      margin-top: 2.5rem;
+      text-align: center;
+      color: #6a6a8a;
+      font-size: 0.9rem;
+      border-top: 1px solid #2a2a44;
+      padding-top: 1.5rem;
+    }
+    .badge {
+      background: #2a2a44;
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      color: #ccc;
+    }
+    .inline-code {
+      background: #1a1a30;
+      padding: 0.1rem 0.4rem;
+      border-radius: 6px;
+      font-family: monospace;
+    }
+  </style>
+
+<meta property="og:title" content="Information Entropy Calculator · ml3x.com">
+<meta property="og:description" content="Comprehensive information theory tool: Shannon entropy, cross-entropy, KL divergence, mutual information, perplexity. Dark theme with yellow accent.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ml3x.com/tools/information-entropy-calculator">
+</head>
+<body>
+<div class="container">
+  <h1>📊 Information Entropy <small>ml3x.com</small></h1>
+  <div class="subhead">Shannon · Cross‑entropy · KL · Mutual info · Perplexity</div>
+
+  <div class="mode-tabs" id="modeTabs">
+    <button class="mode-btn active" data-mode="0">Shannon</button>
+    <button class="mode-btn" data-mode="1">Cross‑entropy</button>
+    <button class="mode-btn" data-mode="2">KL divergence</button>
+    <button class="mode-btn" data-mode="3">Mutual info</button>
+    <button class="mode-btn" data-mode="4">Perplexity</button>
+  </div>
+
+  <!-- 5 mode panels -->
+  <!-- 0: Shannon -->
+  <div class="mode-content active" id="panel0">
+    <div class="grid-2">
+      <div class="card">
+        <h3>⚡ Shannon Entropy H(X)</h3>
+        <label>Probability distribution (comma‑separated, up to 20)</label>
+        <input type="text" id="shannonInput" value="0.5,0.25,0.25" placeholder="e.g. 0.5,0.25,0.25">
+        <button class="btn-calc" id="calcShannon">Compute entropy</button>
+        <div class="result-box" id="shannonResult">
+          <div class="val" id="shannonVal">—</div>
+          <div class="sub" id="shannonSub">bits · nats · efficiency</div>
+        </div>
+        <div class="formula">H = – Σ p·log₂(p)</div>
+      </div>
+      <div class="card">
+        <h3>📊 Distribution & interpretation</h3>
+        <canvas id="shannonChart" height="120"></canvas>
+        <div id="shannonInterpret" class="sub" style="margin-top:0.3rem;">Interpretation</div>
+        <div id="shannonMax" class="sub">Max entropy (uniform): —</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1: Cross-entropy -->
+  <div class="mode-content" id="panel1">
+    <div class="grid-2">
+      <div class="card">
+        <h3>🔁 Cross‑entropy H(P,Q)</h3>
+        <label>True distribution P (comma‑separated)</label>
+        <input type="text" id="ceP" value="0.5,0.5">
+        <label>Predicted distribution Q</label>
+        <input type="text" id="ceQ" value="0.6,0.4">
+        <button class="btn-calc" id="calcCE">Compute</button>
+        <div class="result-box">
+          <div class="val" id="ceVal">—</div>
+          <div class="sub" id="ceSub">H(P) · KL divergence</div>
+        </div>
+        <div class="formula">H(P,Q) = – Σ p·log₂(q)</div>
+      </div>
+      <div class="card">
+        <h3>📈 Comparison</h3>
+        <canvas id="ceChart" height="120"></canvas>
+        <div id="ceKL" class="sub mt-1">KL(P||Q) = </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2: KL -->
+  <div class="mode-content" id="panel2">
+    <div class="grid-2">
+      <div class="card">
+        <h3>🌀 KL Divergence</h3>
+        <label>P distribution</label>
+        <input type="text" id="klP" value="0.5,0.5">
+        <label>Q distribution</label>
+        <input type="text" id="klQ" value="0.7,0.3">
+        <button class="btn-calc" id="calcKL">Compute KL</button>
+        <div class="result-box">
+          <div class="val" id="klVal">—</div>
+          <div class="sub" id="klSub">asymmetry</div>
+        </div>
+        <div class="formula">KL(P||Q) = Σ p·log(p/q)</div>
+      </div>
+      <div class="card">
+        <h3>⚖️ Asymmetry</h3>
+        <div id="klAsym" class="sub">KL(P||Q) vs KL(Q||P)</div>
+        <canvas id="klChart" height="120"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3: Mutual info -->
+  <div class="mode-content" id="panel3">
+    <div class="grid-2">
+      <div class="card">
+        <h3>🔗 Mutual Information I(X;Y)</h3>
+        <label>Joint probability matrix (rows semicolon, cols comma) 2x2–4x4</label>
+        <textarea id="miInput" rows="3">0.2,0.3;0.1,0.4</textarea>
+        <button class="btn-calc" id="calcMI">Compute I(X;Y)</button>
+        <div class="result-box">
+          <div class="val" id="miVal">—</div>
+          <div class="sub" id="miSub">bits</div>
+        </div>
+        <div class="formula">I = Σ p(x,y)·log(p(x,y)/(p(x)p(y)))</div>
+      </div>
+      <div class="card">
+        <h3>📊 Marginals</h3>
+        <div id="miMarginals" class="sub">P(X) and P(Y) displayed</div>
+        <canvas id="miChart" height="120"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4: Perplexity -->
+  <div class="mode-content" id="panel4">
+    <div class="grid-2">
+      <div class="card">
+        <h3>🌀 Perplexity</h3>
+        <label>Enter cross‑entropy H (bits) OR token probabilities (comma)</label>
+        <input type="text" id="perpInput" value="2.5" placeholder="e.g. 2.5 (bits) or 0.2,0.3,0.5">
+        <button class="btn-calc" id="calcPerp">Compute perplexity</button>
+        <div class="result-box">
+          <div class="val" id="perpVal">—</div>
+          <div class="sub" id="perpSub">2^H / e^H</div>
+        </div>
+        <div class="formula">PP = 2^H (bits) or e^H (nats)</div>
+      </div>
+      <div class="card">
+        <h3>📌 Note</h3>
+        <p class="sub">If probabilities given, entropy is computed first. Perplexity = 2^H.</p>
+        <div id="perpDetail" class="sub mt-1"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">© 2025 ml3x.com — Information Entropy Calculator</div>
+</div>
+
+<script>
+  (function() {
+    // ----- helpers -----
+    function sum(arr) { return arr.reduce((a,b)=>a+b,0); }
+    function validateProb(arr, tol=1e-5) {
+      if (arr.some(v=>v<0)) return false;
+      return Math.abs(sum(arr)-1) < tol;
+    }
+    function clamp(v) { return Math.max(0, Math.min(1, v)); }
+
+    // mode switching
+    const modeBtns = document.querySelectorAll('.mode-btn');
+    const panels = [0,1,2,3,4].map(i => document.getElementById('panel'+i));
+    function activateMode(idx) {
+      modeBtns.forEach((b,i)=>b.classList.toggle('active', i===idx));
+      panels.forEach((p,i)=>p.classList.toggle('active', i===idx));
+    }
+    modeBtns.forEach((btn, idx) => btn.addEventListener('click', ()=>activateMode(idx)));
+
+    // draw bar chart on canvas
+    function drawBars(canvasId, probs, color='#eab308') {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width = canvas.clientWidth * 2;
+      const h = canvas.height = 120 * 2;
+      ctx.scale(1,1);
+      ctx.clearRect(0,0,w,h);
+      if (!probs || probs.length===0) return;
+      const n = probs.length;
+      const barW = (w-20)/n;
+      const maxVal = Math.max(...probs, 0.01);
+      ctx.fillStyle = '#1a1a30';
+      ctx.fillRect(0,0,w,h);
+      probs.forEach((p,i)=>{
+        const x = 10 + i*barW;
+        const barH = (p/maxVal)*(h-30);
+        ctx.fillStyle = color;
+        ctx.shadowColor = 'rgba(234,179,8,0.2)';
+        ctx.shadowBlur = 6;
+        ctx.fillRect(x, h-10-barH, barW-4, barH);
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = '#aaa';
+        ctx.font = '12px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(p.toFixed(2), x+barW/2, h-14);
+      });
+    }
+
+    // ----- Shannon -----
+    function computeShannon() {
+      const raw = document.getElementById('shannonInput').value;
+      const arr = raw.split(',').map(Number).filter(v=>!isNaN(v));
+      if (arr.length<2 || !validateProb(arr)) {
+        document.getElementById('shannonVal').innerText = '⚠️ invalid / sum≠1';
+        document.getElementById('shannonSub').innerText = 'enter valid probabilities';
+        drawBars('shannonChart', []);
+        return;
+      }
+      const n = arr.length;
+      const Hbits = -arr.reduce((acc,p)=> acc + (p>0 ? p*Math.log2(p) : 0), 0);
+      const Hnats = Hbits * Math.LN2;
+      const maxH = Math.log2(n);
+      const eff = maxH>0 ? Hbits/maxH : 0;
+      document.getElementById('shannonVal').innerText = `${Hbits.toFixed(4)} bits`;
+      document.getElementById('shannonSub').innerText = `${Hnats.toFixed(4)} nats · efficiency ${(eff*100).toFixed(1)}%`;
+      document.getElementById('shannonMax').innerHTML = `Max entropy (uniform): <span class="text-yellow">${maxH.toFixed(4)} bits</span>`;
+      let interp = '';
+      if (Hbits < 0.01) interp = 'Deterministic (no uncertainty)';
+      else if (Hbits > maxH-0.01) interp = 'Maximum uncertainty (uniform)';
+      else interp = `Uncertainty: ${(Hbits/maxH*100).toFixed(0)}% of max`;
+      document.getElementById('shannonInterpret').innerText = interp;
+      drawBars('shannonChart', arr);
+    }
+    document.getElementById('calcShannon').addEventListener('click', computeShannon);
+
+    // ----- Cross-entropy -----
+    function computeCE() {
+      const pRaw = document.getElementById('ceP').value;
+      const qRaw = document.getElementById('ceQ').value;
+      const P = pRaw.split(',').map(Number).filter(v=>!isNaN(v));
+      const Q = qRaw.split(',').map(Number).filter(v=>!isNaN(v));
+      if (P.length!==Q.length || P.length<2 || !validateProb(P) || !validateProb(Q)) {
+        document.getElementById('ceVal').innerText = '⚠️ invalid / sum≠1';
+        document.getElementById('ceSub').innerText = 'P and Q must sum to 1';
+        drawBars('ceChart', []);
+        return;
+      }
+      const Hp = -P.reduce((acc,p)=> acc + (p>0?p*Math.log2(p):0), 0);
+      const Hcross = -P.reduce((acc,p,i)=> acc + (p>0?p*Math.log2(Q[i]):0), 0);
+      const KL = Hcross - Hp;
+      document.getElementById('ceVal').innerText = `${Hcross.toFixed(4)} bits`;
+      document.getElementById('ceSub').innerText = `H(P)=${Hp.toFixed(4)} · KL(P||Q)=${KL.toFixed(4)}`;
+      document.getElementById('ceKL').innerHTML = `KL(P||Q) = <span class="text-yellow">${KL.toFixed(4)}</span> bits`;
+      drawBars('ceChart', P, '#eab308');
+      // also show Q as overlay? skip for simplicity
+    }
+    document.getElementById('calcCE').addEventListener('click', computeCE);
+
+    // ----- KL divergence -----
+    function computeKL() {
+      const pRaw = document.getElementById('klP').value;
+      const qRaw = document.getElementById('klQ').value;
+      const P = pRaw.split(',').map(Number).filter(v=>!isNaN(v));
+      const Q = qRaw.split(',').map(Number).filter(v=>!isNaN(v));
+      if (P.length!==Q.length || P.length<2 || !validateProb(P) || !validateProb(Q)) {
+        document.getElementById('klVal').innerText = '⚠️ invalid';
+        document.getElementById('klSub').innerText = 'P and Q must sum to 1';
+        drawBars('klChart', []);
+        return;
+      }
+      const klPQ = P.reduce((acc,p,i)=> acc + (p>0?p*Math.log2(p/Q[i]):0), 0);
+      const klQP = Q.reduce((acc,q,i)=> acc + (q>0?q*Math.log2(q/P[i]):0), 0);
+      document.getElementById('klVal').innerText = `KL(P||Q) = ${klPQ.toFixed(4)} bits`;
+      document.getElementById('klSub').innerText = `KL(Q||P) = ${klQP.toFixed(4)} bits`;
+      document.getElementById('klAsym').innerHTML = `KL(P||Q) = ${klPQ.toFixed(4)} &nbsp;|&nbsp; KL(Q||P) = ${klQP.toFixed(4)}`;
+      drawBars('klChart', P, '#eab308');
+    }
+    document.getElementById('calcKL').addEventListener('click', computeKL);
+
+    // ----- Mutual information -----
+    function computeMI() {
+      const raw = document.getElementById('miInput').value.trim();
+      const rows = raw.split(';').map(r=>r.split(',').map(Number).filter(v=>!isNaN(v)));
+      if (rows.length<2 || rows.some(r=>r.length!==rows[0].length) || rows[0].length<2) {
+        document.getElementById('miVal').innerText = '⚠️ need 2x2 to 4x4';
+        document.getElementById('miSub').innerText = 'semicolon rows';
+        drawBars('miChart', []);
+        return;
+      }
+      const nrow = rows.length, ncol = rows[0].length;
+      const flat = rows.flat();
+      if (Math.abs(sum(flat)-1)>1e-5) {
+        document.getElementById('miVal').innerText = '⚠️ joint prob sum≠1';
+        return;
+      }
+      // marginals
+      const px = rows.map(r=>sum(r));
+      const py = Array(ncol).fill(0);
+      rows.forEach(r=> r.forEach((v,j)=> py[j]+=v));
+      let I = 0;
+      for (let i=0;i<nrow;i++) {
+        for (let j=0;j<ncol;j++) {
+          const pxy = rows[i][j];
+          if (pxy>0) {
+            I += pxy * Math.log2(pxy / (px[i]*py[j]));
+          }
+        }
+      }
+      document.getElementById('miVal').innerText = `${I.toFixed(4)} bits`;
+      document.getElementById('miSub').innerText = `I(X;Y)`;
+      document.getElementById('miMarginals').innerHTML = `P(X) = [${px.map(v=>v.toFixed(3)).join(', ')}] &nbsp; P(Y) = [${py.map(v=>v.toFixed(3)).join(', ')}]`;
+      drawBars('miChart', px, '#eab308');
+    }
+    document.getElementById('calcMI').addEventListener('click', computeMI);
+
+    // ----- Perplexity -----
+    function computePerp() {
+      const raw = document.getElementById('perpInput').value.trim();
+      // try parse as number (H in bits)
+      let Hbits = parseFloat(raw);
+      if (!isNaN(Hbits) && raw.split(',').length===1) {
+        // direct entropy
+        const pp2 = Math.pow(2, Hbits);
+        const ppe = Math.exp(Hbits * Math.LN2);
+        document.getElementById('perpVal').innerText = `2^H = ${pp2.toFixed(4)}`;
+        document.getElementById('perpSub').innerText = `e^H = ${ppe.toFixed(4)} (nats)`;
+        document.getElementById('perpDetail').innerText = `Using H = ${Hbits} bits`;
+        return;
+      }
+      // try probabilities
+      const probs = raw.split(',').map(Number).filter(v=>!isNaN(v));
+      if (probs.length>=2 && validateProb(probs)) {
+        const H = -probs.reduce((acc,p)=> acc + (p>0?p*Math.log2(p):0), 0);
+        const pp = Math.pow(2, H);
+        document.getElementById('perpVal').innerText = `Perplexity = ${pp.toFixed(4)}`;
+        document.getElementById('perpSub').innerText = `based on H = ${H.toFixed(4)} bits`;
+        document.getElementById('perpDetail').innerText = `Probabilities: [${probs.map(v=>v.toFixed(3)).join(', ')}]`;
+      } else {
+        document.getElementById('perpVal').innerText = '⚠️ invalid';
+        document.getElementById('perpSub').innerText = 'enter H (bits) or probabilities summing to 1';
+      }
+    }
+    document.getElementById('calcPerp').addEventListener('click', computePerp);
+
+    // init shannon
+    computeShannon();
+    // prefill others
+    computeCE();
+    computeKL();
+    computeMI();
+    computePerp();
+  })();
+</script>
+</body>
+</html>

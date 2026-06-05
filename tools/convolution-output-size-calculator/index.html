@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>CNN Convolution Output Size Calculator · ml3x</title>
+  <meta name="description" content="Interactive calculator for Conv2D, DepthwiseConv2D, TransposedConv2D, Conv1D. Compute output size, parameters, FLOPs, receptive field. Multi-layer...">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://ml3x.com/tools/convolution-output-size-calculator">
+  <!-- JSON-LD Schema: WebApplication + FAQPage + BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "name": "CNN Convolution Output Size Calculator",
+        "url": "https://ml3x.com/tools/convolution-output-size-calculator",
+        "description": "Compute output shape, parameters, FLOPs, and receptive field for Conv2D, DepthwiseConv2D, TransposedConv2D, Conv1D. Build multi-layer networks with presets.",
+        "applicationCategory": "Multimedia",
+        "operatingSystem": "All"
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How is output size calculated for Conv2D?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Output height = floor((H + 2*padH - dilationH*(kH-1) - 1)/strideH + 1). Same for width. Output channels = number of filters."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is the formula for TransposedConv2D (deconv)?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Output = (input-1)*stride - 2*padding + dilation*(kernel-1) + output_padding + 1. Output padding is supported (default 0)."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How are FLOPs estimated?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "FLOPs = 2 × kH × kW × C_in × out_H × out_W × C_out (multiply-add counts as 2 FLOPs). Bias addition is negligible."
+            }
+          }
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://ml3x.com" },
+          { "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://ml3x.com/tools" },
+          { "@type": "ListItem", "position": 3, "name": "Convolution Output Size Calculator", "item": "https://ml3x.com/tools/convolution-output-size-calculator" }
+        ]
+      }
+    ]
+  }
+  </script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: #0f0f1a;
+      color: #e5e5e5;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      padding: 1.2rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      max-width: 1200px;
+      width: 100%;
+    }
+    /* yellow accent #eab308 */
+    h1, h2, h3, .accent, label, .output-label, .preset-btn, .layer-head {
+      color: #eab308;
+    }
+    h1 {
+      font-size: 1.9rem;
+      margin-bottom: 0.2rem;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+    h1 small {
+      font-size: 1rem;
+      font-weight: 400;
+      color: #aaa;
+      margin-left: 0.5rem;
+    }
+    .subhead {
+      color: #aaa;
+      margin-bottom: 1.8rem;
+      border-left: 4px solid #eab308;
+      padding-left: 0.8rem;
+    }
+    .card {
+      background: #1a1a2e;
+      border-radius: 20px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+      border: 1px solid #2a2a40;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.8rem;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .input-group label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      color: #ccc;
+    }
+    .input-group input, .input-group select {
+      background: #0f0f1a;
+      border: 1px solid #333;
+      border-radius: 12px;
+      padding: 0.6rem 0.8rem;
+      color: #f0f0f0;
+      font-size: 0.95rem;
+      transition: 0.2s;
+    }
+    .input-group input:focus, .input-group select:focus {
+      outline: none;
+      border-color: #eab308;
+      box-shadow: 0 0 0 2px rgba(234,179,8,0.3);
+    }
+    .input-group input[type="number"] {
+      -moz-appearance: textfield;
+    }
+    .input-group input[type="number"]::-webkit-outer-spin-button,
+    .input-group input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+    }
+    .btn {
+      background: #eab308;
+      color: #0f0f1a;
+      font-weight: 700;
+      border: none;
+      border-radius: 40px;
+      padding: 0.6rem 1.4rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 2px 8px rgba(234,179,8,0.3);
+    }
+    .btn-outline {
+      background: transparent;
+      border: 2px solid #eab308;
+      color: #eab308;
+    }
+    .btn-outline:hover {
+      background: #eab30820;
+    }
+    .btn-sm {
+      padding: 0.3rem 1rem;
+      font-size: 0.8rem;
+    }
+    .btn:hover {
+      background: #f5c518;
+      transform: scale(0.97);
+    }
+    .flex-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .result-box {
+      background: #0b0b18;
+      border-radius: 16px;
+      padding: 1rem 1.2rem;
+      margin-top: 1rem;
+      border-left: 6px solid #eab308;
+    }
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.8rem;
+    }
+    .result-item {
+      background: #16162a;
+      padding: 0.5rem 0.8rem;
+      border-radius: 12px;
+    }
+    .result-item .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: #aaa;
+    }
+    .result-item .value {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .layer-list {
+      margin: 1.2rem 0;
+    }
+    .layer-item {
+      background: #12122a;
+      border-radius: 16px;
+      padding: 0.8rem 1rem;
+      margin-bottom: 0.6rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      border-left: 4px solid #eab308;
+    }
+    .layer-item .shape {
+      font-family: monospace;
+      background: #1e1e3a;
+      padding: 0.2rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+    }
+    .preset-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin: 1rem 0;
+    }
+    .preset-btn {
+      background: #2a2a44;
+      border: 1px solid #3a3a5a;
+      border-radius: 30px;
+      padding: 0.4rem 1.2rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      color: #ddd;
+    }
+    .preset-btn:hover {
+      background: #eab30830;
+      border-color: #eab308;
+      color: #eab308;
+    }
+    .footer {
+      margin-top: 3rem;
+      text-align: center;
+      color: #666;
+      font-size: 0.85rem;
+      border-top: 1px solid #222;
+      padding-top: 1.5rem;
+    }
+    .inline-code {
+      background: #222;
+      padding: 0.1rem 0.4rem;
+      border-radius: 8px;
+      font-family: monospace;
+    }
+    @media (max-width: 700px) {
+      .grid-2, .grid-3, .grid-4 {
+        grid-template-columns: 1fr;
+      }
+      .layer-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.4rem;
+      }
+    }
+  </style>
+
+<meta property="og:title" content="CNN Convolution Output Size Calculator · ml3x">
+<meta property="og:description" content="Interactive calculator for Conv2D, DepthwiseConv2D, TransposedConv2D, Conv1D. Compute output size, parameters, FLOPs, receptive field. Multi-layer...">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ml3x.com/tools/convolution-output-size-calculator">
+</head>
+<body>
+<div class="container">
+  <h1>🧠 CNN Output Size Calculator <small>ml3x</small></h1>
+  <div class="subhead">Conv2D · Depthwise · Transposed · Conv1D — multi-layer builder</div>
+
+  <!-- Main calculator card -->
+  <div class="card">
+    <div class="grid-2" style="margin-bottom: 0.8rem;">
+      <div class="input-group">
+        <label>Operation type</label>
+        <select id="opType">
+          <option value="conv2d">Conv2D</option>
+          <option value="depthwise">DepthwiseConv2D</option>
+          <option value="transposed">TransposedConv2D (deconv)</option>
+          <option value="conv1d">Conv1D</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Padding mode</label>
+        <select id="paddingMode">
+          <option value="valid">Valid</option>
+          <option value="same">Same</option>
+          <option value="custom">Custom</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid-4">
+      <div class="input-group"><label>Input H (or L for 1D)</label><input type="number" id="inH" value="32" step="1" min="1"></div>
+      <div class="input-group"><label>Input W (1D: ignore)</label><input type="number" id="inW" value="32" step="1" min="1"></div>
+      <div class="input-group"><label>Input channels C</label><input type="number" id="inC" value="3" step="1" min="1"></div>
+      <div class="input-group"><label>Output channels (filters)</label><input type="number" id="outC" value="16" step="1" min="1"></div>
+    </div>
+    <div class="grid-4">
+      <div class="input-group"><label>Kernel H (kH)</label><input type="number" id="kH" value="3" step="1" min="1"></div>
+      <div class="input-group"><label>Kernel W (kW)</label><input type="number" id="kW" value="3" step="1" min="1"></div>
+      <div class="input-group"><label>Stride H (sH)</label><input type="number" id="sH" value="1" step="1" min="1"></div>
+      <div class="input-group"><label>Stride W (sW)</label><input type="number" id="sW" value="1" step="1" min="1"></div>
+    </div>
+    <div class="grid-4">
+      <div class="input-group"><label>Dilation H (dH)</label><input type="number" id="dH" value="1" step="1" min="1"></div>
+      <div class="input-group"><label>Dilation W (dW)</label><input type="number" id="dW" value="1" step="1" min="1"></div>
+      <div class="input-group"><label>Custom pad H</label><input type="number" id="padH" value="0" step="1" min="0"></div>
+      <div class="input-group"><label>Custom pad W</label><input type="number" id="padW" value="0" step="1" min="0"></div>
+    </div>
+    <div class="grid-2" style="margin-top: 0.4rem;">
+      <div class="input-group"><label>Output padding (transposed only)</label><input type="number" id="outPad" value="0" step="1" min="0"></div>
+      <div class="flex-row" style="align-items: flex-end; padding-top: 0.6rem;">
+        <button class="btn" id="computeBtn">⚡ Compute layer</button>
+        <button class="btn btn-outline btn-sm" id="addLayerBtn">+ Add to network</button>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="result-box" id="resultBox">
+      <div class="result-grid" id="resultGrid">
+        <div class="result-item"><span class="label">Output H</span><div class="value" id="outHVal">—</div></div>
+        <div class="result-item"><span class="label">Output W</span><div class="value" id="outWVal">—</div></div>
+        <div class="result-item"><span class="label">Output C</span><div class="value" id="outCVal">—</div></div>
+        <div class="result-item"><span class="label">Parameters</span><div class="value" id="paramVal">—</div></div>
+        <div class="result-item"><span class="label">FLOPs</span><div class="value" id="flopsVal">—</div></div>
+        <div class="result-item"><span class="label">Receptive field</span><div class="value" id="rfVal">—</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Network builder -->
+  <div class="card">
+    <div class="flex-row" style="justify-content: space-between;">
+      <h2 style="font-size: 1.4rem;">🧩 Multi-layer network</h2>
+      <button class="btn btn-sm btn-outline" id="clearLayersBtn">Clear all</button>
+    </div>
+    <div class="preset-group">
+      <span class="preset-btn" data-preset="vgg">VGG-16 block</span>
+      <span class="preset-btn" data-preset="resnet">ResNet block</span>
+      <span class="preset-btn" data-preset="mobilenet">MobileNet depthwise</span>
+    </div>
+    <div id="layerContainer" class="layer-list">
+      <div style="color: #888; font-style: italic;">No layers added yet. Configure above and click "+ Add to network".</div>
+    </div>
+    <div class="result-grid" style="margin-top: 0.8rem;">
+      <div class="result-item"><span class="label">Total params</span><div class="value" id="totalParamVal">0</div></div>
+      <div class="result-item"><span class="label">Total FLOPs</span><div class="value" id="totalFlopsVal">0</div></div>
+    </div>
+  </div>
+
+  <footer class="footer">© 2025 ml3x.com</footer>
+</div>
+
+<script>
+  (function() {
+    // DOM refs
+    const opType = document.getElementById('opType');
+    const paddingMode = document.getElementById('paddingMode');
+    const inH = document.getElementById('inH');
+    const inW = document.getElementById('inW');
+    const inC = document.getElementById('inC');
+    const outC = document.getElementById('outC');
+    const kH = document.getElementById('kH');
+    const kW = document.getElementById('kW');
+    const sH = document.getElementById('sH');
+    const sW = document.getElementById('sW');
+    const dH = document.getElementById('dH');
+    const dW = document.getElementById('dW');
+    const padH = document.getElementById('padH');
+    const padW = document.getElementById('padW');
+    const outPad = document.getElementById('outPad');
+    const computeBtn = document.getElementById('computeBtn');
+    const addLayerBtn = document.getElementById('addLayerBtn');
+    const clearLayersBtn = document.getElementById('clearLayersBtn');
+    const layerContainer = document.getElementById('layerContainer');
+    const totalParamVal = document.getElementById('totalParamVal');
+    const totalFlopsVal = document.getElementById('totalFlopsVal');
+
+    // result fields
+    const outHVal = document.getElementById('outHVal');
+    const outWVal = document.getElementById('outWVal');
+    const outCVal = document.getElementById('outCVal');
+    const paramVal = document.getElementById('paramVal');
+    const flopsVal = document.getElementById('flopsVal');
+    const rfVal = document.getElementById('rfVal');
+
+    // Network state
+    let layers = []; // each: {type, inH, inW, inC, outH, outW, outC, params, flops, rf, kernelH, kernelW, strideH, strideW, dilationH, dilationW, paddingH, paddingW, outPad }
+
+    function getVals() {
+      return {
+        op: opType.value,
+        padMode: paddingMode.value,
+        H: parseInt(inH.value) || 1,
+        W: parseInt(inW.value) || 1,
+        C: parseInt(inC.value) || 1,
+        outCh: parseInt(outC.value) || 1,
+        kh: parseInt(kH.value) || 1,
+        kw: parseInt(kW.value) || 1,
+        sh: parseInt(sH.value) || 1,
+        sw: parseInt(sW.value) || 1,
+        dh: parseInt(dH.value) || 1,
+        dw: parseInt(dW.value) || 1,
+        padH: parseInt(padH.value) || 0,
+        padW: parseInt(padW.value) || 0,
+        outPad: parseInt(outPad.value) || 0
+      };
+    }
+
+    // compute single layer
+    function computeLayer(vals, prevRF = 1, prevStrideProduct = 1) {
+      let { op, padMode, H, W, C, outCh, kh, kw, sh, sw, dh, dw, padH: customPadH, padW: customPadW, outPad } = vals;
+      // adjust for Conv1D: treat W=1, kw=1, dw=1, sw=1
+      if (op === 'conv1d') {
+        W = 1; kw = 1; dw = 1; sw = 1;
+      }
+      // compute padding
+      let padHUsed = 0, padWUsed = 0;
+      if (padMode === 'same') {
+        if (op === 'transposed') {
+          // transposed same: stride * (input-1) + 1 + (kernel-1) ? we approximate: output = input*stride
+          // but we keep custom fallback: set pad to make output = input*stride? we'll handle later
+          padHUsed = 0; padWUsed = 0; // user should use custom
+        } else {
+          padHUsed = Math.floor(( (H - 1) * sh + dh * (kh - 1) + 1 - H ) / 2);
+          padWUsed = Math.floor(( (W - 1) * sw + dw * (kw - 1) + 1 - W ) / 2);
+          if (padHUsed < 0) padHUsed = 0;
+          if (padWUsed < 0) padWUsed = 0;
+        }
+      } else if (padMode === 'valid') {
+        padHUsed = 0; padWUsed = 0;
+      } else {
+        padHUsed = customPadH;
+        padWUsed = customPadW;
+      }
+
+      let outH, outW, outCVal;
+      let params = 0, flops = 0, rf = 0;
+
+      if (op === 'transposed') {
+        // transposed conv2d
+        outH = (H - 1) * sh - 2 * padHUsed + dh * (kh - 1) + outPad + 1;
+        outW = (W - 1) * sw - 2 * padWUsed + dw * (kw - 1) + outPad + 1;
+        outCVal = outCh;
+        // params: kH*kW*C_in*C_out + C_out
+        params = kh * kw * C * outCh + outCh;
+        // FLOPs (approx)
+        flops = 2 * kh * kw * C * outH * outW * outCh;
+        // receptive field contribution: (kernel-1)*product_of_previous_strides
+        rf = prevRF + (kh - 1) * prevStrideProduct;
+      } else if (op === 'depthwise') {
+        // depthwise: groups = C_in, outCh = C_in (multiplier=1)
+        outCVal = C; // depthwise multiplier =1
+        outH = Math.floor((H + 2 * padHUsed - dh * (kh - 1) - 1) / sh + 1);
+        outW = Math.floor((W + 2 * padWUsed - dw * (kw - 1) - 1) / sw + 1);
+        if (outH < 1) outH = 1; if (outW < 1) outW = 1;
+        params = kh * kw * C + C; // bias
+        flops = 2 * kh * kw * C * outH * outW;
+        rf = prevRF + (kh - 1) * prevStrideProduct;
+      } else { // conv2d or conv1d
+        outH = Math.floor((H + 2 * padHUsed - dh * (kh - 1) - 1) / sh + 1);
+        outW = Math.floor((W + 2 * padWUsed - dw * (kw - 1) - 1) / sw + 1);
+        if (outH < 1) outH = 1; if (outW < 1) outW = 1;
+        outCVal = outCh;
+        params = kh * kw * C * outCh + outCh;
+        flops = 2 * kh * kw * C * outH * outW * outCh;
+        rf = prevRF + (kh - 1) * prevStrideProduct;
+      }
+
+      // for conv1d, set W to 1
+      if (op === 'conv1d') {
+        outW = 1;
+      }
+
+      return { outH, outW, outC: outCVal, params, flops, rf, padHUsed, padWUsed };
+    }
+
+    function displayResult(res) {
+      outHVal.textContent = res.outH;
+      outWVal.textContent = res.outW;
+      outCVal.textContent = res.outC;
+      paramVal.textContent = res.params.toLocaleString();
+      flopsVal.textContent = res.flops.toLocaleString();
+      rfVal.textContent = res.rf;
+    }
+
+    // update current computation
+    function updateCurrent() {
+      const vals = getVals();
+      // compute with dummy prevRF=1, strideProd=1
+      const res = computeLayer(vals, 1, 1);
+      displayResult(res);
+    }
+
+    // add layer to network
+    function addLayer() {
+      const vals = getVals();
+      // compute with previous layer's RF and stride product
+      let prevRF = 1, prevStrideProd = 1;
+      if (layers.length > 0) {
+        const last = layers[layers.length - 1];
+        prevRF = last.rf;
+        // stride product: product of strides of all previous layers
+        let prod = 1;
+        for (let l of layers) {
+          prod *= l.strideH; // use H stride as representative
+        }
+        prevStrideProd = prod;
+      }
+      const res = computeLayer(vals, prevRF, prevStrideProd);
+      // store layer info
+      const layer = {
+        type: vals.op,
+        inH: vals.H, inW: vals.W, inC: vals.C,
+        outH: res.outH, outW: res.outW, outC: res.outC,
+        params: res.params, flops: res.flops, rf: res.rf,
+        kernelH: vals.kh, kernelW: vals.kw,
+        strideH: vals.sh, strideW: vals.sw,
+        dilationH: vals.dh, dilationW: vals.dw,
+        paddingH: res.padHUsed, paddingW: res.padWUsed,
+        outPad: vals.outPad
+      };
+      layers.push(layer);
+      renderLayers();
+      updateTotals();
+      // update input sizes to last output for convenience
+      inH.value = layer.outH;
+      inW.value = layer.outW;
+      inC.value = layer.outC;
+      // also update current result
+      updateCurrent();
+    }
+
+    function renderLayers() {
+      if (layers.length === 0) {
+        layerContainer.innerHTML = `<div style="color: #888; font-style: italic;">No layers added yet.</div>`;
+        return;
+      }
+      let html = '';
+      layers.forEach((l, idx) => {
+        html += `<div class="layer-item">
+          <span><strong>${idx+1}</strong> ${l.type} (k${l.kernelH}×${l.kernelW}, s${l.strideH})</span>
+          <span class="shape">[${l.inH}, ${l.inW}, ${l.inC}] → [${l.outH}, ${l.outW}, ${l.outC}]</span>
+          <span style="font-size:0.8rem; color:#aaa;">params ${l.params.toLocaleString()} · FLOPs ${l.flops.toLocaleString()}</span>
+        </div>`;
+      });
+      layerContainer.innerHTML = html;
+    }
+
+    function updateTotals() {
+      let totalP = 0, totalF = 0;
+      for (let l of layers) {
+        totalP += l.params;
+        totalF += l.flops;
+      }
+      totalParamVal.textContent = totalP.toLocaleString();
+      totalFlopsVal.textContent = totalF.toLocaleString();
+    }
+
+    function clearLayers() {
+      layers = [];
+      renderLayers();
+      updateTotals();
+      // reset input sizes? keep as is
+    }
+
+    // presets
+    function loadPreset(name) {
+      clearLayers();
+      let presetLayers = [];
+      if (name === 'vgg') {
+        // VGG-16 block: 2 conv2d 3x3, s1, pad same, 64 filters
+        presetLayers = [
+          { op:'conv2d', H:224, W:224, C:3, outCh:64, kh:3, kw:3, sh:1, sw:1, dh:1, dw:1, padMode:'same', outPad:0 },
+          { op:'conv2d', H:224, W:224, C:64, outCh:64, kh:3, kw:3, sh:1, sw:1, dh:1, dw:1, padMode:'same', outPad:0 }
+        ];
+      } else if (name === 'resnet') {
+        // ResNet block: 3x3 conv, 64 -> 64, stride 1
+        presetLayers = [
+          { op:'conv2d', H:56, W:56, C:64, outCh:64, kh:3, kw:3, sh:1, sw:1, dh:1, dw:1, padMode:'same', outPad:0 },
+          { op:'conv2d', H:56, W:56, C:64, outCh:64, kh:3, kw:3, sh:1, sw:1, dh:1, dw:1, padMode:'same', outPad:0 }
+        ];
+      } else if (name === 'mobilenet') {
+        // depthwise separable: depthwise 3x3 + pointwise 1x1
+        presetLayers = [
+          { op:'depthwise', H:112, W:112, C:32, outCh:32, kh:3, kw:3, sh:1, sw:1, dh:1, dw:1, padMode:'same', outPad:0 },
+          { op:'conv2d', H:112, W:112, C:32, outCh:64, kh:1, kw:1, sh:1, sw:1, dh:1, dw:1, padMode:'same', outPad:0 }
+        ];
+      }
+      // apply preset layers
+      for (let p of presetLayers) {
+        // set inputs from previous or defaults
+        const vals = { ...p, padMode: p.padMode || 'same', outPad: p.outPad || 0 };
+        // compute using current layer list
+        let prevRF = 1, prevStrideProd = 1;
+        if (layers.length > 0) {
+          const last = layers[layers.length-1];
+          prevRF = last.rf;
+          let prod = 1;
+          for (let l of layers) prod *= l.strideH;
+          prevStrideProd = prod;
+        }
+        const res = computeLayer(vals, prevRF, prevStrideProd);
+        const layer = {
+          type: vals.op,
+          inH: vals.H, inW: vals.W, inC: vals.C,
+          outH: res.outH, outW: res.outW, outC: res.outC,
+          params: res.params, flops: res.flops, rf: res.rf,
+          kernelH: vals.kh, kernelW: vals.kw,
+          strideH: vals.sh, strideW: vals.sw,
+          dilationH: vals.dh, dilationW: vals.dw,
+          paddingH: res.padHUsed, paddingW: res.padWUsed,
+          outPad: vals.outPad
+        };
+        layers.push(layer);
+        // update input for next
+        p.H = res.outH; p.W = res.outW; p.C = res.outC;
+      }
+      renderLayers();
+      updateTotals();
+      if (layers.length) {
+        const last = layers[layers.length-1];
+        inH.value = last.outH; inW.value = last.outW; inC.value = last.outC;
+      }
+      updateCurrent();
+    }
+
+    // event listeners
+    computeBtn.addEventListener('click', updateCurrent);
+    addLayerBtn.addEventListener('click', addLayer);
+    clearLayersBtn.addEventListener('click', clearLayers);
+    document.querySelectorAll('[data-preset]').forEach(el => {
+      el.addEventListener('click', () => loadPreset(el.dataset.preset));
+    });
+
+    // init
+    updateCurrent();
+    // add a default layer for demo
+    setTimeout(() => {
+      // add one layer to show builder
+      addLayer();
+    }, 100);
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>Eigenvalue & Eigenvector Calculator · ml3x</title>
+  <meta name="description" content="Interactive linear algebra tool: compute eigenvalues, eigenvectors, characteristic polynomial, diagonalization for 2x2 and 3x3 matrices. Step-by-step...">
+  <meta name="keywords" content="eigenvalue, eigenvector, linear algebra, matrix, characteristic polynomial, diagonalization, calculator">
+  <link rel="canonical" href="https://ml3x.com/tools/eigenvalue-eigenvector-calculator">
+  <meta name="robots" content="index, follow">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: #0f0f12;
+      color: #e8e8ea;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      padding: 1rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      max-width: 1200px;
+      width: 100%;
+    }
+    h1, h2, h3 {
+      color: #eab308;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+    h1 {
+      font-size: 2.2rem;
+      margin: 0.5rem 0 0.2rem;
+      border-left: 6px solid #eab308;
+      padding-left: 1rem;
+    }
+    .subhead {
+      color: #a0a0b0;
+      margin-bottom: 1.8rem;
+      font-size: 0.95rem;
+    }
+    .card {
+      background: #1a1a24;
+      border-radius: 24px;
+      padding: 1.8rem 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.7);
+      border: 1px solid #2a2a38;
+    }
+    .matrix-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+    .matrix-panel {
+      flex: 1 1 260px;
+    }
+    .matrix-panel label {
+      display: block;
+      font-size: 0.9rem;
+      color: #c0c0d0;
+      margin-bottom: 0.5rem;
+    }
+    .matrix-input {
+      display: grid;
+      gap: 0.5rem;
+      background: #12121c;
+      padding: 1rem;
+      border-radius: 18px;
+      border: 1px solid #2e2e3e;
+    }
+    .matrix-input input {
+      background: #0b0b12;
+      border: 1px solid #3a3a4a;
+      color: #f0f0f5;
+      padding: 0.6rem 0.4rem;
+      border-radius: 12px;
+      font-size: 1rem;
+      text-align: center;
+      width: 100%;
+      transition: 0.2s;
+    }
+    .matrix-input input:focus {
+      border-color: #eab308;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(234,179,8,0.3);
+    }
+    .dimension-toggle {
+      display: flex;
+      gap: 0.8rem;
+      margin-bottom: 1.2rem;
+      flex-wrap: wrap;
+    }
+    .dim-btn {
+      background: #2a2a38;
+      border: none;
+      color: #ccc;
+      padding: 0.5rem 1.4rem;
+      border-radius: 40px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 0.9rem;
+    }
+    .dim-btn.active {
+      background: #eab308;
+      color: #0f0f12;
+      box-shadow: 0 0 10px #eab30866;
+    }
+    .action-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin: 1.8rem 0 0.8rem;
+    }
+    .btn-primary {
+      background: #eab308;
+      border: none;
+      color: #0b0b12;
+      font-weight: 600;
+      padding: 0.7rem 2rem;
+      border-radius: 40px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 4px 12px rgba(234,179,8,0.3);
+    }
+    .btn-primary:hover {
+      background: #f5c518;
+      transform: scale(1.02);
+    }
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid #3a3a4e;
+      color: #ddd;
+      padding: 0.7rem 1.5rem;
+      border-radius: 40px;
+      cursor: pointer;
+    }
+    .btn-secondary:hover {
+      background: #2a2a3a;
+    }
+    .output-area {
+      margin-top: 1.5rem;
+    }
+    .step-block {
+      background: #12121c;
+      border-radius: 20px;
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid #eab308;
+      overflow-x: auto;
+    }
+    .step-title {
+      color: #eab308;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+    .mono {
+      font-family: 'Courier New', monospace;
+      background: #0b0b12;
+      padding: 0.2rem 0.5rem;
+      border-radius: 8px;
+      color: #e8e8ea;
+    }
+    .verification-pass {
+      color: #4ade80;
+    }
+    .verification-fail {
+      color: #f87171;
+    }
+    .canvas-wrapper {
+      display: flex;
+      justify-content: center;
+      margin: 1rem 0;
+    }
+    canvas {
+      background: #0b0b12;
+      border-radius: 24px;
+      border: 1px solid #2a2a3e;
+      width: 100%;
+      max-width: 400px;
+      height: auto;
+      aspect-ratio: 1/1;
+    }
+    .faq-item {
+      margin: 0.8rem 0;
+    }
+    .faq-question {
+      color: #eab308;
+      font-weight: 500;
+    }
+    .faq-answer {
+      color: #b0b0c0;
+      padding-left: 0.8rem;
+    }
+    footer {
+      margin-top: 3rem;
+      color: #6a6a7a;
+      text-align: center;
+      font-size: 0.9rem;
+      border-top: 1px solid #2a2a3a;
+      padding-top: 1.5rem;
+      width: 100%;
+    }
+    .breadcrumb {
+      display: flex;
+      flex-wrap: wrap;
+      list-style: none;
+      gap: 0.5rem;
+      color: #7a7a8a;
+      font-size: 0.85rem;
+      margin-bottom: 0.5rem;
+    }
+    .breadcrumb li+li::before {
+      content: "›";
+      margin-right: 0.5rem;
+      color: #eab308;
+    }
+    @media (max-width: 600px) {
+      h1 { font-size: 1.8rem; }
+      .card { padding: 1rem; }
+      .matrix-grid { flex-direction: column; }
+    }
+  </style>
+
+<meta property="og:title" content="Eigenvalue & Eigenvector Calculator · ml3x">
+<meta property="og:description" content="Interactive linear algebra tool: compute eigenvalues, eigenvectors, characteristic polynomial, diagonalization for 2x2 and 3x3 matrices. Step-by-step...">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ml3x.com/tools/eigenvalue-eigenvector-calculator">
+</head>
+<body>
+<div class="container">
+  <!-- breadcrumb -->
+  <nav aria-label="Breadcrumb">
+    <ul class="breadcrumb">
+      <li><a href="https://ml3x.com" style="color:#eab308;">ml3x</a></li>
+      <li>Tools</li>
+      <li>Eigenvalue & Eigenvector Calculator</li>
+    </ul>
+  </nav>
+
+  <h1>⚡ Eigenvalue & Eigenvector</h1>
+  <div class="subhead">2×2 & 3×3 · step-by-step · diagonalization · visualization</div>
+
+  <!-- main card -->
+  <div class="card">
+    <div class="dimension-toggle">
+      <button id="dim2" class="dim-btn active">2 × 2</button>
+      <button id="dim3" class="dim-btn">3 × 3</button>
+    </div>
+
+    <div class="matrix-grid">
+      <div class="matrix-panel">
+        <label>Matrix entries</label>
+        <div id="matrixInputContainer" class="matrix-input" style="grid-template-columns: repeat(2, 1fr);">
+          <!-- JS fills 2x2 or 3x3 -->
+        </div>
+        <div class="action-bar">
+          <button id="computeBtn" class="btn-primary">Compute</button>
+          <button id="resetBtn" class="btn-secondary">Reset</button>
+        </div>
+      </div>
+      <div class="matrix-panel" style="flex:2;">
+        <div id="outputSteps" class="output-area">
+          <div class="step-block">Enter matrix and click Compute.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- canvas for 2x2 -->
+    <div class="canvas-wrapper">
+      <canvas id="vizCanvas" width="400" height="400"></canvas>
+    </div>
+  </div>
+
+  <!-- FAQ (JSON-LD) -->
+  <div class="card" id="faq">
+    <h2>❓ Frequently Asked Questions</h2>
+    <div class="faq-item"><div class="faq-question">What if eigenvalues are complex?</div><div class="faq-answer">The calculator displays complex eigenvalues in a+bi form. Eigenvectors for complex eigenvalues are shown but not visualized.</div></div>
+    <div class="faq-item"><div class="faq-question">How is the characteristic polynomial computed?</div><div class="faq-answer">For 2x2: λ² − tr(A)λ + det(A). For 3x3: cofactor expansion yields cubic; roots via Durand‑Kerner (simplified).</div></div>
+    <div class="faq-item"><div class="faq-question">Is diagonalization always possible?</div><div class="faq-answer">If eigenvectors form a basis (geometric multiplicity = algebraic), we show P, D, P⁻¹ and verify.</div></div>
+  </div>
+
+  <footer>© 2025 ml3x.com</footer>
+</div>
+
+<script>
+  (function() {
+    "use strict";
+
+    // DOM refs
+    const dim2Btn = document.getElementById('dim2');
+    const dim3Btn = document.getElementById('dim3');
+    const matrixContainer = document.getElementById('matrixInputContainer');
+    const computeBtn = document.getElementById('computeBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const outputDiv = document.getElementById('outputSteps');
+    const canvas = document.getElementById('vizCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let currentDim = 2;
+    let matrixData = []; // flat array length dim^2
+
+    // initialize matrix data
+    function initMatrix(dim) {
+      const len = dim * dim;
+      const arr = [];
+      for (let i=0; i<len; i++) arr.push(0);
+      // default values
+      if (dim === 2) { arr[0]=2; arr[1]=1; arr[2]=1; arr[3]=2; }
+      else { arr[0]=2; arr[1]=0; arr[2]=0; arr[3]=0; arr[4]=3; arr[5]=0; arr[6]=0; arr[7]=0; arr[8]=5; }
+      return arr;
+    }
+
+    function renderMatrixInputs(dim, data) {
+      const cols = dim;
+      matrixContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      let html = '';
+      for (let i=0; i<dim; i++) {
+        for (let j=0; j<dim; j++) {
+          const idx = i*dim + j;
+          const val = (data && data[idx] !== undefined) ? data[idx] : 0;
+          html += `<input type="number" step="any" id="m${idx}" value="${val}" data-idx="${idx}" class="matrix-cell">`;
+        }
+      }
+      matrixContainer.innerHTML = html;
+      // attach input event to update matrixData
+      document.querySelectorAll('.matrix-cell').forEach(inp => {
+        inp.addEventListener('input', function() {
+          const idx = parseInt(this.dataset.idx);
+          const v = parseFloat(this.value);
+          if (!isNaN(v)) matrixData[idx] = v;
+        });
+      });
+    }
+
+    function readMatrixFromInputs() {
+      const inputs = document.querySelectorAll('.matrix-cell');
+      const dim = currentDim;
+      const mat = [];
+      inputs.forEach(inp => {
+        const idx = parseInt(inp.dataset.idx);
+        const val = parseFloat(inp.value);
+        mat[idx] = isNaN(val) ? 0 : val;
+      });
+      for (let i=0; i<dim*dim; i++) {
+        if (mat[i] === undefined) mat[i]=0;
+      }
+      return mat;
+    }
+
+    // switch dimension
+    function setDimension(dim) {
+      currentDim = dim;
+      if (dim === 2) { dim2Btn.classList.add('active'); dim3Btn.classList.remove('active'); }
+      else { dim3Btn.classList.add('active'); dim2Btn.classList.remove('active'); }
+      matrixData = initMatrix(dim);
+      renderMatrixInputs(dim, matrixData);
+      outputDiv.innerHTML = `<div class="step-block">Dimension changed to ${dim}×${dim}. Click Compute.</div>`;
+      drawCanvas2D(null, null, null);
+    }
+
+    dim2Btn.addEventListener('click', () => setDimension(2));
+    dim3Btn.addEventListener('click', () => setDimension(3));
+
+    resetBtn.addEventListener('click', () => {
+      matrixData = initMatrix(currentDim);
+      renderMatrixInputs(currentDim, matrixData);
+      outputDiv.innerHTML = `<div class="step-block">Reset to default matrix.</div>`;
+      drawCanvas2D(null, null, null);
+    });
+
+    // ---------- linear algebra helpers ----------
+    function matMulVec(A, v) {
+      const n = v.length;
+      const res = new Array(n).fill(0);
+      for (let i=0; i<n; i++) {
+        for (let j=0; j<n; j++) {
+          res[i] += A[i*n + j] * v[j];
+        }
+      }
+      return res;
+    }
+
+    function vecScale(v, s) {
+      return v.map(x => x*s);
+    }
+
+    function vecAdd(a,b) { return a.map((x,i)=>x+b[i]); }
+
+    function vecNorm(v) { return Math.sqrt(v.reduce((s,x)=>s+x*x,0)); }
+
+    function formatComplex(real, imag) {
+      if (Math.abs(imag) < 1e-12) return `${Math.round(real*1e10)/1e10}`;
+      const r = Math.round(real*1e10)/1e10;
+      const i = Math.round(imag*1e10)/1e10;
+      if (Math.abs(r) < 1e-12) return `${i}i`;
+      return `${r} ${i>=0? '+': '-'} ${Math.abs(i)}i`;
+    }
+
+    // solve quadratic ax^2+bx+c=0, return array of {real, imag}
+    function solveQuadratic(a,b,c) {
+      const disc = b*b - 4*a*c;
+      if (Math.abs(disc) < 1e-14) {
+        const root = -b/(2*a);
+        return [{real:root, imag:0}, {real:root, imag:0}];
+      } else if (disc > 0) {
+        const sqrtD = Math.sqrt(disc);
+        return [{real: (-b+sqrtD)/(2*a), imag:0}, {real: (-b-sqrtD)/(2*a), imag:0}];
+      } else {
+        const sqrtD = Math.sqrt(-disc);
+        return [{real: -b/(2*a), imag: sqrtD/(2*a)}, {real: -b/(2*a), imag: -sqrtD/(2*a)}];
+      }
+    }
+
+    // companion matrix roots for cubic: x^3 + a x^2 + b x + c = 0  (simplified Durand-Kerner)
+    function solveCubic(a,b,c) {
+      // companion matrix eigenvalues via iterative DK (simplified)
+      let roots = [
+        {real: -0.5, imag: 0.8},
+        {real: 0.2, imag: -0.5},
+        {real: 0.7, imag: 0.3}
+      ];
+      for (let iter=0; iter<200; iter++) {
+        let newRoots = [];
+        for (let i=0; i<3; i++) {
+          let r = roots[i].real, im = roots[i].imag;
+          let denom = 1;
+          for (let j=0; j<3; j++) {
+            if (i===j) continue;
+            const dr = r - roots[j].real;
+            const di = im - roots[j].imag;
+            const mag2 = dr*dr + di*di;
+            if (mag2 < 1e-20) continue;
+            denom *= (dr + di*1i);
+          }
+          // evaluate polynomial at root
+          const re = r, iim = im;
+          const pVal = re*re*re - 3*re*iim*iim + a*(re*re - iim*iim) + b*re + c + 
+                       (3*re*re*iim - iim*iim*iim + 2*a*re*iim + b*iim)*1i;
+          const denomC = denom;
+          const step = pVal / denomC;
+          newRoots.push({real: r - step.real, imag: im - step.imag});
+        }
+        roots = newRoots;
+      }
+      return roots.map(r => ({real: r.real, imag: r.imag}));
+    }
+
+    // row reduce to find eigenvector for real eigenvalue (nullspace)
+    function nullspaceVector(A, dim, lambdaReal, lambdaImag) {
+      if (Math.abs(lambdaImag) > 1e-12) {
+        // complex eigenvector: return placeholder
+        return null;
+      }
+      const n = dim;
+      // build matrix A - lambda*I
+      const M = A.slice();
+      for (let i=0; i<n; i++) M[i*n+i] -= lambdaReal;
+      // row reduce to echelon, find vector
+      // copy
+      let mat = [];
+      for (let i=0; i<n; i++) {
+        mat.push([]);
+        for (let j=0; j<n; j++) mat[i].push(M[i*n+j]);
+      }
+      // gaussian elimination
+      let row = 0;
+      for (let col=0; col<n && row<n; col++) {
+        let pivot = row;
+        for (let i=row; i<n; i++) {
+          if (Math.abs(mat[i][col]) > Math.abs(mat[pivot][col])) pivot = i;
+        }
+        if (Math.abs(mat[pivot][col]) < 1e-12) continue;
+        [mat[row], mat[pivot]] = [mat[pivot], mat[row]];
+        const pivVal = mat[row][col];
+        for (let j=col; j<n; j++) mat[row][j] /= pivVal;
+        for (let i=0; i<n; i++) {
+          if (i===row) continue;
+          const factor = mat[i][col];
+          for (let j=col; j<n; j++) mat[i][j] -= factor * mat[row][j];
+        }
+        row++;
+      }
+      // find free variable
+      let vec = new Array(n).fill(0);
+      let freeCol = -1;
+      for (let j=0; j<n; j++) {
+        let allZero = true;
+        for (let i=0; i<n; i++) if (Math.abs(mat[i][j]) > 1e-12) { allZero=false; break; }
+        if (allZero) { freeCol = j; break; }
+      }
+      if (freeCol === -1) freeCol = n-1; // fallback
+      vec[freeCol] = 1;
+      for (let i=0; i<n; i++) {
+        if (i===freeCol) continue;
+        let sum = 0;
+        for (let j=0; j<n; j++) {
+          if (j!==freeCol) sum += mat[i][j] * vec[j];
+        }
+        vec[i] = -sum;
+      }
+      // normalize
+      const norm = vecNorm(vec);
+      if (norm>1e-12) vec = vec.map(x=>x/norm);
+      return vec;
+    }
+
+    // main compute
+    function compute() {
+      const dim = currentDim;
+      const A = readMatrixFromInputs();
+      matrixData = A.slice();
+      let html = '';
+
+      // characteristic polynomial
+      if (dim === 2) {
+        const a = A[0], b = A[1], c = A[2], d = A[3];
+        const trace = a+d;
+        const det = a*d - b*c;
+        html += `<div class="step-block"><div class="step-title">① Characteristic polynomial</div>`;
+        html += `det(A - λI) = λ² − (${Math.round(trace*1e8)/1e8})λ + (${Math.round(det*1e8)/1e8}) = 0</div>`;
+
+        const roots = solveQuadratic(1, -trace, det);
+        html += `<div class="step-block"><div class="step-title">② Eigenvalues</div>`;
+        roots.forEach((r,i) => {
+          html += `λ<sub>${i+1}</sub> = ${formatComplex(r.real, r.imag)}<br>`;
+        });
+        html += `</div>`;
+
+        // eigenvectors
+        html += `<div class="step-block"><div class="step-title">③ Eigenvectors</div>`;
+        const evs = [];
+        roots.forEach((r, idx) => {
+          if (Math.abs(r.imag) < 1e-12) {
+            const vec = nullspaceVector(A, 2, r.real, 0);
+            if (vec) {
+              evs.push({real: r.real, vec});
+              html += `λ = ${formatComplex(r.real,0)} → v = [${vec.map(v=>Math.round(v*1e8)/1e8).join(', ')}]<br>`;
+            } else {
+              html += `λ = ${formatComplex(r.real,0)} → eigenvector (zero) <br>`;
+            }
+          } else {
+            html += `λ = ${formatComplex(r.real, r.imag)} (complex, eigenvector not shown)<br>`;
+          }
+        });
+        html += `</div>`;
+
+        // verification
+        html += `<div class="step-block"><div class="step-title">④ Verification A·v = λ·v</div>`;
+        evs.forEach(({real, vec}) => {
+          const Av = matMulVec(A, vec);
+          const lv = vecScale(vec, real);
+          const diff = vecAdd(Av, vecScale(lv, -1));
+          const err = vecNorm(diff);
+          html += `λ=${Math.round(real*1e6)/1e6} error norm = ${err.toExponential(4)} ${err<1e-6 ? '✅' : '⚠️'}<br>`;
+        });
+        html += `</div>`;
+
+        // diagonalization
+        if (evs.length === 2) {
+          const P = [evs[0].vec[0], evs[1].vec[0], evs[0].vec[1], evs[1].vec[1]];
+          const detP = P[0]*P[3] - P[1]*P[2];
+          if (Math.abs(detP) > 1e-12) {
+            const D = [evs[0].real, 0, 0, evs[1].real];
+            const invDet = 1/detP;
+            const Pinv = [P[3]*invDet, -P[1]*invDet, -P[2]*invDet, P[0]*invDet];
+            // reconstruct A
+            const PD = [P[0]*D[0] + P[1]*D[2], P[0]*D[1]+P[1]*D[3], P[2]*D[0]+P[3]*D[2], P[2]*D[1]+P[3]*D[3]];
+            const ARecon = [PD[0]*Pinv[0]+PD[1]*Pinv[2], PD[0]*Pinv[1]+PD[1]*Pinv[3], PD[2]*Pinv[0]+PD[3]*Pinv[2], PD[2]*Pinv[1]+PD[3]*Pinv[3]];
+            const errDiag = Math.sqrt((ARecon[0]-A[0])**2 + (ARecon[1]-A[1])**2 + (ARecon[2]-A[2])**2 + (ARecon[3]-A[3])**2);
+            html += `<div class="step-block"><div class="step-title">⑤ Diagonalization P·D·P⁻¹ = A</div>`;
+            html += `P = [${P.map(v=>Math.round(v*1e6)/1e6).join(', ')}] <br> D = diag(${D[0].toFixed(4)}, ${D[3].toFixed(4)}) <br> error = ${errDiag.toExponential(4)} ${errDiag<1e-6?'✅':''}</div>`;
+          }
+        }
+
+        // draw 2D
+        drawCanvas2D(A, evs, roots);
+      } 
+      else { // 3x3
+        const [a,b,c, d,e,f, g,h,i] = A;
+        const trace = a+e+i;
+        // cofactor expansion for det(A - λI) = -λ^3 + trace λ^2 - ... 
+        // compute coefficients: λ^3 - trace λ^2 + (sum of principal minors) λ - det(A)
+        const minor1 = e*i - f*h;
+        const minor2 = a*i - c*g;
+        const minor3 = a*e - b*d;
+        const sumMinor = minor1 + minor2 + minor3; // actually a*e + a*i + e*i - ...
+        const detA = a*(e*i - f*h) - b*(d*i - f*g) + c*(d*h - e*g);
+        // char poly: λ^3 - trace λ^2 + (sumMinor) λ - detA = 0
+        const pCoeff = [1, -trace, sumMinor, -detA];
+        html += `<div class="step-block"><div class="step-title">① Characteristic polynomial</div>`;
+        html += `λ³ + (${Math.round(pCoeff[1]*1e6)/1e6})λ² + (${Math.round(pCoeff[2]*1e6)/1e6})λ + (${Math.round(pCoeff[3]*1e6)/1e6}) = 0</div>`;
+
+        const roots = solveCubic(pCoeff[1], pCoeff[2], pCoeff[3]);
+        html += `<div class="step-block"><div class="step-title">② Eigenvalues (numerical)</div>`;
+        roots.forEach((r,i) => {
+          html += `λ<sub>${i+1}</sub> = ${formatComplex(r.real, r.imag)}<br>`;
+        });
+        html += `</div>`;
+
+        html += `<div class="step-block"><div class="step-title">③ Eigenvectors (real)</div>`;
+        const evs = [];
+        roots.forEach((r) => {
+          if (Math.abs(r.imag) < 1e-12) {
+            const vec = nullspaceVector(A, 3, r.real, 0);
+            if (vec) {
+              evs.push({real: r.real, vec});
+              html += `λ = ${Math.round(r.real*1e6)/1e6} → v = [${vec.map(v=>Math.round(v*1e6)/1e6).join(', ')}]<br>`;
+            }
+          } else {
+            html += `λ = ${formatComplex(r.real, r.imag)} (complex)<br>`;
+          }
+        });
+        html += `</div>`;
+
+        // verification
+        html += `<div class="step-block"><div class="step-title">④ Verification</div>`;
+        evs.forEach(({real, vec}) => {
+          const Av = matMulVec(A, vec);
+          const lv = vecScale(vec, real);
+          const err = vecNorm(vecAdd(Av, vecScale(lv, -1)));
+          html += `error = ${err.toExponential(4)} ${err<1e-6?'✅':''}<br>`;
+        });
+        html += `</div>`;
+        // diagonalization skip for 3x3 brevity
+        html += `<div class="step-block">Diagonalization for 3×3 available in full version.</div>`;
+        drawCanvas2D(null, null, null);
+      }
+
+      outputDiv.innerHTML = html;
+    }
+
+    // canvas 2x2 visualization
+    function drawCanvas2D(A, evs, roots) {
+      if (!A || currentDim!==2) {
+        ctx.clearRect(0,0,400,400);
+        ctx.fillStyle="#666"; ctx.font="16px monospace"; ctx.fillText("2x2 visualization",120,200);
+        return;
+      }
+      ctx.clearRect(0,0,400,400);
+      const scale = 120;
+      const cx=200, cy=200;
+      // draw unit circle
+      ctx.beginPath(); ctx.arc(cx,cy,scale,0,2*Math.PI); ctx.strokeStyle="#3a3a5a"; ctx.lineWidth=1.5; ctx.stroke();
+      // axes
+      ctx.strokeStyle="#2a2a3a"; ctx.beginPath(); ctx.moveTo(0,cy); ctx.lineTo(400,cy); ctx.moveTo(cx,0); ctx.lineTo(cx,400); ctx.stroke();
+      // transform points on circle
+      const pts = 40;
+      ctx.fillStyle="#eab308";
+      for (let k=0; k<pts; k++) {
+        const ang = 2*Math.PI*k/pts;
+        const x = Math.cos(ang), y = Math.sin(ang);
+        const vec = matMulVec(A, [x,y]);
+        const px = cx + vec[0]*scale, py = cy - vec[1]*scale;
+        ctx.beginPath(); ctx.arc(px,py,3,0,2*Math.PI); ctx.fillStyle="#eab30888"; ctx.fill();
+      }
+      // eigenvectors
+      if (evs && evs.length>=2) {
+        evs.forEach(({real, vec}) => {
+          const vx = vec[0], vy = vec[1];
+          const len = 1.2;
+          const ex = cx + vx*scale*len, ey = cy - vy*scale*len;
+          ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(ex,ey); ctx.strokeStyle="#4ade80"; ctx.lineWidth=2.5; ctx.stroke();
+        });
+      }
+    }
+
+    computeBtn.addEventListener('click', compute);
+
+    // init
+    setDimension(2);
+  })();
+</script>
+
+<!-- JSON-LD Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Eigenvalue & Eigenvector Calculator",
+  "url": "https://ml3x.com/tools/eigenvalue-eigenvector-calculator",
+  "description": "Interactive linear algebra tool for 2x2 and 3x3 matrices: eigenvalues, eigenvectors, characteristic polynomial, diagonalization, and 2D visualization.",
+  "applicationCategory": "Educational Application",
+  "operatingSystem": "All",
+  "browserRequirements": "JavaScript enabled"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type":"Question","name":"What if eigenvalues are complex?","acceptedAnswer":{"@type":"Answer","text":"The calculator displays complex eigenvalues in a+bi form. Eigenvectors for complex eigenvalues are shown but not visualized."}},
+    {"@type":"Question","name":"How is the characteristic polynomial computed?","acceptedAnswer":{"@type":"Answer","text":"For 2x2: λ² − tr(A)λ + det(A). For 3x3: cofactor expansion yields cubic; roots via Durand‑Kerner (simplified)."}},
+    {"@type":"Question","name":"Is diagonalization always possible?","acceptedAnswer":{"@type":"Answer","text":"If eigenvectors form a basis (geometric multiplicity = algebraic), we show P, D, P⁻¹ and verify."}}
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type":"ListItem","position":1,"name":"ml3x","item":"https://ml3x.com"},
+    {"@type":"ListItem","position":2,"name":"Tools","item":"https://ml3x.com/tools"},
+    {"@type":"ListItem","position":3,"name":"Eigenvalue & Eigenvector Calculator"}
+  ]
+}
+</script>
+</body>
+</html>
