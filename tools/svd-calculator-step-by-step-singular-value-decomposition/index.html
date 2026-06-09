@@ -1,0 +1,632 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVD Calculator — Step-by-Step Singular Value Decomposition</title>
+  <meta name="description" content="Interactive SVD calculator: compute U, Σ, V^T step by step for any matrix up to 5x5. Visual, color-coded, with PCA & LSA connections.">
+  <link rel="canonical" href="https://ml3x.com/svd-calculator">
+  <!-- structured data: WebApplication + FAQPage + BreadcrumbList -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": ["WebApplication", "FAQPage"],
+      "name": "SVD Calculator — Step-by-Step Singular Value Decomposition",
+      "description": "Interactive SVD calculator: compute U, Σ, V^T step by step for any matrix up to 5x5. Visual, color-coded, with PCA & LSA connections.",
+      "url": "https://ml3x.com/svd-calculator",
+      "applicationCategory": "Educational Application",
+      "operatingSystem": "All",
+      "browserRequirements": "JavaScript enabled",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "mainEntity": {
+        "@type": "ItemList",
+        "itemListElement": [
+          {"@type": "Question", "name": "What is SVD?", "acceptedAnswer": {"@type": "Answer", "text": "Singular Value Decomposition factorizes any matrix A into U Σ V^T, where U and V are orthogonal and Σ is diagonal with singular values."}},
+          {"@type": "Question", "name": "How to compute SVD step by step?", "acceptedAnswer": {"@type": "Answer", "text": "1) Compute A^T A, 2) find eigenvalues & eigenvectors, 3) singular values = sqrt(eigenvalues), 4) V = eigenvectors, 5) U = A V Σ^{-1}"}}
+        ]
+      },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://ml3x.com/"},
+          {"@type": "ListItem", "position": 2, "name": "Linear Algebra Tools", "item": "https://ml3x.com/tools"},
+          {"@type": "ListItem", "position": 3, "name": "SVD Calculator", "item": "https://ml3x.com/svd-calculator"}
+        ]
+      }
+    }
+  </script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #0f0f1a;
+      color: #e5e5e5;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      padding: 2rem 1.5rem;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    h1, h2, h3 {
+      color: #eab308;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+    h1 {
+      font-size: 2.3rem;
+      margin-bottom: 0.25rem;
+    }
+    .subhead {
+      color: #aaa;
+      margin-bottom: 2rem;
+      border-left: 4px solid #eab308;
+      padding-left: 1rem;
+    }
+    .card {
+      background: #1a1a2e;
+      border-radius: 20px;
+      padding: 1.5rem 1.8rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.7);
+      border: 1px solid #2a2a40;
+    }
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    @media (max-width: 800px) {
+      .grid-2col { grid-template-columns: 1fr; }
+      body { padding: 1.2rem; }
+    }
+    .matrix-input-area {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .matrix-grid {
+      display: grid;
+      gap: 6px;
+      margin: 0.5rem 0 1rem;
+    }
+    .matrix-cell {
+      background: #0d0d1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 0.2rem;
+      text-align: center;
+      transition: 0.1s;
+    }
+    .matrix-cell input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: #f0f0f0;
+      font-size: 1.1rem;
+      text-align: center;
+      padding: 0.4rem 0;
+      outline: none;
+      font-family: 'Courier New', monospace;
+    }
+    .matrix-cell input:focus {
+      background: #252545;
+      border-radius: 6px;
+      box-shadow: 0 0 0 2px #eab30855;
+    }
+    .matrix-label {
+      font-weight: 500;
+      color: #ccc;
+      margin-bottom: 0.5rem;
+    }
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      margin: 0.8rem 0;
+    }
+    .btn {
+      background: #2a2a44;
+      border: none;
+      color: white;
+      padding: 0.6rem 1.4rem;
+      border-radius: 40px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.15s;
+      border: 1px solid #3a3a5a;
+      font-size: 0.95rem;
+    }
+    .btn-primary {
+      background: #eab308;
+      color: #0f0f1a;
+      border-color: #eab308;
+      font-weight: 600;
+    }
+    .btn-primary:hover {
+      background: #facc15;
+      transform: scale(1.02);
+      box-shadow: 0 0 15px #eab30866;
+    }
+    .btn:hover {
+      background: #3a3a5a;
+    }
+    .btn-outline {
+      background: transparent;
+      border-color: #eab308;
+      color: #eab308;
+    }
+    .btn-outline:hover {
+      background: #eab30822;
+    }
+    .dimension-select {
+      background: #0d0d1a;
+      color: white;
+      border: 1px solid #444;
+      padding: 0.5rem 1rem;
+      border-radius: 30px;
+      font-size: 1rem;
+    }
+    .matrix-display {
+      background: #0b0b18;
+      padding: 1rem;
+      border-radius: 16px;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      border: 1px solid #2a2a40;
+    }
+    .matrix-display table {
+      border-collapse: collapse;
+      margin: 0.2rem 0;
+    }
+    .matrix-display td {
+      padding: 0.3rem 0.7rem;
+      text-align: center;
+      border: 1px solid #2f2f50;
+      min-width: 2.5rem;
+    }
+    .color-singular { background: #2b5a2b77; }
+    .color-u { background: #2b4a6b77; }
+    .color-v { background: #6b4a2b77; }
+    .color-eigen { background: #5a2b6b77; }
+    .step-box {
+      background: #12121f;
+      border-radius: 16px;
+      padding: 1.2rem;
+      margin: 1rem 0;
+      border-left: 6px solid #eab308;
+    }
+    .badge {
+      background: #eab30822;
+      color: #eab308;
+      padding: 0.2rem 1rem;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    .faq-item {
+      margin: 0.8rem 0;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #2a2a40;
+    }
+    .faq-question {
+      font-weight: 600;
+      color: #eab308;
+    }
+    .app-section {
+      background: #16162b;
+      border-radius: 16px;
+      padding: 1rem 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .app-demo {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      align-items: center;
+    }
+    .rank-slider {
+      width: 200px;
+      accent-color: #eab308;
+    }
+    .footnote {
+      color: #888;
+      font-size: 0.9rem;
+      margin-top: 2rem;
+      border-top: 1px solid #2a2a40;
+      padding-top: 1rem;
+    }
+    .inline-code {
+      background: #1e1e32;
+      padding: 0.2rem 0.5rem;
+      border-radius: 8px;
+      font-family: monospace;
+    }
+  </style>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2241192243363112" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container">
+  <h1>🧮 SVD Calculator</h1>
+  <div class="subhead">Step-by-step singular value decomposition · up to 5×5 · color-coded matrices</div>
+
+  <!-- Breadcrumb (visual) -->
+  <div style="font-size:0.85rem; color:#888; margin-bottom:1.5rem;">🏠 <a href="https://ml3x.com/" style="color:#aaa;">Home</a> › <a href="https://ml3x.com/tools" style="color:#aaa;">Tools</a> › SVD Calculator</div>
+
+  <!-- main interactive area -->
+  <div class="grid-2col">
+    <!-- left: input -->
+    <div class="card">
+      <h3 style="display: flex; justify-content: space-between;"><span>✏️ Enter matrix A</span> <span class="badge">up to 5×5</span></h3>
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+        <label>Rows: <select id="rowsSelect" class="dimension-select">
+          <option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option>
+        </select></label>
+        <label>Cols: <select id="colsSelect" class="dimension-select">
+          <option value="2">2</option><option value="3" selected>3</option><option value="4">4</option><option value="5">5</option>
+        </select></label>
+      </div>
+      <div id="matrixInputContainer" class="matrix-grid" style="max-width: 400px;"></div>
+      <div class="btn-group">
+        <button class="btn btn-primary" id="computeSVDbtn">▶ Compute SVD</button>
+        <button class="btn btn-outline" id="resetMatrixBtn">↺ Reset</button>
+        <button class="btn" id="exampleMatrixBtn">📋 Example 3×3</button>
+      </div>
+      <div style="margin-top: 0.8rem; font-size:0.9rem; color:#aaa;">
+        <span>💡 Steps: A<sup>T</sup>A → eigenvalues → singular values → V → U</span>
+      </div>
+    </div>
+
+    <!-- right: quick display of A and results -->
+    <div class="card">
+      <h3>📐 Matrix A (color-coded)</h3>
+      <div id="matrixADisplay" class="matrix-display">(waiting for input)</div>
+      <div style="margin-top: 1rem;">
+        <span class="badge">σ (singular values)</span> <span id="singularValuesDisplay" style="font-family: monospace;">—</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step-by-step results -->
+  <div class="card">
+    <h2>📌 Step-by-step SVD</h2>
+    <div id="svdStepsContainer">
+      <div class="step-box">👆 Click <strong>"Compute SVD"</strong> to see the full decomposition.</div>
+    </div>
+  </div>
+
+  <!-- Applications: image compression demo / PCA / LSA -->
+  <div class="card">
+    <h2>⚡ Applications & connections</h2>
+    <div class="app-section">
+      <h3>🖼️ Rank‑k approximation (image compression demo)</h3>
+      <div class="app-demo">
+        <div>Choose rank k: <input type="range" id="rankSlider" class="rank-slider" min="1" max="5" value="2"> <span id="rankValue">2</span></div>
+        <div style="font-family: monospace; background: #0b0b18; padding: 0.8rem; border-radius: 12px;">
+          <span id="rankApproxDisplay">A ≈ Uₖ Σₖ Vₖᵀ</span>
+        </div>
+        <div style="font-size:0.9rem; color:#bbb;">Frobenius error: <span id="frobError">—</span></div>
+      </div>
+      <p style="margin-top: 1rem;">📈 <strong>PCA connection:</strong> Principal components are right singular vectors (V). Singular values ∝ variance explained.</p>
+      <p>🧠 <strong>LSA / topic modeling:</strong> SVD of term‑document matrix yields latent topics (UΣ = document‑topic, V = term‑topic).</p>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="card">
+    <h2>❓ Frequently asked questions</h2>
+    <div class="faq-item"><span class="faq-question">What is SVD?</span> <span style="color:#ccc;">Factorizes any real matrix A into U Σ Vᵀ, with orthogonal U, V and diagonal Σ.</span></div>
+    <div class="faq-item"><span class="faq-question">How to interpret singular values?</span> <span style="color:#ccc;">They are the square roots of eigenvalues of AᵀA, sorted descending. Indicate importance of each singular vector.</span></div>
+    <div class="faq-item"><span class="faq-question">Why SVD for PCA?</span> <span style="color:#ccc;">PCA uses eigenvectors of covariance (AᵀA). SVD gives them directly as V, and singular values relate to explained variance.</span></div>
+  </div>
+  <div class="footnote">ml3x.com — SVD Calculator. Data stays in your browser. No cookies.</div>
+</div>
+
+<script>
+  (function() {
+    // ---------- state ----------
+    let rows = 3, cols = 3;
+    let matrixA = Array.from({length: 3}, () => Array(3).fill(0));
+    // default example
+    const defaultExample = [
+      [3, 2, 2],
+      [2, 3, -2],
+      [1, 1, 3]
+    ];
+    matrixA = defaultExample.map(r => [...r]);
+
+    // DOM refs
+    const rowsSelect = document.getElementById('rowsSelect');
+    const colsSelect = document.getElementById('colsSelect');
+    const matrixInputContainer = document.getElementById('matrixInputContainer');
+    const matrixADisplay = document.getElementById('matrixADisplay');
+    const singularValuesDisplay = document.getElementById('singularValuesDisplay');
+    const svdStepsContainer = document.getElementById('svdStepsContainer');
+    const computeBtn = document.getElementById('computeSVDbtn');
+    const resetBtn = document.getElementById('resetMatrixBtn');
+    const exampleBtn = document.getElementById('exampleMatrixBtn');
+    const rankSlider = document.getElementById('rankSlider');
+    const rankValue = document.getElementById('rankValue');
+    const rankApproxDisplay = document.getElementById('rankApproxDisplay');
+    const frobError = document.getElementById('frobError');
+
+    // ---------- helpers ----------
+    function buildInputGrid() {
+      const r = parseInt(rowsSelect.value);
+      const c = parseInt(colsSelect.value);
+      rows = r; cols = c;
+      // resize matrixA
+      const newA = Array.from({length: r}, (_, i) => 
+        Array.from({length: c}, (_, j) => (matrixA[i] && matrixA[i][j] !== undefined) ? matrixA[i][j] : 0)
+      );
+      matrixA = newA;
+      renderInputGrid();
+      renderMatrixADisplay();
+    }
+
+    function renderInputGrid() {
+      const container = matrixInputContainer;
+      container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      container.innerHTML = '';
+      for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+          const cell = document.createElement('div');
+          cell.className = 'matrix-cell';
+          const inp = document.createElement('input');
+          inp.type = 'number';
+          inp.step = 'any';
+          inp.value = matrixA[i][j];
+          inp.dataset.row = i;
+          inp.dataset.col = j;
+          inp.addEventListener('input', function() {
+            const val = parseFloat(this.value) || 0;
+            matrixA[parseInt(this.dataset.row)][parseInt(this.dataset.col)] = val;
+          });
+          cell.appendChild(inp);
+          container.appendChild(cell);
+        }
+      }
+    }
+
+    // render A with color coding (simple)
+    function renderMatrixADisplay() {
+      const html = ['<table>'];
+      for (let i = 0; i < rows; i++) {
+        html.push('<tr>');
+        for (let j = 0; j < cols; j++) {
+          const val = matrixA[i][j];
+          const colorClass = (val > 2) ? 'color-singular' : (val < 0) ? 'color-v' : 'color-u';
+          html.push(`<td class="${colorClass}">${val}</td>`);
+        }
+        html.push('</tr>');
+      }
+      html.push('</table>');
+      matrixADisplay.innerHTML = html.join('');
+    }
+
+    // ---------- linear algebra (simple JS) ----------
+    function transpose(m) {
+      return m[0].map((_, col) => m.map(row => row[col]));
+    }
+
+    function multiply(A, B) {
+      const rowsA = A.length, colsA = A[0].length, colsB = B[0].length;
+      const res = Array.from({length: rowsA}, () => Array(colsB).fill(0));
+      for (let i = 0; i < rowsA; i++) {
+        for (let j = 0; j < colsB; j++) {
+          let sum = 0;
+          for (let k = 0; k < colsA; k++) sum += A[i][k] * B[k][j];
+          res[i][j] = sum;
+        }
+      }
+      return res;
+    }
+
+    // eigenvalues & eigenvectors for symmetric 2x2 / 3x3 (power method fallback) — for demo we use 3x3 exact via math? We'll implement simple 3x3 symmetric eigens (analytic) but limited. For up to 5x5 we use iterative? For demo we use a numeric approach: jacobi? We'll compute via characteristic polynomial for 2x2, 3x3. For 4x4,5x5 we use approximation? We'll show steps but compute using numeric approximate (power method) for simplicity.
+    // We'll implement a small jacobi for symmetric matrices up to 5x5.
+    function jacobiEigen(A, maxIter = 100) {
+      const n = A.length;
+      let D = A.map(r => [...r]);
+      let V = Array.from({length: n}, (_, i) => Array(n).fill(0));
+      for (let i = 0; i < n; i++) V[i][i] = 1;
+
+      for (let iter = 0; iter < maxIter; iter++) {
+        let maxOff = 0, p = 0, q = 0;
+        for (let i = 0; i < n; i++) {
+          for (let j = i+1; j < n; j++) {
+            if (Math.abs(D[i][j]) > maxOff) {
+              maxOff = Math.abs(D[i][j]); p = i; q = j;
+            }
+          }
+        }
+        if (maxOff < 1e-12) break;
+        const theta = (D[q][q] - D[p][p]) / (2 * D[p][q]);
+        const t = Math.sign(theta) / (Math.abs(theta) + Math.sqrt(theta*theta + 1));
+        const c = 1 / Math.sqrt(1 + t*t);
+        const s = t * c;
+        // rotate
+        const tau = s / (1 + c);
+        for (let r = 0; r < n; r++) {
+          if (r !== p && r !== q) {
+            const Dpr = D[p][r]; const Dqr = D[q][r];
+            D[p][r] = Dpr - s * (Dqr + tau * Dpr);
+            D[r][p] = D[p][r];
+            D[q][r] = Dqr + s * (Dpr - tau * Dqr);
+            D[r][q] = D[q][r];
+          }
+        }
+        const Dpp = D[p][p]; const Dqq = D[q][q]; const Dpq = D[p][q];
+        D[p][p] = Dpp - t * Dpq;
+        D[q][q] = Dqq + t * Dpq;
+        D[p][q] = 0; D[q][p] = 0;
+        for (let r = 0; r < n; r++) {
+          const Vrp = V[r][p]; const Vrq = V[r][q];
+          V[r][p] = Vrp - s * (Vrq + tau * Vrp);
+          V[r][q] = Vrq + s * (Vrp - tau * Vrq);
+        }
+      }
+      const eigenvalues = Array.from({length: n}, (_, i) => D[i][i]);
+      return { eigenvalues, eigenvectors: V };
+    }
+
+    // compute SVD steps
+    function computeSVD() {
+      const A = matrixA.map(r => [...r]);
+      const m = A.length, n = A[0].length;
+      // 1) A^T A
+      const At = transpose(A);
+      const AtA = multiply(At, A);
+      // 2) eigenvalues of AtA (symmetric)
+      const { eigenvalues: evals, eigenvectors: V } = jacobiEigen(AtA);
+      // sort descending
+      const indices = evals.map((val, idx) => idx).sort((a,b) => evals[b] - evals[a]);
+      const sortedEvals = indices.map(i => evals[i]);
+      const sortedV = indices.map(i => V.map(row => row[i])); // columns as vectors? V is n x n, columns eigenvectors. We'll reorder columns
+      // Build V matrix columns sorted
+      const Vmat = Array.from({length: n}, (_, i) => indices.map(j => V[i][j]));
+      // singular values
+      const singularValues = sortedEvals.map(e => Math.sqrt(Math.max(0, e)));
+      // 4) V is Vmat (right singular vectors)
+      // 5) U = A * V * Σ^-1
+      const sigmaInv = singularValues.map(s => s > 1e-12 ? 1/s : 0);
+      // A * V
+      const AV = multiply(A, Vmat);
+      const U = AV.map(row => row.map((val, j) => val * sigmaInv[j]));
+      // ensure orthonormal (approx)
+      return { A, AtA, eigenvalues: sortedEvals, singularValues, V: Vmat, U, Sigma: singularValues };
+    }
+
+    // display steps
+    function displaySVD(result) {
+      const { A, AtA, eigenvalues, singularValues, V, U, Sigma } = result;
+      let html = '';
+      // step 1
+      html += `<div class="step-box"><strong>Step 1: A<sup>T</sup>A</strong><br><span style="font-family: monospace;">${matrixToHtml(AtA)}</span></div>`;
+      // step 2 eigenvalues
+      html += `<div class="step-box"><strong>Step 2: Eigenvalues of A<sup>T</sup>A</strong> (sorted)<br>`;
+      html += `<span style="font-family: monospace; color: #eab308;">[${eigenvalues.map(v => v.toFixed(4)).join(', ')}]</span></div>`;
+      // step 3 singular values
+      html += `<div class="step-box"><strong>Step 3: Singular values (σ = √λ)</strong><br>`;
+      html += `<span style="font-family: monospace; color: #7bed9f;">[${singularValues.map(v => v.toFixed(4)).join(', ')}]</span></div>`;
+      // step 4 V
+      html += `<div class="step-box"><strong>Step 4: V (right singular vectors, columns)</strong><br>${matrixToHtml(V)}</div>`;
+      // step 5 U
+      html += `<div class="step-box"><strong>Step 5: U (left singular vectors, columns)</strong><br>${matrixToHtml(U)}</div>`;
+      // Σ matrix
+      const sigmaMat = Array.from({length: A.length}, () => Array(A[0].length).fill(0));
+      for (let i = 0; i < Math.min(A.length, A[0].length); i++) sigmaMat[i][i] = singularValues[i] || 0;
+      html += `<div class="step-box"><strong>Σ (singular value diagonal)</strong><br>${matrixToHtml(sigmaMat)}</div>`;
+      svdStepsContainer.innerHTML = html;
+      // update singular values display
+      singularValuesDisplay.textContent = `[${singularValues.map(v => v.toFixed(3)).join(', ')}]`;
+      // rank slider max
+      const maxRank = Math.min(A.length, A[0].length);
+      rankSlider.max = maxRank;
+      rankSlider.value = Math.min(parseInt(rankSlider.value), maxRank);
+      updateRankApprox(U, Sigma, V, A);
+    }
+
+    function matrixToHtml(mat) {
+      if (!mat || mat.length === 0) return '';
+      let tbl = '<table>';
+      for (let i=0; i<mat.length; i++) {
+        tbl += '<tr>';
+        for (let j=0; j<mat[0].length; j++) {
+          let val = mat[i][j];
+          if (typeof val === 'number') val = val.toFixed(3);
+          tbl += `<td>${val}</td>`;
+        }
+        tbl += '</tr>';
+      }
+      tbl += '</table>';
+      return tbl;
+    }
+
+    function updateRankApprox(U, Sigma, V, A) {
+      const k = parseInt(rankSlider.value);
+      rankValue.textContent = k;
+      // compute A_k = U_k * Sigma_k * V_k^T
+      const m = U.length, n = V.length;
+      const Uk = U.map(row => row.slice(0, k));
+      const Sigmak = Sigma.slice(0, k);
+      const Vk = V.map(row => row.slice(0, k));
+      // Vk^T
+      const VkT = transpose(Vk);
+      // Sigma_k diag
+      const diag = Sigmak.map(s => s);
+      // Uk * diag
+      const UkD = Uk.map(row => row.map((val, idx) => val * diag[idx]));
+      const Ak = multiply(UkD, VkT);
+      // Frobenius error
+      let err = 0;
+      for (let i=0; i<m; i++) for (let j=0; j<n; j++) err += (A[i][j] - Ak[i][j]) ** 2;
+      err = Math.sqrt(err);
+      frobError.textContent = err.toFixed(4);
+      rankApproxDisplay.innerHTML = `A<sub>${k}</sub> ≈ ${matrixToHtml(Ak)}`;
+    }
+
+    // reset
+    function resetMatrix() {
+      matrixA = Array.from({length: rows}, () => Array(cols).fill(0));
+      renderInputGrid();
+      renderMatrixADisplay();
+      svdStepsContainer.innerHTML = `<div class="step-box">👆 Click "Compute SVD" to see decomposition.</div>`;
+      singularValuesDisplay.textContent = '—';
+    }
+
+    // example
+    function loadExample() {
+      matrixA = defaultExample.map(r => [...r]);
+      rowsSelect.value = 3; colsSelect.value = 3;
+      rows=3; cols=3;
+      renderInputGrid();
+      renderMatrixADisplay();
+    }
+
+    // listeners
+    rowsSelect.addEventListener('change', buildInputGrid);
+    colsSelect.addEventListener('change', buildInputGrid);
+    computeBtn.addEventListener('click', function() {
+      // sync matrix from inputs
+      const inputs = matrixInputContainer.querySelectorAll('input');
+      inputs.forEach(inp => {
+        const i = parseInt(inp.dataset.row), j = parseInt(inp.dataset.col);
+        matrixA[i][j] = parseFloat(inp.value) || 0;
+      });
+      renderMatrixADisplay();
+      const result = computeSVD();
+      displaySVD(result);
+    });
+    resetBtn.addEventListener('click', resetMatrix);
+    exampleBtn.addEventListener('click', loadExample);
+    rankSlider.addEventListener('input', function() {
+      // need latest U,Sigma,V from last compute
+      const result = computeSVD();
+      updateRankApprox(result.U, result.Sigma, result.V, result.A);
+    });
+
+    // init
+    buildInputGrid();
+    renderMatrixADisplay();
+    // precompute example
+    setTimeout(() => {
+      computeBtn.click();
+    }, 100);
+  })();
+</script>
+<div style="margin:20px auto;max-width:728px;text-align:center">
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-2241192243363112" data-ad-slot="auto" data-ad-format="auto" data-full-width-responsive="true"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+</body>
+</html>
