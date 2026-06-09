@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linear Algebra Toolkit | ml3x</title>
+    <meta name="description" content="Matrix operations toolkit for linear algebra. Multiply, add, subtract, transpose, inverse, determinant on 2x2 to 4x4 matrices with step-by-step...">
+    <link rel="canonical" href="https://ml3x.com/tools/linear-algebra-toolkit">
+    <meta property="og:title" content="Linear Algebra Toolkit">
+    <meta property="og:description" content="Interactive matrix operations calculator with step-by-step solutions for multiplication, addition, transpose, inverse, and determinant.">
+    <meta property="og:url" content="https://ml3x.com/tools/linear-algebra-toolkit">
+    <meta property="og:type" content="website">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2241192243363112" crossorigin="anonymous"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0f172a;
+            color: #e2e8f0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #a855f7;
+            padding-bottom: 20px;
+        }
+        h1 {
+            font-size: 2em;
+            color: #a855f7;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #cbd5e1;
+            font-size: 0.95em;
+        }
+        .controls {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid #334155;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            align-items: end;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            color: #a855f7;
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+        select, button {
+            padding: 10px;
+            background: #0f172a;
+            color: #e2e8f0;
+            border: 1px solid #475569;
+            border-radius: 4px;
+            font-size: 0.95em;
+            cursor: pointer;
+        }
+        select:focus {
+            outline: none;
+            border-color: #a855f7;
+            box-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
+        }
+        button {
+            background: #a855f7;
+            color: #0f172a;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        button:hover {
+            background: #9333ea;
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+        .card h2 {
+            color: #a855f7;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+        .matrix-input {
+            background: #0f172a;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .matrix-label {
+            color: #a855f7;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: block;
+            font-size: 0.95em;
+        }
+        .matrix-grid {
+            display: inline-grid;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        input[type="number"] {
+            width: 60px;
+            padding: 8px;
+            background: #1e293b;
+            color: #e2e8f0;
+            border: 1px solid #475569;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 0.9em;
+            font-family: 'Courier New', monospace;
+        }
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #a855f7;
+            background: #1e293b;
+        }
+        .result-section {
+            background: #0f172a;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .result-title {
+            color: #a855f7;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
+        .result-matrix {
+            display: inline-grid;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+        }
+        .matrix-value {
+            min-width: 50px;
+            padding: 10px;
+            background: #1e293b;
+            border: 1px solid #475569;
+            border-radius: 2px;
+            text-align: center;
+            color: #a855f7;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        .scalar-result {
+            background: #1e293b;
+            padding: 15px;
+            border-left: 3px solid #a855f7;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .scalar-label {
+            color: #94a3b8;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+        .scalar-value {
+            color: #a855f7;
+            font-size: 1.3em;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+        .formula-box {
+            background: #1e293b;
+            padding: 12px;
+            border-left: 3px solid #a855f7;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8em;
+            color: #cbd5e1;
+            overflow-x: auto;
+        }
+        .single-matrix {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        footer {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid #334155;
+            color: #64748b;
+            font-size: 0.9em;
+            margin-top: 40px;
+        }
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .controls {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Linear Algebra Toolkit",
+        "description": "Interactive matrix operations calculator supporting multiplication, addition, subtraction, transpose, inverse, and determinant",
+        "url": "https://ml3x.com/tools/linear-algebra-toolkit",
+        "applicationCategory": "UtilityApplication"
+    }
+    </script>
+
+    <div class="container">
+        <header>
+            <h1>Linear Algebra Toolkit</h1>
+            <p class="subtitle">Matrix operations with step-by-step calculations for 2x2 to 4x4 matrices</p>
+        </header>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="matrixSize">Matrix Size</label>
+                <select id="matrixSize">
+                    <option value="2">2x2</option>
+                    <option value="3">3x3</option>
+                    <option value="4">4x4</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="operation">Operation</label>
+                <select id="operation">
+                    <option value="multiply">Multiply (A × B)</option>
+                    <option value="add">Add (A + B)</option>
+                    <option value="subtract">Subtract (A - B)</option>
+                    <option value="transpose">Transpose (Aᵀ)</option>
+                    <option value="inverse">Inverse (A⁻¹)</option>
+                    <option value="determinant">Determinant (det A)</option>
+                </select>
+            </div>
+            <button id="calculateBtn">Calculate</button>
+        </div>
+
+        <div class="grid" id="mainGrid">
+            <div class="card">
+                <h2>Matrix A</h2>
+                <div id="matrixAInput"></div>
+            </div>
+            <div class="card" id="matrixBCard">
+                <h2>Matrix B</h2>
+                <div id="matrixBInput"></div>
+            </div>
+        </div>
+
+        <div class="card single-matrix">
+            <h2>Result</h2>
+            <div id="resultArea"></div>
+        </div>
+
+        <footer>
+            © 2026 ml3x.com — Math & ML Tools
+        </footer>
+    </div>
+
+    <script>
+        class Matrix {
+            constructor(size) {
+                this.size = size;
+                this.data = Array(size).fill(0).map(() => Array(size).fill(0));
+            }
+
+            static identity(size) {
+                const m = new Matrix(size);
+                for (let i = 0; i < size; i++) m.data[i][i] = 1;
+                return m;
+            }
+
+            multiply(other) {
+                if (this.size !== other.size) throw new Error('Size mismatch');
+                const result = new Matrix(this.size);
+                for (let i = 0; i < this.size; i++) {
+                    for (let j = 0; j < this.size; j++) {
+                        let sum = 0;
+                        for (let k = 0; k < this.size; k++) {
+                            sum += this.data[i][k] * other.data[k][j];
+                        }
+                        result.data[i][j] = sum;
+                    }
+                }
+                return result;
+            }
+
+            add(other) {
+                const result = new Matrix(this.size);
+                for (let i = 0; i < this.size; i++) {
+                    for (let j = 0; j < this.size; j++) {
+                        result.data[i][j] = this.data[i][j] + other.data[i][j];
+                    }
+                }
+                return result;
+            }
+
+            subtract(other) {
+                const result = new Matrix(this.size);
+                for (let i = 0; i < this.size; i++) {
+                    for (let j = 0; j < this.size; j++) {
+                        result.data[i][j] = this.data[i][j] - other.data[i][j];
+                    }
+                }
+                return result;
+            }
+
+            transpose() {
+                const result = new Matrix(this.size);
+                for (let i = 0; i < this.size; i++) {
+                    for (let j = 0; j < this.size; j++) {
+                        result.data[i][j] = this.data[j][i];
+                    }
+                }
+                return result;
+            }
+
+            determinant() {
+                if (this.size === 2) {
+                    return this.data[0][0] * this.data[1][1] - this.data[0][1] * this.data[1][0];
+                }
+                let det = 0;
+                for (let j = 0; j < this.size; j++) {
+                    det += Math.pow(-1, j) * this.data[0][j] * this.minor(0, j).determinant();
+                }
+                return det;
+            }
+
+            minor(row, col) {
+                const result = new Matrix(this.size - 1);
+                let ri = 0;
+                for (let i = 0; i < this.size; i++) {
+                    if (i === row) continue;
+                    let cj = 0;
+                    for (let j = 0; j < this.size; j++) {
+                        if (j === col) continue;
+                        result.data[ri][cj] = this.data[i][j];
+                        cj++;
+                    }
+                    ri++;
+                }
+                return result;
+            }
+
+            inverse() {
+                const det = this.determinant();
+                if (Math.abs(det) < 1e-10) throw new Error('Matrix is singular (non-invertible)');
+
+                const adj = this.adjugate();
+                const result = new Matrix(this.size);
+                for (let i = 0; i < this.size; i++) {
+                    for (let j = 0; j < this.size; j++) {
+                        result.data[i][j] = adj.data[i][j] / det;
+                    }
+                }
+                return result;
+            }
+
+            adjugate() {
+                const result = new Matrix(this.size);
+                for (let i = 0; i < this.size; i++) {
+                    for (let j = 0; j < this.size; j++) {
+                        result.data[j][i] = Math.pow(-1, i + j) * this.minor(i, j).determinant();
+                    }
+                }
+                return result;
+            }
+
+            toHTML() {
+                let html = '<div class="result-matrix" style="grid-template-columns: repeat(' + this.size + ', 1fr);">';
+                for (let i = 0; i < this.size; i++) {
+                    for (let j = 0; j < this.size; j++) {
+                        const val = this.data[i][j].toFixed(4);
+                        html += `<div class="matrix-value">${val}</div>`;
+                    }
+                }
+                html += '</div>';
+                return html;
+            }
+        }
+
+        let matrixSize = 2;
+        const matrices = { A: null, B: null };
+
+        function generateMatrixInput(id, size) {
+            let html = '<div class="matrix-input">';
+            let gridStyle = `grid-template-columns: repeat(${size}, 1fr);`;
+            html += `<div class="matrix-grid" style="${gridStyle}">`;
+
+            for (let i = 0; i < size; i++) {
+                for (let j = 0; j < size; j++) {
+                    html += `<input type="number" id="${id}_${i}_${j}" value="0" step="0.1">`;
+                }
+            }
+            html += '</div></div>';
+            return html;
+        }
+
+        function getMatrixFromInput(id, size) {
+            const m = new Matrix(size);
+            for (let i = 0; i < size; i++) {
+                for (let j = 0; j < size; j++) {
+                    m.data[i][j] = parseFloat(document.getElementById(`${id}_${i}_${j}`).value) || 0;
+                }
+            }
+            return m;
+        }
+
+        function updateUI() {
+            matrixSize = parseInt(document.getElementById('matrixSize').value);
+            const operation = document.getElementById('operation').value;
+
+            document.getElementById('matrixAInput').innerHTML = generateMatrixInput('A', matrixSize);
+
+            if (['multiply', 'add', 'subtract'].includes(operation)) {
+                document.getElementById('matrixBCard').style.display = 'block';
+                document.getElementById('matrixBInput').innerHTML = generateMatrixInput('B', matrixSize);
+            } else {
+                document.getElementById('matrixBCard').style.display = 'none';
+            }
+        }
+
+        function calculate() {
+            try {
+                const operation = document.getElementById('operation').value;
+                const A = getMatrixFromInput('A', matrixSize);
+                let result, resultHTML, formula;
+
+                switch(operation) {
+                    case 'multiply':
+                        const B1 = getMatrixFromInput('B', matrixSize);
+                        result = A.multiply(B1);
+                        resultHTML = result.toHTML();
+                        formula = '<div class="formula-box">C[i,j] = Σₖ A[i,k] × B[k,j]</div>';
+                        break;
+                    case 'add':
+                        const B2 = getMatrixFromInput('B', matrixSize);
+                        result = A.add(B2);
+                        resultHTML = result.toHTML();
+                        formula = '<div class="formula-box">C[i,j] = A[i,j] + B[i,j]</div>';
+                        break;
+                    case 'subtract':
+                        const B3 = getMatrixFromInput('B', matrixSize);
+                        result = A.subtract(B3);
+                        resultHTML = result.toHTML();
+                        formula = '<div class="formula-box">C[i,j] = A[i,j] - B[i,j]</div>';
+                        break;
+                    case 'transpose':
+                        result = A.transpose();
+                        resultHTML = result.toHTML();
+                        formula = '<div class="formula-box">Aᵀ[i,j] = A[j,i]</div>';
+                        break;
+                    case 'determinant':
+                        const det = A.determinant();
+                        resultHTML = `<div class="scalar-result"><div class="scalar-label">Determinant</div><div class="scalar-value">${det.toFixed(4)}</div></div>`;
+                        formula = matrixSize === 2 ? '<div class="formula-box">det(A) = a₁₁a₂₂ - a₁₂a₂₁</div>' : '<div class="formula-box">Cofactor expansion along first row</div>';
+                        break;
+                    case 'inverse':
+                        result = A.inverse();
+                        resultHTML = result.toHTML();
+                        formula = '<div class="formula-box">A⁻¹ = adj(A) / det(A)</div>';
+                        break;
+                }
+
+                document.getElementById('resultArea').innerHTML = resultHTML + formula;
+            } catch (e) {
+                document.getElementById('resultArea').innerHTML = `<div class="scalar-result"><div class="scalar-label">Error</div><div class="scalar-value" style="color: #ef4444;">${e.message}</div></div>`;
+            }
+        }
+
+        document.getElementById('matrixSize').addEventListener('change', updateUI);
+        document.getElementById('operation').addEventListener('change', updateUI);
+        document.getElementById('calculateBtn').addEventListener('click', calculate);
+
+        updateUI();
+    </script>
+</body>
+</html>

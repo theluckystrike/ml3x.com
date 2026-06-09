@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loss Function Comparator | ml3x</title>
+    <meta name="description" content="Compare MSE, MAE, Huber, Cross-Entropy, Hinge, Log-Cosh loss functions with formulas, graphs, gradient behavior, and robustness analysis.">
+    <link rel="canonical" href="https://ml3x.com/tools/loss-function-comparator">
+    <meta property="og:title" content="Loss Function Comparator">
+    <meta property="og:description" content="Side-by-side comparison of neural network loss functions with mathematical analysis and visualizations.">
+    <meta property="og:url" content="https://ml3x.com/tools/loss-function-comparator">
+    <meta property="og:type" content="website">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2241192243363112" crossorigin="anonymous"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0f172a;
+            color: #e2e8f0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #a855f7;
+            padding-bottom: 20px;
+        }
+        h1 {
+            font-size: 2em;
+            color: #a855f7;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #cbd5e1;
+            font-size: 0.95em;
+        }
+        .controls {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid #334155;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #a855f7;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        select, input {
+            padding: 10px;
+            background: #0f172a;
+            color: #e2e8f0;
+            border: 1px solid #475569;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: #a855f7;
+            box-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
+        }
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+        .card h2 {
+            color: #a855f7;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        canvas {
+            width: 100%;
+            max-width: 100%;
+            height: 300px;
+            background: #0f172a;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .formula {
+            background: #0f172a;
+            padding: 12px;
+            border-left: 3px solid #a855f7;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            overflow-x: auto;
+        }
+        .formula-label {
+            color: #a855f7;
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-bottom: 3px;
+            display: block;
+        }
+        .analysis {
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        .analysis-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #334155;
+            font-size: 0.85em;
+        }
+        .analysis-row:last-child {
+            border-bottom: none;
+        }
+        .analysis-label {
+            color: #94a3b8;
+        }
+        .analysis-value {
+            color: #a855f7;
+            font-weight: 600;
+        }
+        .summary-card {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            margin-top: 30px;
+        }
+        .summary-card h3 {
+            color: #a855f7;
+            margin-bottom: 15px;
+        }
+        .use-case {
+            background: #0f172a;
+            padding: 12px;
+            border-left: 3px solid #a855f7;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        .use-case strong {
+            color: #a855f7;
+        }
+        footer {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid #334155;
+            color: #64748b;
+            font-size: 0.9em;
+            margin-top: 40px;
+        }
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            .controls {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Loss Function Comparator",
+        "description": "Interactive tool to compare neural network loss functions with mathematical formulas, graphs, and robustness analysis",
+        "url": "https://ml3x.com/tools/loss-function-comparator",
+        "applicationCategory": "UtilityApplication"
+    }
+    </script>
+
+    <div class="container">
+        <header>
+            <h1>Loss Function Comparator</h1>
+            <p class="subtitle">Compare MSE, MAE, Huber, Cross-Entropy, Hinge, and Log-Cosh loss functions</p>
+        </header>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="loss1">Loss Function 1</label>
+                <select id="loss1">
+                    <option value="mse">MSE (Mean Squared Error)</option>
+                    <option value="mae">MAE (Mean Absolute Error)</option>
+                    <option value="huber">Huber Loss</option>
+                    <option value="crossentropy">Cross-Entropy</option>
+                    <option value="hinge">Hinge Loss</option>
+                    <option value="logcosh">Log-Cosh</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="loss2">Loss Function 2</label>
+                <select id="loss2">
+                    <option value="mae">MAE (Mean Absolute Error)</option>
+                    <option value="mse">MSE (Mean Squared Error)</option>
+                    <option value="huber">Huber Loss</option>
+                    <option value="crossentropy">Cross-Entropy</option>
+                    <option value="hinge">Hinge Loss</option>
+                    <option value="logcosh">Log-Cosh</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="comparison-grid">
+            <div class="card">
+                <h2 id="loss1Name">MSE</h2>
+                <canvas id="loss1Canvas"></canvas>
+                <div class="formula">
+                    <span class="formula-label">Formula</span>
+                    <div id="loss1Formula"></div>
+                </div>
+                <div class="analysis" id="loss1Analysis"></div>
+            </div>
+
+            <div class="card">
+                <h2 id="loss2Name">MAE</h2>
+                <canvas id="loss2Canvas"></canvas>
+                <div class="formula">
+                    <span class="formula-label">Formula</span>
+                    <div id="loss2Formula"></div>
+                </div>
+                <div class="analysis" id="loss2Analysis"></div>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <h3>Comparative Analysis</h3>
+            <div id="comparisonSummary"></div>
+        </div>
+
+        <footer>
+            © 2026 ml3x.com — Math & ML Tools
+        </footer>
+    </div>
+
+    <script>
+        const losses = {
+            mse: {
+                name: 'MSE (Mean Squared Error)',
+                formula: 'L = (y - ŷ)² or mean((y - ŷ)²)',
+                fn: (y, pred) => (y - pred) ** 2,
+                deriv: (y, pred) => 2 * (pred - y),
+                outlierSensitivity: 'High (penalizes large errors quadratically)',
+                gradientZero: 'Only at y = ŷ',
+                robustness: 'Low (outliers increase loss exponentially)',
+                use: 'Regression, normally distributed errors',
+                gradBehavior: 'Large near zero, grows rapidly'
+            },
+            mae: {
+                name: 'MAE (Mean Absolute Error)',
+                formula: 'L = |y - ŷ| or mean(|y - ŷ|)',
+                fn: (y, pred) => Math.abs(y - pred),
+                deriv: (y, pred) => pred > y ? 1 : -1,
+                outlierSensitivity: 'Low (linear penalty)',
+                gradientZero: 'Undefined at y = ŷ',
+                robustness: 'High (robust to outliers)',
+                use: 'Robust regression, non-Gaussian errors',
+                gradBehavior: 'Constant (±1), no vanishing'
+            },
+            huber: {
+                name: 'Huber Loss',
+                formula: 'L = 0.5(y-ŷ)² if |y-ŷ|≤δ, else δ(|y-ŷ|-0.5δ)',
+                fn: (y, pred, delta = 1) => {
+                    const err = Math.abs(y - pred);
+                    return err <= delta ? 0.5 * err**2 : delta * (err - 0.5 * delta);
+                },
+                deriv: (y, pred, delta = 1) => {
+                    const err = pred - y;
+                    return Math.abs(err) <= delta ? err : delta * Math.sign(err);
+                },
+                outlierSensitivity: 'Medium (hybrid approach)',
+                gradientZero: 'At y = ŷ',
+                robustness: 'Very High (combines MSE & MAE benefits)',
+                use: 'Regression with outliers, general purpose',
+                gradBehavior: 'Smooth near zero, bounded in tails'
+            },
+            crossentropy: {
+                name: 'Cross-Entropy',
+                formula: 'L = -[y·log(p) + (1-y)·log(1-p)]',
+                fn: (y, p) => -(y * Math.log(Math.max(p, 1e-7)) + (1-y) * Math.log(Math.max(1-p, 1e-7))),
+                deriv: (y, p) => (p - y) / (p * (1 - p) + 1e-7),
+                outlierSensitivity: 'Medium (log scale)',
+                gradientZero: 'At y = p',
+                robustness: 'Medium (diverges as p→0 or p→1)',
+                use: 'Classification (binary, multi-class)',
+                gradBehavior: 'Large for wrong predictions'
+            },
+            hinge: {
+                name: 'Hinge Loss',
+                formula: 'L = max(0, 1 - y·ŷ) for y ∈ {-1, 1}',
+                fn: (y, pred) => Math.max(0, 1 - y * pred),
+                deriv: (y, pred) => y * pred < 1 ? -y : 0,
+                outlierSensitivity: 'Low (zero after margin)',
+                gradientZero: 'When y·ŷ ≥ 1',
+                robustness: 'High (ignores correct predictions)',
+                use: 'SVM, margin-based classification',
+                gradBehavior: 'Zero for correct predictions'
+            },
+            logcosh: {
+                name: 'Log-Cosh',
+                formula: 'L = log(cosh(y - ŷ)) ≈ (y-ŷ)²/2 for small errors',
+                fn: (y, pred) => Math.log(Math.cosh(Math.min(y - pred, 20))),
+                deriv: (y, pred) => Math.tanh(y - pred),
+                outlierSensitivity: 'Medium (smooth approximation to MAE)',
+                gradientZero: 'At y = ŷ',
+                robustness: 'High (approaches MAE for large errors)',
+                use: 'Regression (smooth, twice differentiable)',
+                gradBehavior: 'Smooth everywhere, tanh-like'
+            }
+        };
+
+        function drawLossGraph(canvasId, lossFn, name) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 40;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, width, height);
+
+            // Axes
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.stroke();
+
+            // Plot
+            ctx.strokeStyle = '#a855f7';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+
+            for (let i = 0; i <= graphWidth; i++) {
+                const error = -4 + (i / graphWidth) * 8;
+                let loss;
+                try {
+                    loss = lossFn(0, error);
+                    loss = Math.min(loss, 10);
+                } catch {
+                    loss = 0;
+                }
+
+                const canvasX = padding + i;
+                const maxLoss = name === 'Cross-Entropy' ? 3 : 5;
+                const canvasY = height - padding - (loss / maxLoss) * graphHeight;
+
+                if (i === 0) ctx.moveTo(canvasX, canvasY);
+                else ctx.lineTo(canvasX, canvasY);
+            }
+            ctx.stroke();
+
+            // Labels
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('-4', padding, height - padding + 20);
+            ctx.fillText('Error', width / 2, height - 10);
+            ctx.fillText('4', width - padding, height - padding + 20);
+        }
+
+        function getAnalysisHtml(lossKey) {
+            const loss = losses[lossKey];
+            return `
+                <div class="analysis-row">
+                    <span class="analysis-label">Outlier Sensitivity</span>
+                    <span class="analysis-value">${loss.outlierSensitivity}</span>
+                </div>
+                <div class="analysis-row">
+                    <span class="analysis-label">Gradient at Zero</span>
+                    <span class="analysis-value">${loss.gradientZero}</span>
+                </div>
+                <div class="analysis-row">
+                    <span class="analysis-label">Robustness</span>
+                    <span class="analysis-value">${loss.robustness}</span>
+                </div>
+                <div class="analysis-row">
+                    <span class="analysis-label">Grad Behavior</span>
+                    <span class="analysis-value">${loss.gradBehavior}</span>
+                </div>
+            `;
+        }
+
+        function updateComparison() {
+            const loss1Key = document.getElementById('loss1').value;
+            const loss2Key = document.getElementById('loss2').value;
+
+            const loss1 = losses[loss1Key];
+            const loss2 = losses[loss2Key];
+
+            // Update Loss 1
+            document.getElementById('loss1Name').textContent = loss1.name.split(' (')[0];
+            document.getElementById('loss1Formula').textContent = loss1.formula;
+            document.getElementById('loss1Analysis').innerHTML = getAnalysisHtml(loss1Key);
+            drawLossGraph('loss1Canvas', loss1.fn, loss1.name);
+
+            // Update Loss 2
+            document.getElementById('loss2Name').textContent = loss2.name.split(' (')[0];
+            document.getElementById('loss2Formula').textContent = loss2.formula;
+            document.getElementById('loss2Analysis').innerHTML = getAnalysisHtml(loss2Key);
+            drawLossGraph('loss2Canvas', loss2.fn, loss2.name);
+
+            // Comparison summary
+            const summary = `
+                <div class="use-case">
+                    <strong>${loss1.name}:</strong> ${loss1.use}
+                </div>
+                <div class="use-case">
+                    <strong>${loss2.name}:</strong> ${loss2.use}
+                </div>
+            `;
+            document.getElementById('comparisonSummary').innerHTML = summary;
+        }
+
+        document.getElementById('loss1').addEventListener('change', updateComparison);
+        document.getElementById('loss2').addEventListener('change', updateComparison);
+
+        updateComparison();
+    </script>
+</body>
+</html>

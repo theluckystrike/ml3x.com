@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Normal Distribution Calculator | ml3x</title>
+    <meta name="description" content="Interactive normal distribution calculator. Compute PDF, CDF, z-score, probabilities, and visualize bell curves with customizable mean and standard...">
+    <link rel="canonical" href="https://ml3x.com/tools/normal-distribution-calculator">
+    <meta property="og:title" content="Normal Distribution Calculator">
+    <meta property="og:description" content="Calculate PDF, CDF, z-scores, and probabilities for the normal distribution with interactive visualization.">
+    <meta property="og:url" content="https://ml3x.com/tools/normal-distribution-calculator">
+    <meta property="og:type" content="website">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2241192243363112" crossorigin="anonymous"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0f172a;
+            color: #e2e8f0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #a855f7;
+            padding-bottom: 20px;
+        }
+        h1 {
+            font-size: 2em;
+            color: #a855f7;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #cbd5e1;
+            font-size: 0.95em;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+        .card h2 {
+            color: #a855f7;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            color: #a855f7;
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-bottom: 6px;
+        }
+        input {
+            padding: 10px;
+            background: #0f172a;
+            color: #e2e8f0;
+            border: 1px solid #475569;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+        input:focus {
+            outline: none;
+            border-color: #a855f7;
+            box-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
+        }
+        canvas {
+            width: 100%;
+            height: 350px;
+            background: #0f172a;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .result-item {
+            background: #0f172a;
+            padding: 15px;
+            border-left: 3px solid #a855f7;
+            border-radius: 4px;
+        }
+        .result-label {
+            color: #94a3b8;
+            font-size: 0.85em;
+            margin-bottom: 6px;
+            display: block;
+        }
+        .result-value {
+            color: #a855f7;
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+        .result-formula {
+            color: #64748b;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75em;
+            margin-top: 6px;
+        }
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        .section {
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            margin-bottom: 30px;
+        }
+        .section h2 {
+            color: #a855f7;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+        .range-results {
+            background: #0f172a;
+            padding: 20px;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        .range-input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .percentile-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .percentile-table th, .percentile-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #475569;
+            color: #e2e8f0;
+        }
+        .percentile-table th {
+            background: #0f172a;
+            color: #a855f7;
+            font-weight: 600;
+        }
+        .percentile-table td {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        footer {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid #334155;
+            color: #64748b;
+            font-size: 0.9em;
+            margin-top: 40px;
+        }
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Normal Distribution Calculator",
+        "description": "Interactive tool to calculate PDF, CDF, z-scores, and probabilities for the normal distribution with visualization",
+        "url": "https://ml3x.com/tools/normal-distribution-calculator",
+        "applicationCategory": "UtilityApplication"
+    }
+    </script>
+
+    <div class="container">
+        <header>
+            <h1>Normal Distribution Calculator</h1>
+            <p class="subtitle">Calculate probabilities, PDF, CDF, and z-scores for the normal distribution</p>
+        </header>
+
+        <div class="section">
+            <h2>Distribution Parameters</h2>
+            <div class="input-grid">
+                <div class="input-group">
+                    <label for="mean">Mean (μ)</label>
+                    <input type="number" id="mean" value="0" step="0.1">
+                </div>
+                <div class="input-group">
+                    <label for="stddev">Standard Deviation (σ)</label>
+                    <input type="number" id="stddev" value="1" step="0.1" min="0.01">
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>Probability Density Function</h2>
+                <canvas id="pdfCanvas"></canvas>
+                <div class="result-item">
+                    <span class="result-label">PDF Formula</span>
+                    <span class="result-formula">f(x) = (1 / (σ√(2π))) · e^(-(x-μ)² / (2σ²))</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Cumulative Distribution Function</h2>
+                <canvas id="cdfCanvas"></canvas>
+                <div class="result-item">
+                    <span class="result-label">CDF Formula</span>
+                    <span class="result-formula">F(x) = 0.5 · [1 + erf((x-μ) / (σ√2))]</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Point Analysis</h2>
+            <div class="input-grid">
+                <div class="input-group">
+                    <label for="xValue">X Value</label>
+                    <input type="number" id="xValue" value="0" step="0.1">
+                </div>
+            </div>
+
+            <div class="results-grid">
+                <div class="result-item">
+                    <span class="result-label">Z-Score</span>
+                    <span class="result-value" id="zscore">—</span>
+                    <span class="result-formula">z = (x - μ) / σ</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">PDF Value f(x)</span>
+                    <span class="result-value" id="pdfValue">—</span>
+                    <span class="result-formula">Probability density</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">CDF Value F(x)</span>
+                    <span class="result-value" id="cdfValue">—</span>
+                    <span class="result-formula">P(X ≤ x)</span>
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Percentile</span>
+                    <span class="result-value" id="percentile">—</span>
+                    <span class="result-formula">% below this value</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Probability Range</h2>
+            <div class="range-input-group">
+                <div class="input-group">
+                    <label for="lower">Lower Bound</label>
+                    <input type="number" id="lower" value="-1" step="0.1">
+                </div>
+                <div class="input-group">
+                    <label for="upper">Upper Bound</label>
+                    <input type="number" id="upper" value="1" step="0.1">
+                </div>
+            </div>
+
+            <div class="range-results">
+                <div class="result-item">
+                    <span class="result-label">P(Lower ≤ X ≤ Upper)</span>
+                    <span class="result-value" id="rangeProbability">—</span>
+                    <span class="result-formula">F(upper) - F(lower)</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Standard Normal Percentiles</h2>
+            <table class="percentile-table">
+                <thead>
+                    <tr>
+                        <th>Percentile</th>
+                        <th>Z-Score</th>
+                        <th>X Value</th>
+                    </tr>
+                </thead>
+                <tbody id="percentileTable">
+                </tbody>
+            </table>
+        </div>
+
+        <footer>
+            © 2026 ml3x.com — Math & ML Tools
+        </footer>
+    </div>
+
+    <script>
+        // Error function approximation
+        function erf(x) {
+            const a1 = 0.254829592;
+            const a2 = -0.284496736;
+            const a3 = 1.421413741;
+            const a4 = -1.453152027;
+            const a5 = 1.061405429;
+            const p = 0.3275911;
+
+            const sign = x < 0 ? -1 : 1;
+            x = Math.abs(x);
+
+            const t = 1.0 / (1.0 + p * x);
+            const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+
+            return sign * y;
+        }
+
+        // Normal PDF
+        function normalPDF(x, mean, stddev) {
+            const exponent = -Math.pow(x - mean, 2) / (2 * Math.pow(stddev, 2));
+            return (1 / (stddev * Math.sqrt(2 * Math.PI))) * Math.exp(exponent);
+        }
+
+        // Normal CDF using erf
+        function normalCDF(x, mean, stddev) {
+            return 0.5 * (1 + erf((x - mean) / (stddev * Math.sqrt(2))));
+        }
+
+        function drawPDF(mean, stddev) {
+            const canvas = document.getElementById('pdfCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 40;
+
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, width, height);
+
+            // Axes
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.stroke();
+
+            // Plot PDF
+            ctx.strokeStyle = '#a855f7';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+
+            const xMin = mean - 4 * stddev;
+            const xMax = mean + 4 * stddev;
+            const xRange = xMax - xMin;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+
+            for (let i = 0; i <= graphWidth; i++) {
+                const x = xMin + (i / graphWidth) * xRange;
+                const y = normalPDF(x, mean, stddev);
+                const canvasX = padding + i;
+                const canvasY = height - padding - (y / 0.5) * graphHeight;
+
+                if (i === 0) ctx.moveTo(canvasX, canvasY);
+                else ctx.lineTo(canvasX, canvasY);
+            }
+            ctx.stroke();
+
+            // Labels
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(mean.toFixed(1), padding + graphWidth / 2, height - 10);
+        }
+
+        function drawCDF(mean, stddev) {
+            const canvas = document.getElementById('cdfCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 40;
+
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, width, height);
+
+            // Axes
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.stroke();
+
+            // Plot CDF
+            ctx.strokeStyle = '#a855f7';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+
+            const xMin = mean - 4 * stddev;
+            const xMax = mean + 4 * stddev;
+            const xRange = xMax - xMin;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+
+            for (let i = 0; i <= graphWidth; i++) {
+                const x = xMin + (i / graphWidth) * xRange;
+                const y = normalCDF(x, mean, stddev);
+                const canvasX = padding + i;
+                const canvasY = height - padding - y * graphHeight;
+
+                if (i === 0) ctx.moveTo(canvasX, canvasY);
+                else ctx.lineTo(canvasX, canvasY);
+            }
+            ctx.stroke();
+        }
+
+        function updateCalculations() {
+            const mean = parseFloat(document.getElementById('mean').value) || 0;
+            const stddev = parseFloat(document.getElementById('stddev').value) || 1;
+            const xValue = parseFloat(document.getElementById('xValue').value) || 0;
+            const lower = parseFloat(document.getElementById('lower').value) || -1;
+            const upper = parseFloat(document.getElementById('upper').value) || 1;
+
+            // Z-score
+            const zscore = (xValue - mean) / stddev;
+            document.getElementById('zscore').textContent = zscore.toFixed(4);
+
+            // PDF value
+            const pdfVal = normalPDF(xValue, mean, stddev);
+            document.getElementById('pdfValue').textContent = pdfVal.toFixed(6);
+
+            // CDF value
+            const cdfVal = normalCDF(xValue, mean, stddev);
+            document.getElementById('cdfValue').textContent = cdfVal.toFixed(6);
+
+            // Percentile
+            document.getElementById('percentile').textContent = (cdfVal * 100).toFixed(2) + '%';
+
+            // Range probability
+            const lowerCDF = normalCDF(lower, mean, stddev);
+            const upperCDF = normalCDF(upper, mean, stddev);
+            const rangeProb = upperCDF - lowerCDF;
+            document.getElementById('rangeProbability').textContent = rangeProb.toFixed(6) + ' (' + (rangeProb * 100).toFixed(2) + '%)';
+
+            // Redraw graphs
+            drawPDF(mean, stddev);
+            drawCDF(mean, stddev);
+
+            // Percentile table
+            const percentiles = [0.5, 1, 5, 10, 25, 50, 75, 90, 95, 99, 99.5];
+            const tableBody = document.getElementById('percentileTable');
+            tableBody.innerHTML = '';
+
+            percentiles.forEach(p => {
+                const z = normInverse(p / 100);
+                const x = mean + z * stddev;
+                const row = `<tr><td>${p}%</td><td>${z.toFixed(4)}</td><td>${x.toFixed(4)}</td></tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        // Inverse normal using Newton-Raphson
+        function normInverse(p) {
+            if (p <= 0) return -100;
+            if (p >= 1) return 100;
+            if (p < 0.5) return -normInverse(1 - p);
+
+            let x = Math.sqrt(-2.0 * Math.log(1.0 - p));
+            const c0 = 2.515517;
+            const c1 = 0.802853;
+            const c2 = 0.010328;
+            const d1 = 1.432788;
+            const d2 = 0.189269;
+            const d3 = 0.001308;
+
+            return x - ((c2 * x + c1) * x + c0) / (((d3 * x + d2) * x + d1) * x + 1.0);
+        }
+
+        ['mean', 'stddev', 'xValue', 'lower', 'upper'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateCalculations);
+        });
+
+        updateCalculations();
+    </script>
+</body>
+</html>

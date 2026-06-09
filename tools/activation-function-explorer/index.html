@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activation Function Explorer | ml3x</title>
+    <meta name="description" content="Explore activation functions: ReLU, Sigmoid, Tanh, GELU, Swish, Softplus. View formulas, derivatives, graphs, inflection points, and gradient flow...">
+    <link rel="canonical" href="https://ml3x.com/tools/activation-function-explorer">
+    <meta property="og:title" content="Activation Function Explorer">
+    <meta property="og:description" content="Interactive exploration of neural network activation functions with mathematical formulas and visualizations.">
+    <meta property="og:url" content="https://ml3x.com/tools/activation-function-explorer">
+    <meta property="og:type" content="website">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2241192243363112" crossorigin="anonymous"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0f172a;
+            color: #e2e8f0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #a855f7;
+            padding-bottom: 20px;
+        }
+        h1 {
+            font-size: 2em;
+            color: #a855f7;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #cbd5e1;
+            font-size: 0.95em;
+        }
+        .controls {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid #334155;
+        }
+        .control-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #a855f7;
+            font-weight: 600;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            background: #0f172a;
+            color: #e2e8f0;
+            border: 1px solid #475569;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: #a855f7;
+            box-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+        .card h2 {
+            color: #a855f7;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        canvas {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            background: #0f172a;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .formula {
+            background: #0f172a;
+            padding: 15px;
+            border-left: 3px solid #a855f7;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+        }
+        .formula-label {
+            color: #a855f7;
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .properties {
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        .property-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #334155;
+            font-size: 0.9em;
+        }
+        .property-row:last-child {
+            border-bottom: none;
+        }
+        .property-label {
+            color: #94a3b8;
+        }
+        .property-value {
+            color: #a855f7;
+            font-weight: 600;
+        }
+        .range-slider {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .range-slider input {
+            flex: 1;
+        }
+        .range-value {
+            min-width: 50px;
+            color: #a855f7;
+            font-weight: 600;
+        }
+        footer {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid #334155;
+            color: #64748b;
+            font-size: 0.9em;
+            margin-top: 40px;
+        }
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Activation Function Explorer",
+        "description": "Interactive tool to explore neural network activation functions with mathematical formulas, derivatives, and visualizations",
+        "url": "https://ml3x.com/tools/activation-function-explorer",
+        "applicationCategory": "UtilityApplication",
+        "offers": {
+            "@type": "Offer",
+            "price": "0"
+        }
+    }
+    </script>
+
+    <div class="container">
+        <header>
+            <h1>Activation Function Explorer</h1>
+            <p class="subtitle">Explore mathematical properties of neural network activation functions</p>
+        </header>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="funcSelect">Select Activation Function</label>
+                <select id="funcSelect">
+                    <option value="relu">ReLU (Rectified Linear Unit)</option>
+                    <option value="sigmoid">Sigmoid</option>
+                    <option value="tanh">Tanh (Hyperbolic Tangent)</option>
+                    <option value="gelu">GELU (Gaussian Error Linear Unit)</option>
+                    <option value="swish">Swish (SiLU)</option>
+                    <option value="softplus">Softplus</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="xRange">X-axis Range</label>
+                <div class="range-slider">
+                    <input type="range" id="xRange" min="2" max="10" value="6" step="1">
+                    <span class="range-value" id="xRangeValue">[-6, 6]</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>Function</h2>
+                <canvas id="funcCanvas" width="400" height="300"></canvas>
+                <div class="formula">
+                    <span class="formula-label">Formula</span>
+                    <div id="funcFormula"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Derivative</h2>
+                <canvas id="derivCanvas" width="400" height="300"></canvas>
+                <div class="formula">
+                    <span class="formula-label">Derivative Formula</span>
+                    <div id="derivFormula"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Properties & Analysis</h2>
+            <div class="properties">
+                <div class="property-row">
+                    <span class="property-label">Inflection Point(s)</span>
+                    <span class="property-value" id="inflectionProp">—</span>
+                </div>
+                <div class="property-row">
+                    <span class="property-label">Output Range</span>
+                    <span class="property-value" id="rangeProp">—</span>
+                </div>
+                <div class="property-row">
+                    <span class="property-label">Max Derivative</span>
+                    <span class="property-value" id="maxDerivProp">—</span>
+                </div>
+                <div class="property-row">
+                    <span class="property-label">Gradient Flow</span>
+                    <span class="property-value" id="gradientProp">—</span>
+                </div>
+                <div class="property-row">
+                    <span class="property-label">Monotonic</span>
+                    <span class="property-value" id="monooProp">—</span>
+                </div>
+                <div class="property-row">
+                    <span class="property-label">Common Use</span>
+                    <span class="property-value" id="useProp">—</span>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            © 2026 ml3x.com — Math & ML Tools
+        </footer>
+    </div>
+
+    <script>
+        const functions = {
+            relu: {
+                name: 'ReLU',
+                formula: 'f(x) = max(0, x)',
+                derivFormula: "f'(x) = 0 if x < 0, else 1",
+                fn: x => Math.max(0, x),
+                deriv: x => x < 0 ? 0 : 1,
+                inflection: 'x = 0 (discontinuous)',
+                range: '[0, ∞)',
+                maxDeriv: '1',
+                gradient: 'Can vanish for x < 0 (dying ReLU)',
+                monotonic: 'Yes',
+                use: 'Hidden layers (CNN, RNN, DNN)'
+            },
+            sigmoid: {
+                name: 'Sigmoid',
+                formula: 'f(x) = 1 / (1 + e^(-x))',
+                derivFormula: "f'(x) = f(x)(1 - f(x))",
+                fn: x => 1 / (1 + Math.exp(-x)),
+                deriv: x => { const f = 1 / (1 + Math.exp(-x)); return f * (1 - f); },
+                inflection: 'x = 0',
+                range: '(0, 1)',
+                maxDeriv: '0.25 at x = 0',
+                gradient: 'Vanishing gradients in tails',
+                monotonic: 'Yes',
+                use: 'Output layer (binary classification)'
+            },
+            tanh: {
+                name: 'Tanh',
+                formula: 'f(x) = (e^x - e^(-x)) / (e^x + e^(-x))',
+                derivFormula: "f'(x) = 1 - f(x)²",
+                fn: x => Math.tanh(x),
+                deriv: x => 1 - Math.tanh(x) ** 2,
+                inflection: 'x = 0',
+                range: '(-1, 1)',
+                maxDeriv: '1 at x = 0',
+                gradient: 'Better than sigmoid, still vanishing',
+                monotonic: 'Yes',
+                use: 'RNNs, LSTM, GRU'
+            },
+            gelu: {
+                name: 'GELU',
+                formula: 'f(x) = x · Φ(x) where Φ is CDF of standard normal',
+                derivFormula: "f'(x) ≈ 0.5(1 + tanh(√(2/π)(x + 0.044x³)))",
+                fn: x => x * (0.5 * (1 + Math.tanh(Math.sqrt(2/Math.PI) * (x + 0.044 * x**3)))),
+                deriv: x => 0.5 * (1 + Math.tanh(Math.sqrt(2/Math.PI) * (x + 0.044 * x**3))) + x * (1 - Math.tanh(Math.sqrt(2/Math.PI) * (x + 0.044 * x**3))**2) * Math.sqrt(2/Math.PI) * (1 + 0.132 * x**2),
+                inflection: 'x ≈ -0.75 and x ≈ 0.75',
+                range: '≈ (-0.17, ∞)',
+                maxDeriv: '≈ 1.2',
+                gradient: 'Strong gradient flow',
+                monotonic: 'Mostly',
+                use: 'Transformers (BERT, GPT)'
+            },
+            swish: {
+                name: 'Swish (SiLU)',
+                formula: 'f(x) = x · sigmoid(x)',
+                derivFormula: "f'(x) = f(x) + sigmoid(x)(1 - f(x))",
+                fn: x => x / (1 + Math.exp(-x)),
+                deriv: x => { const s = 1/(1+Math.exp(-x)); const f = x * s; return f + s * (1 - f); },
+                inflection: 'x ≈ -0.67',
+                range: '(-0.27, ∞)',
+                maxDeriv: '≈ 1.18',
+                gradient: 'Good gradient propagation',
+                monotonic: 'No (negative dip)',
+                use: 'Modern deep networks'
+            },
+            softplus: {
+                name: 'Softplus',
+                formula: 'f(x) = ln(1 + e^x)',
+                derivFormula: "f'(x) = sigmoid(x) = 1/(1 + e^(-x))",
+                fn: x => Math.log(1 + Math.exp(Math.min(x, 20))),
+                deriv: x => 1 / (1 + Math.exp(-x)),
+                inflection: 'None (smooth everywhere)',
+                range: '(0, ∞)',
+                maxDeriv: '1 (approaches)',
+                gradient: 'Smooth, non-zero everywhere',
+                monotonic: 'Yes',
+                use: 'Positive value networks'
+            }
+        };
+
+        function drawGraph(canvasId, fn, maxX, label) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 40;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, width, height);
+
+            // Axes
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.stroke();
+
+            // Grid
+            ctx.strokeStyle = '#1e293b';
+            for (let i = -maxX; i <= maxX; i += 2) {
+                const x = padding + ((i + maxX) / (2 * maxX)) * graphWidth;
+                ctx.beginPath();
+                ctx.moveTo(x, height - padding - 5);
+                ctx.lineTo(x, height - padding + 5);
+                ctx.stroke();
+            }
+
+            // Plot
+            ctx.strokeStyle = '#a855f7';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+
+            for (let i = 0; i <= graphWidth; i++) {
+                const x = -maxX + (i / graphWidth) * (2 * maxX);
+                const y = fn(x);
+                const canvasX = padding + i;
+                const canvasY = height - padding - ((y + maxX) / (2 * maxX)) * graphHeight;
+
+                if (i === 0) ctx.moveTo(canvasX, canvasY);
+                else ctx.lineTo(canvasX, canvasY);
+            }
+            ctx.stroke();
+
+            // Labels
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(`-${maxX}`, padding, height - padding + 20);
+            ctx.fillText(`${maxX}`, width - padding, height - padding + 20);
+        }
+
+        function updateDisplay() {
+            const selected = document.getElementById('funcSelect').value;
+            const fn = functions[selected];
+            const maxX = parseInt(document.getElementById('xRange').value);
+
+            document.getElementById('xRangeValue').textContent = `[-${maxX}, ${maxX}]`;
+            document.getElementById('funcFormula').textContent = fn.formula;
+            document.getElementById('derivFormula').textContent = fn.derivFormula;
+            document.getElementById('inflectionProp').textContent = fn.inflection;
+            document.getElementById('rangeProp').textContent = fn.range;
+            document.getElementById('maxDerivProp').textContent = fn.maxDeriv;
+            document.getElementById('gradientProp').textContent = fn.gradient;
+            document.getElementById('monooProp').textContent = fn.monotonic;
+            document.getElementById('useProp').textContent = fn.use;
+
+            drawGraph('funcCanvas', fn.fn, maxX, 'f(x)');
+            drawGraph('derivCanvas', fn.deriv, maxX, "f'(x)");
+        }
+
+        document.getElementById('funcSelect').addEventListener('change', updateDisplay);
+        document.getElementById('xRange').addEventListener('input', updateDisplay);
+
+        updateDisplay();
+    </script>
+</body>
+</html>

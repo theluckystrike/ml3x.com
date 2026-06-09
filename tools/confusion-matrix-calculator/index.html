@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confusion Matrix Calculator | ml3x</title>
+    <meta name="description" content="Build and analyze confusion matrices. Calculate accuracy, precision, recall, F1, specificity, MCC, ROC coordinates with formulas.">
+    <link rel="canonical" href="https://ml3x.com/tools/confusion-matrix-calculator">
+    <meta property="og:title" content="Confusion Matrix Calculator">
+    <meta property="og:description" content="Interactive confusion matrix analyzer with accuracy, precision, recall, F1, MCC, and ROC metrics.">
+    <meta property="og:url" content="https://ml3x.com/tools/confusion-matrix-calculator">
+    <meta property="og:type" content="website">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2241192243363112" crossorigin="anonymous"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0f172a;
+            color: #e2e8f0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #a855f7;
+            padding-bottom: 20px;
+        }
+        h1 {
+            font-size: 2em;
+            color: #a855f7;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #cbd5e1;
+            font-size: 0.95em;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: #1e293b;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+        .card h2 {
+            color: #a855f7;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+        .inputs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            color: #a855f7;
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-bottom: 6px;
+        }
+        input {
+            padding: 10px;
+            background: #0f172a;
+            color: #e2e8f0;
+            border: 1px solid #475569;
+            border-radius: 4px;
+            font-size: 0.95em;
+        }
+        input:focus {
+            outline: none;
+            border-color: #a855f7;
+            box-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
+        }
+        .matrix-display {
+            background: #0f172a;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .matrix-row {
+            display: grid;
+            grid-template-columns: 80px 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .matrix-label {
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+        .matrix-cell {
+            background: #1e293b;
+            padding: 12px;
+            border-radius: 4px;
+            border: 1px solid #475569;
+            text-align: center;
+            font-weight: 600;
+            color: #a855f7;
+        }
+        .metrics-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .metric {
+            background: #0f172a;
+            padding: 15px;
+            border-left: 3px solid #a855f7;
+            border-radius: 4px;
+        }
+        .metric-name {
+            color: #94a3b8;
+            font-size: 0.85em;
+            margin-bottom: 6px;
+        }
+        .metric-value {
+            color: #a855f7;
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .metric-formula {
+            color: #64748b;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75em;
+            background: #0f172a;
+            padding: 8px;
+            border-radius: 2px;
+            overflow-x: auto;
+        }
+        .roc-point {
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            border: 1px solid #475569;
+        }
+        .roc-title {
+            color: #a855f7;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .roc-coords {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.9em;
+        }
+        .roc-coord {
+            background: #1e293b;
+            padding: 8px;
+            border-radius: 4px;
+            border-left: 2px solid #a855f7;
+        }
+        .roc-label {
+            color: #94a3b8;
+            margin-bottom: 2px;
+        }
+        .roc-value {
+            color: #a855f7;
+            font-weight: 600;
+        }
+        canvas {
+            width: 100%;
+            height: 300px;
+            background: #0f172a;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .note {
+            background: #1e293b;
+            padding: 12px;
+            border-left: 3px solid #a855f7;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: #cbd5e1;
+            margin-top: 15px;
+        }
+        footer {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid #334155;
+            color: #64748b;
+            font-size: 0.9em;
+            margin-top: 40px;
+        }
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .metrics-container {
+                grid-template-columns: 1fr;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Confusion Matrix Calculator",
+        "description": "Interactive tool to build and analyze confusion matrices with comprehensive classification metrics",
+        "url": "https://ml3x.com/tools/confusion-matrix-calculator",
+        "applicationCategory": "UtilityApplication"
+    }
+    </script>
+
+    <div class="container">
+        <header>
+            <h1>Confusion Matrix Calculator</h1>
+            <p class="subtitle">Analyze classification performance with comprehensive metrics</p>
+        </header>
+
+        <div class="grid">
+            <div class="card">
+                <h2>Input Values</h2>
+                <div class="inputs-grid">
+                    <div class="input-group">
+                        <label for="tp">True Positives (TP)</label>
+                        <input type="number" id="tp" value="45" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="fp">False Positives (FP)</label>
+                        <input type="number" id="fp" value="8" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="tn">True Negatives (TN)</label>
+                        <input type="number" id="tn" value="122" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label for="fn">False Negatives (FN)</label>
+                        <input type="number" id="fn" value="5" min="0">
+                    </div>
+                </div>
+
+                <h2 style="margin-top: 30px;">Confusion Matrix</h2>
+                <div class="matrix-display">
+                    <div class="matrix-row">
+                        <div class="matrix-label"></div>
+                        <div class="matrix-label">Pred +</div>
+                        <div class="matrix-label">Pred -</div>
+                    </div>
+                    <div class="matrix-row">
+                        <div class="matrix-label">Actual +</div>
+                        <div class="matrix-cell" id="matrixTP">45</div>
+                        <div class="matrix-cell" id="matrixFN">5</div>
+                    </div>
+                    <div class="matrix-row">
+                        <div class="matrix-label">Actual -</div>
+                        <div class="matrix-cell" id="matrixFP">8</div>
+                        <div class="matrix-cell" id="matrixTN">122</div>
+                    </div>
+                </div>
+
+                <div class="note">
+                    <strong>Legend:</strong> TP (correct positive), TN (correct negative), FP (false positive), FN (false negative)
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Classification Metrics</h2>
+                <div class="metrics-container">
+                    <div class="metric">
+                        <div class="metric-name">Accuracy</div>
+                        <div class="metric-value" id="accuracy">—</div>
+                        <div class="metric-formula">(TP + TN) / Total</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-name">Precision</div>
+                        <div class="metric-value" id="precision">—</div>
+                        <div class="metric-formula">TP / (TP + FP)</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-name">Recall (Sensitivity)</div>
+                        <div class="metric-value" id="recall">—</div>
+                        <div class="metric-formula">TP / (TP + FN)</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-name">Specificity</div>
+                        <div class="metric-value" id="specificity">—</div>
+                        <div class="metric-formula">TN / (TN + FP)</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-name">F1 Score</div>
+                        <div class="metric-value" id="f1">—</div>
+                        <div class="metric-formula">2·(Precision·Recall)/(Precision+Recall)</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-name">MCC (Matthews)</div>
+                        <div class="metric-value" id="mcc">—</div>
+                        <div class="metric-formula">(TP·TN - FP·FN) / √((TP+FP)(TP+FN)(TN+FP)(TN+FN))</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-name">False Positive Rate</div>
+                        <div class="metric-value" id="fpr">—</div>
+                        <div class="metric-formula">FP / (FP + TN)</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-name">False Negative Rate</div>
+                        <div class="metric-value" id="fnr">—</div>
+                        <div class="metric-formula">FN / (FN + TP)</div>
+                    </div>
+                </div>
+
+                <div class="roc-point">
+                    <div class="roc-title">ROC Curve Point</div>
+                    <div class="roc-coords">
+                        <div class="roc-coord">
+                            <div class="roc-label">False Positive Rate (X)</div>
+                            <div class="roc-value" id="rocX">—</div>
+                        </div>
+                        <div class="roc-coord">
+                            <div class="roc-label">True Positive Rate (Y)</div>
+                            <div class="roc-value" id="rocY">—</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            © 2026 ml3x.com — Math & ML Tools
+        </footer>
+    </div>
+
+    <script>
+        function updateMetrics() {
+            const tp = parseInt(document.getElementById('tp').value) || 0;
+            const fp = parseInt(document.getElementById('fp').value) || 0;
+            const tn = parseInt(document.getElementById('tn').value) || 0;
+            const fn = parseInt(document.getElementById('fn').value) || 0;
+
+            // Update matrix display
+            document.getElementById('matrixTP').textContent = tp;
+            document.getElementById('matrixFP').textContent = fp;
+            document.getElementById('matrixTN').textContent = tn;
+            document.getElementById('matrixFN').textContent = fn;
+
+            const total = tp + fp + tn + fn;
+
+            // Accuracy
+            const accuracy = total > 0 ? (tp + tn) / total : 0;
+            document.getElementById('accuracy').textContent = accuracy.toFixed(4);
+
+            // Precision
+            const precision = (tp + fp) > 0 ? tp / (tp + fp) : 0;
+            document.getElementById('precision').textContent = precision.toFixed(4);
+
+            // Recall (True Positive Rate)
+            const recall = (tp + fn) > 0 ? tp / (tp + fn) : 0;
+            document.getElementById('recall').textContent = recall.toFixed(4);
+
+            // Specificity (True Negative Rate)
+            const specificity = (tn + fp) > 0 ? tn / (tn + fp) : 0;
+            document.getElementById('specificity').textContent = specificity.toFixed(4);
+
+            // F1 Score
+            const f1 = (precision + recall) > 0 ? 2 * (precision * recall) / (precision + recall) : 0;
+            document.getElementById('f1').textContent = f1.toFixed(4);
+
+            // Matthews Correlation Coefficient (MCC)
+            const denominator = Math.sqrt((tp + fp) * (tp + fn) * (tn + fp) * (tn + fn));
+            const mcc = denominator > 0 ? (tp * tn - fp * fn) / denominator : 0;
+            document.getElementById('mcc').textContent = mcc.toFixed(4);
+
+            // False Positive Rate (1 - Specificity)
+            const fpr = (fp + tn) > 0 ? fp / (fp + tn) : 0;
+            document.getElementById('fpr').textContent = fpr.toFixed(4);
+
+            // False Negative Rate (1 - Recall)
+            const fnr = (fn + tp) > 0 ? fn / (fn + tp) : 0;
+            document.getElementById('fnr').textContent = fnr.toFixed(4);
+
+            // ROC Point
+            document.getElementById('rocX').textContent = fpr.toFixed(4);
+            document.getElementById('rocY').textContent = recall.toFixed(4);
+        }
+
+        // Add event listeners
+        ['tp', 'fp', 'tn', 'fn'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateMetrics);
+        });
+
+        // Initial calculation
+        updateMetrics();
+    </script>
+</body>
+</html>
