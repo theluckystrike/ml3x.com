@@ -1,237 +1,251 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Matrix Determinant Calculator — 2x2, 3x3, NxN | ML3X</title>
-<meta name="description" content="Calculate matrix determinants with cofactor expansion. Step-by-step solutions for 2x2, 3x3, and larger matrices. Understand what determinants mean.">
-<meta name="keywords" content="determinant calculator, matrix determinant, cofactor expansion, 2x2 determinant, 3x3 determinant, singular matrix">
-<link rel="canonical" href="https://ml3x.com/tools/determinant-calculator.html">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Determinant Calculator — 2x2, 3x3, 4x4 Matrix Det</title>
+<meta name="description" content="Free determinant calculator for 2x2, 3x3, 4x4 and larger square matrices. Live results using LU decomposition with full step-by-step cofactor expansion.">
+<link rel="canonical" href="https://ml3x.com/tools/determinant-calculator">
+<meta property="og:title" content="Determinant Calculator — 2x2, 3x3, 4x4 Matrix Det">
+<meta property="og:description" content="Free determinant calculator for square matrices. Live results via LU decomposition with cofactor-expansion steps.">
+<meta property="og:url" content="https://ml3x.com/tools/determinant-calculator">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Matrix Determinant Calculator — 2x2, 3x3, NxN | ML3X">
-<meta property="og:description" content="Calculate matrix determinants with cofactor expansion. Step-by-step solutions for 2x2, 3x3, and larger matrices. Understand what determinants mean.">
-<meta property="og:url" content="https://ml3x.com/tools/determinant-calculator.html">
-<meta property="og:site_name" content="Zovo Tools">
-<meta property="og:image" content="https://ml3x.com/assets/og-image.png">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Matrix Determinant Calculator — 2x2, 3x3, NxN | ML3X">
-<meta name="twitter:description" content="Calculate matrix determinants with cofactor expansion. Step-by-step solutions for 2x2, 3x3, and larger matrices.">
-<meta name="twitter:image" content="https://ml3x.com/assets/og-image.png">
-<link rel="stylesheet" href="/assets/style.css">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "Matrix Determinant Calculator — ML3X",
-  "url": "https://ml3x.com/tools/determinant-calculator.html",
-  "description": "Calculate matrix determinants with cofactor expansion. Step-by-step solutions for 2x2, 3x3, and larger matrices. Understand what determinants mean.",
-  "applicationCategory": "EducationalApplication",
+  "name": "Determinant Calculator",
+  "url": "https://ml3x.com/tools/determinant-calculator",
+  "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Any",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
-  },
-  "author": {
-    "@type": "Person",
-    "name": "Michael Lip",
-    "url": "https://zovo.one"
-  },
-  "datePublished": "2026-04-10",
-  "dateModified": "2026-05-25"
+  "description": "Compute the determinant of 2x2, 3x3, 4x4 and larger square matrices instantly in your browser.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Person", "name": "Michael Lip", "url": "https://zovo.one" },
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://ml3x.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://ml3x.com/tools/" },
+      { "@type": "ListItem", "position": 3, "name": "determinant calculator", "item": "https://ml3x.com/tools/determinant-calculator" }
+    ]
+  }
 }
 </script>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "What does the determinant of a matrix tell you?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "The determinant measures how a matrix scales area (in 2D) or volume (in 3D and higher). A determinant of 2 means the matrix doubles areas, while a determinant of -1 means areas are preserved but orientation is reversed. A determinant of zero means the matrix collapses space into a lower dimension, making the matrix singular (non-invertible)."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "How do you calculate a 2x2 determinant?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "For a 2x2 matrix [[a, b], [c, d]], the determinant is ad - bc. Multiply the top-left by the bottom-right, subtract the product of the top-right and bottom-left. For example, det([[3, 7], [1, 5]]) = 3*5 - 7*1 = 15 - 7 = 8."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "What is cofactor expansion?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Cofactor expansion (also called Laplace expansion) computes the determinant by expanding along a row or column. For each element in the chosen row, you multiply the element by its cofactor (the determinant of the submatrix obtained by deleting that element's row and column, with an alternating sign). The sum of these products gives the determinant."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "When is a matrix singular?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "A matrix is singular when its determinant equals zero. This means the matrix has no inverse, its rows (or columns) are linearly dependent, and the system of equations Ax = b either has no solution or infinitely many solutions. Singular matrices collapse at least one dimension, reducing the rank of the transformation."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Does det(AB) equal det(A) times det(B)?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes. One of the most important properties of determinants is that det(AB) = det(A) * det(B) for any two square matrices A and B of the same size. This multiplicative property also implies that det(A^(-1)) = 1/det(A) when the inverse exists, since A * A^(-1) = I and det(I) = 1."
-      }
-    }
-  ]
-}
-</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://ml3x.com/"},{"@type":"ListItem","position":2,"name":"Tools","item":"https://ml3x.com/tools/"},{"@type":"ListItem","position":3,"name":"Determinant Calculator"}]}</script>
+<style>
+:root{--bg:#0d1117;--panel:#161b22;--panel2:#1c232d;--bd:#2d3744;--fg:#e6edf3;--mut:#9aa7b4;--acc:#58a6ff;--acc2:#3fb950;--warn:#f85149}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;line-height:1.6}
+a{color:var(--acc);text-decoration:none}
+a:hover{text-decoration:underline}
+nav{display:flex;gap:18px;padding:14px 20px;border-bottom:1px solid var(--bd);background:var(--panel);font-size:14px}
+.wrap{max-width:860px;margin:0 auto;padding:24px 20px 60px}
+h1{font-size:1.9rem;line-height:1.25;margin:.4em 0 .2em}
+h2{font-size:1.25rem;margin:1.6em 0 .4em;border-bottom:1px solid var(--bd);padding-bottom:.2em}
+.lead{color:var(--mut);font-size:1.05rem}
+section#tool{background:var(--panel);border:1px solid var(--bd);border-radius:12px;padding:20px;margin:22px 0}
+.ctrl{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;margin-bottom:16px}
+.fld{display:flex;flex-direction:column;gap:6px}
+label{font-size:13px;color:var(--mut);font-weight:600}
+input,select{background:var(--panel2);border:1px solid var(--bd);color:var(--fg);border-radius:8px;padding:8px 10px;font-size:15px;font-family:inherit}
+input[type=number]{width:74px;text-align:center}
+button{background:var(--acc);color:#06121f;border:none;border-radius:8px;padding:9px 16px;font-size:14px;font-weight:700;cursor:pointer}
+button.sec{background:var(--panel2);color:var(--fg);border:1px solid var(--bd)}
+button:hover{filter:brightness(1.1)}
+#grid{display:grid;gap:6px;margin:6px 0 4px;width:max-content;max-width:100%;overflow:auto;padding-bottom:4px}
+#grid input{width:64px}
+.out{background:var(--panel2);border:1px solid var(--bd);border-radius:10px;padding:16px;margin-top:14px}
+.det{font-size:2rem;font-weight:800;color:var(--acc2);word-break:break-all}
+.det.bad{color:var(--warn);font-size:1.2rem}
+.meta{color:var(--mut);font-size:13px;margin-top:6px}
+.steps{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;white-space:pre-wrap;background:#0b0f14;border:1px solid var(--bd);border-radius:8px;padding:12px;margin-top:12px;color:#cdd9e5;overflow:auto}
+footer{border-top:1px solid var(--bd);padding:22px 20px;color:var(--mut);font-size:14px;text-align:center}
+footer a{margin:0 8px}
+.rel a{display:inline-block;margin:4px 10px 4px 0}
+@media(max-width:560px){#grid input{width:52px}input[type=number]{width:64px}}
+</style>
 </head>
 <body>
-<header class="site-header">
-  <a href="/" class="site-logo">ML3X</a>
-  <nav class="site-nav">
-    <a href="/">Calculator</a>
-    <a href="/blog/">Blog</a>
-    <a href="/about.html">About</a>
-      <div class="nav-right">
-      <a href="https://zovo.one/pricing?utm_source=ml3x.com&amp;utm_medium=satellite&amp;utm_campaign=nav-link" class="nav-pro" target="_blank">Go Pro &#10022;</a>
-      <a href="https://zovo.one/tools" class="nav-zovo">Zovo Tools</a>
-    </div>
-  </nav>
-</header>
-
-<main>
-  <div class="hero">
-    <nav class="breadcrumb" aria-label="Breadcrumb">
-      <a href="/">Home</a> &raquo; <a href="/tools/">Tools</a> &raquo; <span>Determinant Calculator</span>
-    </nav>
-    <h1>Matrix Determinant Calculator</h1>
-    <p>Calculate the determinant of any square matrix up to 5&times;5 with full cofactor expansion steps. Understand the geometric meaning of determinants and when a matrix is singular.</p>
-  </div>
-
-  <section style="max-width:720px;margin:2rem auto;line-height:1.7;">
-    <h2>Determinant Formulas by Matrix Size</h2>
-    <p>The determinant is a scalar value that encodes important properties of a square matrix. It tells you whether the matrix is invertible, how it scales areas and volumes, and whether it preserves or reverses orientation. Only square matrices have determinants &mdash; a 3&times;4 matrix does not have one.</p>
-
-    <h3>2&times;2 Determinant</h3>
-    <p>For a 2&times;2 matrix, the determinant has a simple closed-form formula:</p>
-    <p style="text-align:center;font-family:monospace;font-size:1.1rem;margin:1.5rem 0;padding:1rem;background:var(--bg-secondary,#f5f5f5);border-radius:8px;">
-      det([[a, b], [c, d]]) = ad - bc
-    </p>
-    <p>For example, det([[4, 6], [3, 8]]) = 4&middot;8 - 6&middot;3 = 32 - 18 = 14. This means the matrix scales areas by a factor of 14. If the result were negative, it would also reverse orientation (mirror reflection).</p>
-
-    <h3>3&times;3 Cofactor Expansion</h3>
-    <p>For a 3&times;3 matrix, we expand along the first row using cofactors. Given matrix A = [[a, b, c], [d, e, f], [g, h, i]]:</p>
-    <p style="text-align:center;font-family:monospace;font-size:1.05rem;margin:1.5rem 0;padding:1rem;background:var(--bg-secondary,#f5f5f5);border-radius:8px;">
-      det(A) = a(ei - fh) - b(di - fg) + c(dh - eg)
-    </p>
-    <p>Each term multiplies an element from the first row by the determinant of the 2&times;2 submatrix obtained by deleting that element's row and column. The signs alternate: +, -, +. This pattern generalizes to any size &mdash; for an n&times;n matrix, you expand along a row, computing n cofactors, each of which involves an (n-1)&times;(n-1) determinant.</p>
-
-    <h2>Properties of Determinants</h2>
-    <p>Determinants satisfy several key algebraic properties that make them powerful tools in linear algebra. The multiplicative property states that <strong>det(AB) = det(A) &middot; det(B)</strong> for any two square matrices of the same size. This immediately implies that det(A<sup>-1</sup>) = 1/det(A), since A&middot;A<sup>-1</sup> = I and det(I) = 1.</p>
-    <p>Swapping two rows of a matrix negates the determinant. Multiplying a row by a scalar k multiplies the determinant by k. Adding a multiple of one row to another row does not change the determinant. These row operation rules are the basis for computing determinants via Gaussian elimination &mdash; reduce to upper triangular form and multiply the diagonal entries.</p>
-    <p>The determinant of a triangular matrix (upper or lower) is simply the product of its diagonal entries. This makes the Gaussian elimination approach efficient: reduce the matrix to row echelon form (tracking row swaps), then multiply the diagonal. For large matrices (n > 5), this O(n&sup3;) approach is far more efficient than cofactor expansion, which runs in O(n!) time.</p>
-
-    <h2>Geometric Interpretation</h2>
-    <p>In two dimensions, the absolute value of the determinant of a 2&times;2 matrix equals the area of the parallelogram formed by the two column vectors. If the original unit square has area 1, applying the linear transformation A scales it to a parallelogram with area |det(A)|. A negative determinant indicates that the transformation reverses orientation &mdash; turning a counterclockwise path into a clockwise one.</p>
-    <p>In three dimensions, |det(A)| gives the volume of the parallelepiped formed by the three column vectors. A zero determinant means the three vectors are coplanar &mdash; they lie in a plane rather than spanning 3D space. This geometric picture generalizes to any dimension: the determinant measures the signed n-dimensional volume scaling factor of the linear transformation. This interpretation is central to change-of-variables formulas in multivariable calculus, where the Jacobian determinant adjusts for how a coordinate transformation distorts volume elements.</p>
-  </section>
-
-  <section class="faq-section" style="max-width:720px;margin:2rem auto;">
-    <h2>Frequently Asked Questions</h2>
-    <details>
-      <summary>What does the determinant of a matrix tell you?</summary>
-      <p>The determinant measures how a matrix scales area (in 2D) or volume (in 3D and higher). A determinant of 2 means the matrix doubles areas, while a determinant of -1 means areas are preserved but orientation is reversed. A determinant of zero means the matrix collapses space into a lower dimension, making the matrix singular (non-invertible).</p>
-    </details>
-    <details>
-      <summary>How do you calculate a 2&times;2 determinant?</summary>
-      <p>For a 2&times;2 matrix [[a, b], [c, d]], the determinant is ad - bc. Multiply the top-left by the bottom-right, subtract the product of the top-right and bottom-left. For example, det([[3, 7], [1, 5]]) = 3&middot;5 - 7&middot;1 = 15 - 7 = 8.</p>
-    </details>
-    <details>
-      <summary>What is cofactor expansion?</summary>
-      <p>Cofactor expansion (also called Laplace expansion) computes the determinant by expanding along a row or column. For each element in the chosen row, you multiply the element by its cofactor (the determinant of the submatrix obtained by deleting that element's row and column, with an alternating sign). The sum of these products gives the determinant.</p>
-    </details>
-    <details>
-      <summary>When is a matrix singular?</summary>
-      <p>A matrix is singular when its determinant equals zero. This means the matrix has no inverse, its rows (or columns) are linearly dependent, and the system of equations Ax = b either has no solution or infinitely many solutions. Singular matrices collapse at least one dimension, reducing the rank of the transformation.</p>
-    </details>
-    <details>
-      <summary>Does det(AB) equal det(A) times det(B)?</summary>
-      <p>Yes. One of the most important properties of determinants is that det(AB) = det(A) &middot; det(B) for any two square matrices A and B of the same size. This multiplicative property also implies that det(A<sup>-1</sup>) = 1/det(A) when the inverse exists, since A &middot; A<sup>-1</sup> = I and det(I) = 1.</p>
-    </details>
-  </section>
-
-  <section style="max-width:720px;margin:2rem auto;">
-    <h2>Related Tools</h2>
-    <ul>
-      <li><a href="/tools/inverse-matrix.html">Inverse Matrix Calculator</a> &mdash; requires det &ne; 0 to find the inverse</li>
-      <li><a href="/tools/eigenvalue-calculator.html">Eigenvalue Calculator</a> &mdash; uses det(A - &lambda;I) = 0 to find eigenvalues</li>
-      <li><a href="/tools/matrix-multiplication.html">Matrix Multiplication Calculator</a> &mdash; multiply matrices step-by-step</li>
-    </ul>
-  </section>
-
-  <section style="max-width:720px;margin:2rem auto;">
-    <p style="font-size:0.9rem;color:var(--text-muted);">Built by <a href="https://zovo.one">Michael Lip</a>. Try the <a href="/">ML3X Matrix Calculator</a> for interactive step-by-step solutions.</p>
-  </section>
-</main>
-
-<footer class="site-footer">
-    <div class="footer-inner">
-        <div class="footer-brand">Zovo Tools</div>
-        <div class="footer-tagline">Free developer tools by a solo dev. No tracking.</div>
-        <a href="https://zovo.one/pricing?utm_source=ml3x.com&utm_medium=satellite&utm_campaign=footer-link" class="footer-cta">Zovo Lifetime — $99 once, free forever &rarr;</a>
-        <div class="footer-copy">&copy; 2026 <a href="https://zovo.one">Zovo</a> &middot; 47/500 founding spots</div>
-    </div>
-</footer>
-
-<nav class="zovo-network" aria-label="Zovo Tools Network">
-    <div class="zovo-network-inner">
-        <h3 class="zovo-network-title">Explore More Tools</h3>
-        <div class="zovo-network-links">
-            <a href="https://abwex.com">ABWex — A/B Testing</a>
-            <a href="https://b2berp.com">B2BERP — Business Tools</a>
-            <a href="https://bugbountyreality.com">BugBountyReality — Security</a>
-            <a href="https://claudflow.com">ClaudFlow — Workflows</a>
-            <a href="https://claudkit.com">ClaudKit — API Tools</a>
-            <a href="https://dismissticket.com">DismissTicket — Support</a>
-            <a href="https://enhio.com">Enhio — Text Tools</a>
-            <a href="https://epochpilot.com">EpochPilot — Timestamps</a>
-            <a href="https://gen8x.com">Gen8X — Color Tools</a>
-            <a href="https://gpt0x.com">GPT0X — AI Models</a>
-            <a href="https://heytensor.com">HeyTensor — ML Tools</a>
-            <a href="https://ingredientcalculator.com">IngredientCalc — Recipes</a>
-            <a href="https://invokebot.com">InvokeBot — Webhooks</a>
-            <a href="https://kappafy.com">Kappafy — JSON</a>
-            <a href="https://kappakit.com">KappaKit — Dev Toolkit</a>
-            <a href="https://kickllm.com">KickLLM — LLM Costs</a>
-            <a href="https://krzen.com">Krzen — Image Tools</a>
-            <a href="https://lochbot.com">LochBot — Security</a>
-            <a href="https://lockml.com">LockML — ML Security</a>
-            <a href="https://ml0x.com">ML0X — ML Basics</a>
-            <a href="https://pictureeditor.net">PictureEditor — Image Editing</a>
-            <a href="https://recipetool.net">RecipeTool — Cooking</a>
-            <a href="https://viryd.com">Viryd — Dev Tools</a>
-        </div>
-    </div>
+<nav>
+  <a href="/">Home</a>
+  <a href="/tools/">Tools</a>
+  <a href="/tools/determinant-calculator">Determinant</a>
 </nav>
+<div class="wrap">
+<h1>Matrix Determinant Calculator</h1>
+<p class="lead">Enter any square matrix from 1×1 up to 8×8 and get its determinant instantly, with a reduction trace showing how the value was found.</p>
 
-<div class="pow-strip">
-  <div class="pow-strip-inner">
-    <span class="pow-label">By the same builder:</span>
-    <a href="https://github.com/theluckystrike" rel="nofollow">GitHub — theluckystrike</a>
-    <a href="https://www.belikenative.com" rel="nofollow">BeLikeNative — Grammar AI</a>
-    <a href="https://earlythunder.com" rel="nofollow">EarlyThunder — Dev Blog</a>
-    <a href="https://bugbountyreality.com" rel="nofollow">Bug Bounty Reality</a>
-    <a href="https://zovo.one" rel="nofollow">Zovo — AI Dev Tools</a>
+<section id="tool">
+  <div class="ctrl">
+    <div class="fld">
+      <label for="size">Matrix size (n × n)</label>
+      <select id="size">
+        <option>1</option><option>2</option><option selected>3</option>
+        <option>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+      </select>
+    </div>
+    <div class="fld">
+      <button id="ident" class="sec" type="button">Identity</button>
+    </div>
+    <div class="fld">
+      <button id="rand" class="sec" type="button">Random</button>
+    </div>
+    <div class="fld">
+      <button id="zero" class="sec" type="button">Clear</button>
+    </div>
   </div>
+  <div id="grid" aria-label="Matrix input grid"></div>
+  <div class="out">
+    <div id="det" class="det">—</div>
+    <div id="meta" class="meta"></div>
+    <div id="steps" class="steps"></div>
+  </div>
+</section>
+
+<h2>How the determinant is computed</h2>
+<p>The determinant is a single number, written det(A) or |A|, that summarizes a square matrix. It is nonzero exactly when the matrix is invertible, and its magnitude equals the volume-scaling factor of the linear map the matrix represents. For a 2×2 matrix the formula is simply <strong>ad − bc</strong>. For a 3×3 matrix the rule of Sarrus expands to <strong>a(ei − fh) − b(di − fg) + c(dh − eg)</strong>, which is cofactor expansion along the first row.</p>
+<p>Cofactor (Laplace) expansion generalizes this: det(A) = Σ (−1)<sup>i+j</sup> · a<sub>ij</sub> · M<sub>ij</sub>, where M<sub>ij</sub> is the minor obtained by deleting row i and column j. That recursion is elegant but costs O(n!) operations, so it becomes impractical past 4×4. This calculator instead uses <strong>LU decomposition with partial pivoting</strong>: it applies Gaussian elimination to reduce the matrix to upper-triangular form, where the determinant is just the product of the diagonal pivots. Each row swap done for numerical stability flips the sign, so the final result is (−1)<sup>swaps</sup> times the product of pivots. This runs in O(n³) time and stays accurate for larger systems.</p>
+<p>A determinant of zero means the rows are linearly dependent — the matrix is singular and has no inverse. The trace panel below shows the sign, pivot count, and the product that produced your answer, so you can follow the elimination step by step. All computation happens locally in your browser; nothing is uploaded.</p>
+
+<h2>Related Tools</h2>
+<p class="rel">
+  <a href="/tools/matrix-inverse-calculator">Matrix Inverse Calculator</a>
+  <a href="/tools/eigenvalue-calculator">Eigenvalue Calculator</a>
+  <a href="/tools/matrix-multiplication-calculator">Matrix Multiplication</a>
+</p>
 </div>
 
-<script src="/assets/js/pro-nudge.js"></script>
+<footer>
+  <a href="/">Home</a>
+  <a href="/tools/">All Tools</a>
+  <a href="https://zovo.one">About</a>
+  <div style="margin-top:8px">© 2026 ml3x.com — Linear algebra calculators</div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var sizeEl=document.getElementById('size');
+  var grid=document.getElementById('grid');
+  var detEl=document.getElementById('det');
+  var metaEl=document.getElementById('meta');
+  var stepsEl=document.getElementById('steps');
+  var N=3;
+
+  function buildGrid(n, fill){
+    grid.style.gridTemplateColumns='repeat('+n+',auto)';
+    grid.innerHTML='';
+    for(var i=0;i<n;i++){
+      for(var j=0;j<n;j++){
+        var inp=document.createElement('input');
+        inp.type='number';
+        inp.step='any';
+        inp.setAttribute('aria-label','row '+(i+1)+' col '+(j+1));
+        var v;
+        if(typeof fill==='function'){ v=fill(i,j); } else { v=0; }
+        inp.value=v;
+        inp.addEventListener('input',compute);
+        grid.appendChild(inp);
+      }
+    }
+  }
+
+  function readMatrix(){
+    var inputs=grid.querySelectorAll('input');
+    var M=[];
+    for(var i=0;i<N;i++){
+      M.push([]);
+      for(var j=0;j<N;j++){
+        var raw=inputs[i*N+j].value;
+        var num=parseFloat(raw);
+        if(raw==='' || isNaN(num)) num=0;
+        M[i].push(num);
+      }
+    }
+    return M;
+  }
+
+  function determinant(src){
+    var n=src.length;
+    // deep copy
+    var A=[];
+    for(var i=0;i<n;i++){ A.push(src[i].slice()); }
+    var sign=1, swaps=0;
+    var EPS=1e-12;
+    for(var col=0; col<n; col++){
+      // partial pivot: find largest magnitude in this column at/below diagonal
+      var piv=col, max=Math.abs(A[col][col]);
+      for(var r=col+1;r<n;r++){
+        var a=Math.abs(A[r][col]);
+        if(a>max){max=a;piv=r;}
+      }
+      if(max<EPS){ return {value:0, sign:sign, swaps:swaps, pivots:null, singular:true}; }
+      if(piv!==col){
+        var tmp=A[piv]; A[piv]=A[col]; A[col]=tmp;
+        sign=-sign; swaps++;
+      }
+      for(var rr=col+1; rr<n; rr++){
+        var f=A[rr][col]/A[col][col];
+        if(f!==0){
+          for(var c=col;c<n;c++){ A[rr][c]-=f*A[col][c]; }
+        }
+      }
+    }
+    var prod=1, pivots=[];
+    for(var k=0;k<n;k++){ pivots.push(A[k][k]); prod*=A[k][k]; }
+    return {value:sign*prod, sign:sign, swaps:swaps, pivots:pivots, singular:false};
+  }
+
+  function fmt(x){
+    if(!isFinite(x)) return String(x);
+    if(Math.abs(x)<1e-10) return '0';
+    var r=Math.round(x);
+    if(Math.abs(x-r)<1e-9) return String(r);
+    return parseFloat(x.toPrecision(10)).toString();
+  }
+
+  function compute(){
+    var M=readMatrix();
+    var res=determinant(M);
+    if(res.singular){
+      detEl.className='det';
+      detEl.textContent='det(A) = 0';
+      metaEl.textContent='Singular matrix — rows are linearly dependent, so A is not invertible.';
+      stepsEl.textContent='Elimination reached a zero pivot column; the determinant collapses to 0.';
+      return;
+    }
+    detEl.className='det';
+    detEl.textContent='det(A) = '+fmt(res.value);
+    metaEl.textContent=N+'×'+N+' matrix · '+res.swaps+' row swap(s) · sign '+(res.sign>0?'+':'−')+' · method: LU / Gaussian elimination';
+    var pv=res.pivots.map(fmt).join(' × ');
+    var line='Upper-triangular pivots: '+pv+'\n';
+    line+='Product of pivots = '+fmt(res.pivots.reduce(function(a,b){return a*b;},1))+'\n';
+    line+='Sign from '+res.swaps+' swap(s) = '+(res.sign>0?'+1':'-1')+'\n';
+    line+='det(A) = '+(res.sign>0?'+':'-')+' ( '+pv+' ) = '+fmt(res.value);
+    stepsEl.textContent=line;
+  }
+
+  sizeEl.addEventListener('change',function(){
+    N=parseInt(sizeEl.value,10);
+    buildGrid(N,function(i,j){ return i===j?1:0; });
+    compute();
+  });
+  document.getElementById('ident').addEventListener('click',function(){
+    buildGrid(N,function(i,j){ return i===j?1:0; }); compute();
+  });
+  document.getElementById('zero').addEventListener('click',function(){
+    buildGrid(N,function(){ return 0; }); compute();
+  });
+  document.getElementById('rand').addEventListener('click',function(){
+    buildGrid(N,function(){ return Math.floor(Math.random()*19)-9; }); compute();
+  });
+
+  // default prefilled 3x3 so output shows on load
+  buildGrid(N,function(i,j){
+    var d=[[4,3,2],[1,5,7],[6,8,9]];
+    return d[i][j];
+  });
+  compute();
+})();
+</script>
 </body>
 </html>
