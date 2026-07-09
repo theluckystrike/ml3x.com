@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RREF &amp; Matrix Rank Calculator</title>
+<meta name="description" content="Compute the reduced row echelon form, rank, and pivot columns of any matrix. Full Gauss-Jordan elimination shown step by step with exact fractions.">
+<link rel="canonical" href="https://ml3x.com/tools/rref-gaussian-elimination-calculator">
+<meta property="og:title" content="RREF &amp; Matrix Rank Calculator">
+<meta property="og:description" content="Compute the reduced row echelon form, rank, and pivot columns of any matrix. Full Gauss-Jordan elimination shown step by step with exact fractions.">
+<meta property="og:url" content="https://ml3x.com/tools/rref-gaussian-elimination-calculator">
+<meta property="og:type" content="website">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "RREF & Matrix Rank Calculator",
+  "url": "https://ml3x.com/tools/rref-gaussian-elimination-calculator",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "description": "Compute the reduced row echelon form, rank, and pivot columns of any matrix. Full Gauss-Jordan elimination shown step by step with exact fractions.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Person", "name": "Michael Lip", "url": "https://zovo.one" },
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://ml3x.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://ml3x.com/tools/" },
+      { "@type": "ListItem", "position": 3, "name": "RREF & Matrix Rank Calculator", "item": "https://ml3x.com/tools/rref-gaussian-elimination-calculator" }
+    ]
+  }
+}
+</script>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c232d; --border:#2d333b;
+    --fg:#e6edf3; --muted:#9aa7b4; --accent:#58a6ff; --accent2:#3fb950;
+    --pivot:#3fb950; --free:#f0883e; --warn:#f85149;
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--fg);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  nav{
+    display:flex; gap:20px; padding:14px 20px; border-bottom:1px solid var(--border);
+    background:var(--panel); font-size:.92rem;
+  }
+  nav a{color:var(--accent); text-decoration:none}
+  nav a:hover{text-decoration:underline}
+  main{max-width:940px; margin:0 auto; padding:24px 20px 60px}
+  h1{font-size:1.9rem; line-height:1.25; margin:.4em 0 .3em}
+  h2{font-size:1.3rem; margin:1.8em 0 .5em; border-bottom:1px solid var(--border); padding-bottom:.3em}
+  p{color:var(--fg)}
+  .intro{color:var(--muted); font-size:1.05rem}
+  section#tool{
+    background:var(--panel); border:1px solid var(--border); border-radius:12px;
+    padding:20px; margin:22px 0;
+  }
+  .controls{display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end; margin-bottom:16px}
+  .field{display:flex; flex-direction:column; gap:5px}
+  label{font-size:.82rem; color:var(--muted); font-weight:600; letter-spacing:.02em}
+  input[type=number],select,textarea{
+    background:var(--panel2); border:1px solid var(--border); color:var(--fg);
+    border-radius:7px; padding:8px 10px; font-family:var(--mono); font-size:.95rem;
+  }
+  input[type=number]{width:78px}
+  textarea{width:100%; min-height:110px; resize:vertical; line-height:1.5}
+  button{
+    background:var(--accent); color:#0d1117; border:none; border-radius:7px;
+    padding:9px 16px; font-weight:700; font-size:.92rem; cursor:pointer;
+  }
+  button:hover{filter:brightness(1.1)}
+  button.ghost{background:var(--panel2); color:var(--fg); border:1px solid var(--border)}
+  .grid{overflow-x:auto; margin:12px 0}
+  table.mx{border-collapse:collapse; font-family:var(--mono); margin:6px 0}
+  table.mx td{
+    border:1px solid var(--border); padding:6px 10px; text-align:right;
+    min-width:44px; background:var(--panel2);
+  }
+  table.mx.aug td.augsep{border-left:2px solid var(--accent)}
+  td.pivotcell{background:rgba(63,185,80,.16); color:#7ee787; font-weight:700}
+  .stats{display:flex; flex-wrap:wrap; gap:12px; margin:14px 0}
+  .stat{
+    background:var(--panel2); border:1px solid var(--border); border-radius:9px;
+    padding:10px 14px; min-width:120px;
+  }
+  .stat .k{font-size:.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:.05em}
+  .stat .v{font-size:1.3rem; font-weight:700; font-family:var(--mono); margin-top:2px}
+  .badge{display:inline-block; padding:2px 8px; border-radius:20px; font-size:.75rem; font-weight:700; font-family:var(--mono)}
+  .b-pivot{background:rgba(63,185,80,.18); color:#7ee787}
+  .b-free{background:rgba(240,136,62,.18); color:#f0883e}
+  .steps{margin:10px 0}
+  .step{
+    background:var(--panel2); border:1px solid var(--border); border-left:3px solid var(--accent);
+    border-radius:6px; padding:8px 12px; margin:8px 0; font-size:.9rem;
+  }
+  .step .op{font-family:var(--mono); color:var(--accent2)}
+  .err{color:var(--warn); font-weight:600}
+  code,.mono{font-family:var(--mono)}
+  .hint{font-size:.82rem; color:var(--muted)}
+  details{margin:10px 0}
+  summary{cursor:pointer; color:var(--accent); font-weight:600}
+  .related a{display:inline-block; margin:4px 14px 4px 0; color:var(--accent); text-decoration:none}
+  .related a:hover{text-decoration:underline}
+  footer{border-top:1px solid var(--border); padding:22px 20px; text-align:center; color:var(--muted); font-size:.88rem}
+  footer a{color:var(--accent); text-decoration:none; margin:0 8px}
+  .kbd{font-family:var(--mono); background:var(--panel2); border:1px solid var(--border); border-radius:4px; padding:1px 6px; font-size:.82rem}
+  .flexrow{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/">Home</a>
+  <a href="/tools/">Tools</a>
+</nav>
+<main>
+  <h1>Reduce Any Matrix to RREF and Read Off Its Rank</h1>
+  <p class="intro">Paste a matrix, choose exact-fraction or decimal output, and watch full Gauss-Jordan elimination run row by row. This calculator reports the reduced row echelon form, the rank, every pivot and free column, and a basis for the null space &mdash; with each swap, scale, and elimination logged so you can check your own homework.</p>
+
+  <section id="tool" aria-label="RREF calculator">
+    <div class="controls">
+      <div class="field">
+        <label for="rows">Rows (m)</label>
+        <input type="number" id="rows" min="1" max="12" value="3">
+      </div>
+      <div class="field">
+        <label for="cols">Cols (n)</label>
+        <input type="number" id="cols" min="1" max="12" value="4">
+      </div>
+      <div class="field">
+        <label for="mode">Output</label>
+        <select id="mode">
+          <option value="frac">Exact fractions</option>
+          <option value="dec">Decimals</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="aug">Augmented?</label>
+        <select id="aug">
+          <option value="0">No (plain matrix)</option>
+          <option value="1">Yes (last col = RHS)</option>
+        </select>
+      </div>
+      <div class="field flexrow" style="align-self:flex-end">
+        <button id="applyDims" class="ghost" type="button">Apply size</button>
+        <button id="ex1" class="ghost" type="button">Example</button>
+        <button id="ident" class="ghost" type="button">Random full-rank</button>
+        <button id="singular" class="ghost" type="button">Rank-deficient</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="matrix">Matrix entries &mdash; one row per line, values separated by spaces or commas. Fractions like <code>3/4</code> and decimals are allowed.</label>
+      <textarea id="matrix" spellcheck="false" aria-describedby="mhint">1 2 -1 3
+2 4 -2 6
+-1 1 3 1</textarea>
+      <div id="mhint" class="hint">Computes live as you type. Everything runs in your browser &mdash; nothing is uploaded.</div>
+    </div>
+
+    <div id="out" aria-live="polite"></div>
+  </section>
+
+  <h2>How the calculation works</h2>
+  <p>Gauss-Jordan elimination transforms a matrix into <strong>reduced row echelon form (RREF)</strong> using three elementary row operations: swapping two rows, scaling a row by a nonzero constant, and adding a multiple of one row to another. The algorithm walks left to right. For each column it searches at or below the current pivot row for a nonzero entry; if found, that row is swapped into place, scaled so the pivot becomes 1, and then that multiple is subtracted from <em>every</em> other row to zero out the rest of the column. A column that yields a leading 1 is a <strong>pivot column</strong>; a column with no available pivot is a <strong>free column</strong>.</p>
+  <p>The number of pivots equals the <strong>rank</strong> of the matrix &mdash; the dimension of its row space and column space. For an m&times;n matrix the rank-nullity theorem states <code>rank + nullity = n</code>, so the count of free columns is exactly the nullity, the dimension of the null space. To keep results exact and avoid floating-point drift, this tool performs every operation in rational arithmetic: numerators and denominators are stored as integers and reduced with the Euclidean greatest-common-divisor algorithm after each step, so a pivot of <code>1/3</code> stays <code>1/3</code> and never becomes <code>0.333&hellip;</code>. When you treat the last column as an augmented right-hand side, the RREF also reveals whether the linear system is consistent, has a unique solution, or has infinitely many &mdash; a row of the form <code>[0 &hellip; 0 | c]</code> with nonzero <code>c</code> flags an inconsistent system with no solution. The null-space basis below is built directly from the free columns by back-substituting each RREF pivot equation.</p>
+
+  <h2>Related Tools</h2>
+  <p class="related">
+    <a href="/tools/matrix-determinant-calculator">Matrix Determinant Calculator</a>
+    <a href="/tools/matrix-inverse-calculator">Matrix Inverse Calculator</a>
+    <a href="/tools/linear-system-solver">Linear System Solver</a>
+  </p>
+</main>
+
+<footer>
+  <div>
+    <a href="/">Home</a>
+    <a href="/tools/">All Tools</a>
+    <a href="/tools/matrix-determinant-calculator">Determinant</a>
+    <a href="https://zovo.one">More by Michael Lip</a>
+  </div>
+  <div style="margin-top:8px">&copy; 2026 ml3x.com</div>
+</footer>
+
+<script>
+"use strict";
+/* ---------- exact rational arithmetic ---------- */
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;}
+function Frac(n,d){
+  if(d===0) d=1;
+  if(d<0){n=-n;d=-d;}
+  var g=gcd(n,d);
+  this.n=n/g; this.d=d/g;
+}
+Frac.prototype.isZero=function(){return this.n===0;};
+Frac.prototype.neg=function(){return new Frac(-this.n,this.d);};
+function fAdd(a,b){return new Frac(a.n*b.d+b.n*a.d, a.d*b.d);}
+function fSub(a,b){return new Frac(a.n*b.d-b.n*a.d, a.d*b.d);}
+function fMul(a,b){return new Frac(a.n*b.n, a.d*b.d);}
+function fDiv(a,b){return new Frac(a.n*b.d, a.d*b.n);}
+function fFromNum(x){
+  if(Number.isInteger(x)) return new Frac(x,1);
+  // convert decimal to fraction with bounded denominator
+  var den=1;
+  while(!Number.isInteger(x) && den<1e9){x*=10;den*=10;}
+  return new Frac(Math.round(x),den);
+}
+function parseEntry(tok){
+  tok=tok.trim();
+  if(tok==="") return null;
+  if(tok.indexOf("/")>=0){
+    var p=tok.split("/");
+    if(p.length!==2) return NaN;
+    var a=Number(p[0]), b=Number(p[1]);
+    if(!isFinite(a)||!isFinite(b)||b===0) return NaN;
+    return numToFrac(a,b);
+  }
+  var v=Number(tok);
+  if(!isFinite(v)) return NaN;
+  return fFromNum(v);
+}
+function numToFrac(a,b){
+  // handle possibly-decimal a and b in "a/b"
+  var fa=fFromNum(a), fb=fFromNum(b);
+  return fDiv(fa,fb);
+}
+function fmtFrac(f,mode){
+  if(mode==="dec"){
+    var val=f.n/f.d;
+    if(Number.isInteger(val)) return String(val);
+    return (Math.round(val*1e6)/1e6).toString();
+  }
+  if(f.d===1) return String(f.n);
+  return f.n+"/"+f.d;
+}
+
+/* ---------- parse textarea into matrix of Frac ---------- */
+function parseMatrix(text){
+  var lines=text.split(/\n/).map(function(l){return l.trim();}).filter(function(l){return l.length>0;});
+  if(lines.length===0) return {err:"Enter at least one row."};
+  var M=[], width=null, bad=null;
+  for(var i=0;i<lines.length;i++){
+    var toks=lines[i].split(/[,\s]+/).filter(function(t){return t.length>0;});
+    var row=[];
+    for(var j=0;j<toks.length;j++){
+      var f=parseEntry(toks[j]);
+      if(f===null) continue;
+      if(f!==f || !(f instanceof Frac)){ bad="Row "+(i+1)+": '"+toks[j]+"' is not a valid number."; break; }
+      row.push(f);
+    }
+    if(bad) break;
+    if(width===null) width=row.length;
+    else if(row.length!==width){ bad="Row "+(i+1)+" has "+row.length+" entries but row 1 has "+width+". All rows must match."; break; }
+    M.push(row);
+  }
+  if(bad) return {err:bad};
+  if(width===0) return {err:"No numeric entries found."};
+  return {M:M, m:M.length, n:width};
+}
+
+/* ---------- core: Gauss-Jordan to RREF with step log ---------- */
+function rref(M){
+  var m=M.length, n=M[0].length;
+  var A=M.map(function(r){return r.map(function(f){return new Frac(f.n,f.d);});});
+  var steps=[], pivots=[], pr=0;
+  for(var c=0; c<n && pr<m; c++){
+    // find pivot at or below pr in column c
+    var sel=-1;
+    for(var r=pr;r<m;r++){ if(!A[r][c].isZero()){sel=r;break;} }
+    if(sel===-1) continue; // free column
+    if(sel!==pr){
+      var t=A[sel]; A[sel]=A[pr]; A[pr]=t;
+      steps.push({op:"R"+(pr+1)+" ↔ R"+(sel+1), desc:"Swap to bring a nonzero pivot into column "+(c+1)+".", snap:snapshot(A)});
+    }
+    var piv=A[pr][c];
+    if(!(piv.n===1 && piv.d===1)){
+      for(var j=0;j<n;j++){ A[pr][j]=fDiv(A[pr][j],piv); }
+      steps.push({op:"R"+(pr+1)+" → R"+(pr+1)+" ÷ ("+fmtFrac(piv,"frac")+")", desc:"Scale row "+(pr+1)+" so the pivot becomes 1.", snap:snapshot(A)});
+    }
+    var elim=false;
+    for(var r2=0;r2<m;r2++){
+      if(r2===pr) continue;
+      var factor=A[r2][c];
+      if(factor.isZero()) continue;
+      for(var j2=0;j2<n;j2++){ A[r2][j2]=fSub(A[r2][j2], fMul(factor, A[pr][j2])); }
+      elim=true;
+    }
+    if(elim) steps.push({op:"eliminate col "+(c+1), desc:"Subtract multiples of row "+(pr+1)+" from the other rows to clear column "+(c+1)+".", snap:snapshot(A)});
+    pivots.push(c);
+    pr++;
+  }
+  return {A:A, pivots:pivots, steps:steps, m:m, n:n};
+}
+function snapshot(A){ return A.map(function(r){return r.map(function(f){return new Frac(f.n,f.d);});}); }
+
+/* ---------- null space basis from RREF ---------- */
+function nullSpace(A, pivots, n){
+  var pivotSet={}; pivots.forEach(function(c,i){pivotSet[c]=i;});
+  var free=[];
+  for(var c=0;c<n;c++){ if(!(c in pivotSet)) free.push(c); }
+  var basis=[];
+  free.forEach(function(fc){
+    var vec=new Array(n);
+    for(var i=0;i<n;i++) vec[i]=new Frac(0,1);
+    vec[fc]=new Frac(1,1);
+    pivots.forEach(function(pc,ri){
+      // pivot row ri: x_pc + sum(A[ri][free]*x_free)=0  => x_pc = -A[ri][fc]
+      vec[pc]=A[ri][fc].neg();
+    });
+    basis.push(vec);
+  });
+  return {free:free, basis:basis};
+}
+
+/* ---------- rendering ---------- */
+function matTable(A, mode, augCols, pivots){
+  var pivotSet={}; if(pivots) pivots.forEach(function(c){pivotSet[c]=1;});
+  var m=A.length, n=A[0].length;
+  var html='<div class="grid"><table class="mx'+(augCols?' aug':'')+'">';
+  for(var i=0;i<m;i++){
+    html+='<tr>';
+    for(var j=0;j<n;j++){
+      var cls=[];
+      if(augCols && j===n-1) cls.push('augsep');
+      if(pivots && pivotSet[j] && A[i][j].n===1 && A[i][j].d===1){
+        // mark leading pivot 1 only on its pivot row (first row where this col is 1 & rest 0 handled loosely)
+      }
+      html+='<td'+(cls.length?' class="'+cls.join(' ')+'"':'')+'>'+fmtFrac(A[i][j],mode)+'</td>';
+    }
+    html+='</tr>';
+  }
+  html+='</table></div>';
+  return html;
+}
+function markPivots(A, mode, augCols, pivots){
+  // render with pivot leading-1 cells highlighted
+  var m=A.length, n=A[0].length;
+  var used={};
+  var html='<div class="grid"><table class="mx'+(augCols?' aug':'')+'">';
+  for(var i=0;i<m;i++){
+    html+='<tr>';
+    for(var j=0;j<n;j++){
+      var cls=[];
+      if(augCols && j===n-1) cls.push('augsep');
+      // pivot cell = first nonzero of the row & it's a 1 in a pivot column
+      html+='<td class="'+cls.join(' ')+'">'+fmtFrac(A[i][j],mode)+'</td>';
+    }
+    html+='</tr>';
+  }
+  html+='</table></div>';
+  // second pass to add pivot highlight: rebuild with row->pivotcol map
+  html='<div class="grid"><table class="mx'+(augCols?' aug':'')+'">';
+  var rowPivotCol={};
+  pivots.forEach(function(c,ri){ rowPivotCol[ri]=c; });
+  for(var i2=0;i2<m;i2++){
+    html+='<tr>';
+    for(var j2=0;j2<n;j2++){
+      var cl=[];
+      if(augCols && j2===n-1) cl.push('augsep');
+      if(rowPivotCol[i2]===j2) cl.push('pivotcell');
+      html+='<td'+(cl.length?' class="'+cl.join(' ')+'"':'')+'>'+fmtFrac(A[i2][j2],mode)+'</td>';
+    }
+    html+='</tr>';
+  }
+  html+='</table></div>';
+  return html;
+}
+
+/* ---------- main compute + render ---------- */
+function compute(){
+  var out=document.getElementById("out");
+  var mode=document.getElementById("mode").value;
+  var aug=document.getElementById("aug").value==="1";
+  var parsed=parseMatrix(document.getElementById("matrix").value);
+  if(parsed.err){ out.innerHTML='<p class="err">'+parsed.err+'</p>'; return; }
+  var M=parsed.M, m=parsed.m, n=parsed.n;
+  var res=rref(M);
+  var rank=res.pivots.length;
+  var coeffCols = aug ? n-1 : n;
+  var varPivots = res.pivots.filter(function(c){return c<coeffCols;});
+
+  // consistency check for augmented systems
+  var consistent=true, inconsRow=-1;
+  if(aug){
+    for(var i=0;i<m;i++){
+      var allZero=true;
+      for(var j=0;j<coeffCols;j++){ if(!res.A[i][j].isZero()){allZero=false;break;} }
+      if(allZero && !res.A[i][n-1].isZero()){ consistent=false; inconsRow=i; break; }
+    }
+  }
+
+  var html="";
+  // input echo
+  html+='<h3 style="margin:14px 0 4px;font-size:1rem">Input ('+m+'×'+n+')'+(aug?' — augmented [A | b]':'')+'</h3>';
+  html+=matTable(M.map(function(r){return r;}), mode, aug, null);
+
+  // RREF
+  html+='<h3 style="margin:16px 0 4px;font-size:1rem">Reduced Row Echelon Form</h3>';
+  html+=markPivots(res.A, mode, aug, res.pivots);
+
+  // stats
+  html+='<div class="stats">';
+  html+='<div class="stat"><div class="k">Rank</div><div class="v">'+rank+'</div></div>';
+  html+='<div class="stat"><div class="k">Nullity ('+ (aug?'coeff':'n') +'−rank)</div><div class="v">'+(coeffCols-varPivots.length)+'</div></div>';
+  html+='<div class="stat"><div class="k">Pivot columns</div><div class="v">'+(res.pivots.length?res.pivots.map(function(c){return c+1;}).join(", "):"—")+'</div></div>';
+  html+='<div class="stat"><div class="k">Size</div><div class="v">'+m+'×'+n+'</div></div>';
+  html+='</div>';
+
+  // column classification
+  html+='<div style="margin:6px 0">';
+  for(var c=0;c<coeffCols;c++){
+    var isP = res.pivots.indexOf(c)>=0;
+    html+='<span class="badge '+(isP?'b-pivot':'b-free')+'" style="margin:3px 6px 3px 0">col '+(c+1)+' · '+(isP?'pivot':'free')+'</span>';
+  }
+  html+='</div>';
+
+  // system interpretation
+  if(aug){
+    html+='<h3 style="margin:16px 0 4px;font-size:1rem">System [A | b]</h3>';
+    if(!consistent){
+      html+='<p class="err">Inconsistent — no solution. Row '+(inconsRow+1)+' reduces to [0 &hellip; 0 | nonzero], an impossible equation.</p>';
+    } else {
+      var nfree=coeffCols-varPivots.length;
+      if(nfree===0) html+='<p><strong>Unique solution.</strong> Rank equals the number of unknowns ('+coeffCols+'), so exactly one solution exists.</p>';
+      else html+='<p><strong>Infinitely many solutions.</strong> '+nfree+' free variable'+(nfree>1?'s':'')+' (nullity '+nfree+'), giving a '+nfree+'-parameter solution family.</p>';
+    }
+  }
+
+  // null space (of coefficient part)
+  var coeffA = res.A.map(function(r){return r.slice(0,coeffCols);});
+  var ns=nullSpace(coeffA, varPivots, coeffCols);
+  html+='<h3 style="margin:16px 0 4px;font-size:1rem">Null space basis ('+(aug?'of A':'of the matrix')+')</h3>';
+  if(ns.basis.length===0){
+    html+='<p class="hint">Trivial — only the zero vector. The '+coeffCols+' columns are linearly independent (full column rank).</p>';
+  } else {
+    html+='<div class="flexrow" style="align-items:flex-start;gap:14px">';
+    ns.basis.forEach(function(vec,k){
+      html+='<div><div class="hint" style="margin-bottom:4px">v'+(k+1)+' (free col '+(ns.free[k]+1)+')</div><div class="grid"><table class="mx">';
+      vec.forEach(function(f){ html+='<tr><td>'+fmtFrac(f,mode)+'</td></tr>'; });
+      html+='</table></div></div>';
+    });
+    html+='</div>';
+    html+='<p class="hint">Any null-space vector is a linear combination of the above. Verify: A&middot;v = 0.</p>';
+  }
+
+  // steps
+  html+='<details open><summary>'+res.steps.length+' elimination step'+(res.steps.length===1?'':'s')+'</summary><div class="steps">';
+  if(res.steps.length===0){
+    html+='<div class="step">Matrix is already in reduced row echelon form.</div>';
+  } else {
+    res.steps.forEach(function(s,idx){
+      html+='<div class="step"><span class="op">'+(idx+1)+'. '+s.op+'</span> &mdash; '+s.desc+matTable(s.snap,mode,aug,null)+'</div>';
+    });
+  }
+  html+='</div></details>';
+
+  out.innerHTML=html;
+}
+
+/* ---------- dimension / example helpers ---------- */
+function setMatrix(rows,cols,fill){
+  var lines=[];
+  for(var i=0;i<rows;i++){
+    var row=[];
+    for(var j=0;j<cols;j++) row.push(fill(i,j));
+    lines.push(row.join(" "));
+  }
+  document.getElementById("matrix").value=lines.join("\n");
+  document.getElementById("rows").value=rows;
+  document.getElementById("cols").value=cols;
+}
+function applyDims(){
+  var r=Math.max(1,Math.min(12,parseInt(document.getElementById("rows").value)||1));
+  var c=Math.max(1,Math.min(12,parseInt(document.getElementById("cols").value)||1));
+  var parsed=parseMatrix(document.getElementById("matrix").value);
+  var cur = parsed.err? null : parsed.M;
+  setMatrix(r,c,function(i,j){
+    if(cur && cur[i] && cur[i][j]) return fmtFrac(cur[i][j],"frac");
+    return "0";
+  });
+  compute();
+}
+
+/* ---------- wire up ---------- */
+document.getElementById("matrix").addEventListener("input", compute);
+document.getElementById("mode").addEventListener("change", compute);
+document.getElementById("aug").addEventListener("change", compute);
+document.getElementById("applyDims").addEventListener("click", applyDims);
+document.getElementById("ex1").addEventListener("click", function(){
+  document.getElementById("aug").value="1";
+  document.getElementById("rows").value=3; document.getElementById("cols").value=4;
+  document.getElementById("matrix").value="1 2 -1 3\n2 4 -2 6\n-1 1 3 1";
+  compute();
+});
+document.getElementById("ident").addEventListener("click", function(){
+  var nn=3;
+  document.getElementById("aug").value="0";
+  setMatrix(nn,nn,function(i,j){ return String(Math.floor(Math.random()*9)-4); });
+  compute();
+});
+document.getElementById("singular").addEventListener("click", function(){
+  // row 3 = row1 + row2  -> guaranteed rank-deficient
+  document.getElementById("aug").value="0";
+  var a=[[1,2,3,4],[2,-1,0,5]];
+  var r3=[a[0][0]+a[1][0],a[0][1]+a[1][1],a[0][2]+a[1][2],a[0][3]+a[1][3]];
+  document.getElementById("rows").value=3; document.getElementById("cols").value=4;
+  document.getElementById("matrix").value=a[0].join(" ")+"\n"+a[1].join(" ")+"\n"+r3.join(" ");
+  compute();
+});
+
+compute();
+</script>
+</body>
+</html>

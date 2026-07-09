@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linear System Solver (Ax = b) with Steps</title>
+<meta name="description" content="Solve systems of linear equations Ax = b via Gaussian elimination with partial pivoting. See every row-reduction step, detect no/unique/infinite solutions.">
+<link rel="canonical" href="https://ml3x.com/tools/linear-system-solver">
+<meta property="og:title" content="Linear System Solver (Ax = b) with Steps">
+<meta property="og:description" content="Solve systems of linear equations Ax = b via Gaussian elimination with partial pivoting. See every row-reduction step, detect no/unique/infinite solutions.">
+<meta property="og:url" content="https://ml3x.com/tools/linear-system-solver">
+<meta property="og:type" content="website">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Linear System Solver (Ax = b) with Steps",
+      "url": "https://ml3x.com/tools/linear-system-solver",
+      "description": "Solve systems of linear equations Ax = b via Gaussian elimination with partial pivoting, showing every row-reduction step and classifying solutions.",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Any",
+      "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+      "author": {"@type": "Person", "name": "Michael Lip", "url": "https://zovo.one"}
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://ml3x.com/"},
+        {"@type": "ListItem", "position": 2, "name": "Tools", "item": "https://ml3x.com/tools/"},
+        {"@type": "ListItem", "position": 3, "name": "Linear System Solver (Ax = b) with Steps", "item": "https://ml3x.com/tools/linear-system-solver"}
+      ]
+    }
+  ]
+}
+</script>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2430; --border:#2b3441;
+    --fg:#e6edf3; --muted:#9aa7b4; --accent:#58a6ff; --accent2:#3fb950;
+    --warn:#f0883e; --err:#f85149; --pivot:#1f6feb; --op:#8957e5;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--bg);color:var(--fg);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;font-size:16px;
+  }
+  nav{
+    display:flex;gap:18px;padding:14px 20px;border-bottom:1px solid var(--border);
+    background:var(--panel);position:sticky;top:0;z-index:5;
+  }
+  nav a{color:var(--accent);text-decoration:none;font-weight:600}
+  nav a:hover{text-decoration:underline}
+  main{max-width:900px;margin:0 auto;padding:24px 20px 60px}
+  h1{font-size:1.7rem;line-height:1.25;margin:.4em 0 .3em}
+  h2{font-size:1.25rem;margin:1.8em 0 .5em;border-bottom:1px solid var(--border);padding-bottom:.3em}
+  p{color:var(--fg)}
+  .muted{color:var(--muted)}
+  section#tool{
+    background:var(--panel);border:1px solid var(--border);border-radius:12px;
+    padding:20px;margin:22px 0;
+  }
+  label{display:block;font-weight:600;margin:0 0 6px}
+  .hint{font-size:.85rem;color:var(--muted);font-weight:400;margin-bottom:8px}
+  textarea{
+    width:100%;min-height:130px;background:var(--bg);color:var(--fg);
+    border:1px solid var(--border);border-radius:8px;padding:12px;
+    font-family:var(--mono);font-size:15px;resize:vertical;line-height:1.5;
+  }
+  textarea:focus{outline:2px solid var(--accent);border-color:var(--accent)}
+  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:14px 0}
+  .controls label{margin:0;font-weight:600;display:flex;align-items:center;gap:8px}
+  select,input[type=number]{
+    background:var(--bg);color:var(--fg);border:1px solid var(--border);
+    border-radius:6px;padding:6px 8px;font-family:var(--mono);font-size:14px;
+  }
+  .examples{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+  button.ex{
+    background:var(--panel2);color:var(--accent);border:1px solid var(--border);
+    border-radius:20px;padding:5px 14px;font-size:.85rem;cursor:pointer;
+  }
+  button.ex:hover{border-color:var(--accent);background:#1a2230}
+  #verdict{
+    margin:16px 0;padding:14px 16px;border-radius:8px;font-weight:600;
+    border:1px solid var(--border);background:var(--panel2);
+  }
+  #verdict.unique{border-color:var(--accent2);color:#7ee787}
+  #verdict.none{border-color:var(--err);color:#ff9b95}
+  #verdict.inf{border-color:var(--warn);color:#ffb787}
+  #verdict.error{border-color:var(--err);color:#ff9b95}
+  .solbox{
+    font-family:var(--mono);background:var(--bg);border:1px solid var(--border);
+    border-radius:8px;padding:12px 14px;margin:10px 0;overflow-x:auto;
+  }
+  .solbox .var{color:var(--accent);font-weight:700}
+  .steps{margin-top:12px}
+  .step{
+    background:var(--panel2);border:1px solid var(--border);border-radius:8px;
+    padding:12px 14px;margin:12px 0;
+  }
+  .step-head{font-weight:600;margin-bottom:8px;color:var(--fg)}
+  .op-tag{
+    display:inline-block;font-family:var(--mono);font-size:.8rem;
+    background:#2a1f47;color:#c9a7ff;border:1px solid #4b3a7a;
+    border-radius:5px;padding:2px 8px;margin:2px 6px 2px 0;
+  }
+  .matrix{overflow-x:auto;margin-top:6px}
+  table.mtx{border-collapse:collapse;font-family:var(--mono);font-size:14px}
+  table.mtx td{
+    padding:5px 12px;text-align:right;border-top:1px solid transparent;
+    border-bottom:1px solid transparent;min-width:44px;
+  }
+  table.mtx td.aug{border-left:2px solid var(--accent);padding-left:14px}
+  table.mtx tr.pivot-row td{background:rgba(31,111,235,.14)}
+  table.mtx td.pivot-cell{background:rgba(63,185,80,.22);font-weight:700;color:#7ee787;border-radius:4px}
+  .brace-l,.brace-r{color:var(--muted)}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.82rem;color:var(--muted);margin:8px 0}
+  .swatch{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:middle;margin-right:5px}
+  code{background:var(--panel2);padding:1px 6px;border-radius:4px;font-family:var(--mono);font-size:.9em}
+  .related a{color:var(--accent);text-decoration:none}
+  .related a:hover{text-decoration:underline}
+  .related li{margin:6px 0}
+  footer{
+    border-top:1px solid var(--border);margin-top:40px;padding:22px 20px;
+    text-align:center;color:var(--muted);font-size:.9rem;
+  }
+  footer a{color:var(--accent);text-decoration:none;margin:0 8px}
+  footer a:hover{text-decoration:underline}
+  @media(max-width:560px){h1{font-size:1.4rem}main{padding:16px 14px 50px}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/">Home</a>
+  <a href="/tools/">Tools</a>
+</nav>
+<main>
+  <h1>Gaussian Elimination Solver for Ax = b</h1>
+  <p class="muted">Enter an augmented matrix <code>[A | b]</code> and watch every pivot, row swap, and elimination step. The solver classifies your system as having a <strong>unique solution</strong>, <strong>no solution</strong>, or <strong>infinitely many solutions</strong> using ranks.</p>
+
+  <section id="tool">
+    <label for="mtx">Augmented matrix [A&nbsp;|&nbsp;b]</label>
+    <div class="hint">One equation per line. The <em>last number</em> on each row is the right-hand side b. Separate values by spaces or commas. Fractions like <code>1/2</code> are allowed.</div>
+    <textarea id="mtx" spellcheck="false" aria-label="Augmented matrix input">2 1 -1 8
+-3 -1 2 -11
+-2 1 2 -3</textarea>
+
+    <div class="examples" aria-label="Example systems">
+      <button class="ex" data-ex="unique">Unique 3×3</button>
+      <button class="ex" data-ex="none">No solution</button>
+      <button class="ex" data-ex="inf">Infinite solutions</button>
+      <button class="ex" data-ex="pivot">Needs pivoting</button>
+      <button class="ex" data-ex="two">Simple 2×2</button>
+    </div>
+
+    <div class="controls">
+      <label>Rounding
+        <select id="dp">
+          <option value="2">2 dp</option>
+          <option value="4" selected>4 dp</option>
+          <option value="6">6 dp</option>
+          <option value="frac">exact fraction</option>
+        </select>
+      </label>
+      <label><input type="checkbox" id="showSteps" checked> Show every step</label>
+    </div>
+
+    <div id="verdict" role="status" aria-live="polite">—</div>
+    <div id="solution"></div>
+
+    <div class="legend">
+      <span><span class="swatch" style="background:rgba(31,111,235,.5)"></span>pivot row</span>
+      <span><span class="swatch" style="background:rgba(63,185,80,.6)"></span>pivot element</span>
+      <span><span class="swatch" style="background:var(--accent);width:3px;height:12px"></span>the b column</span>
+    </div>
+    <div id="steps" class="steps"></div>
+  </section>
+
+  <h2>How the algorithm works</h2>
+  <p>A linear system <code>Ax = b</code> stacks the coefficient matrix <code>A</code> beside the constant vector <code>b</code> to form the augmented matrix <code>[A | b]</code>. This tool applies <strong>Gaussian elimination with partial pivoting</strong>, the standard, numerically stable direct method taught in every linear-algebra course.</p>
+  <p>For each column <code>k</code>, the algorithm scans rows at or below the diagonal and selects the row whose entry in that column has the largest absolute value — the <em>partial pivot</em>. Swapping it into place keeps the multipliers small and controls round-off error. Each lower row <code>i</code> is then updated by the operation <code>R<sub>i</sub> → R<sub>i</sub> − (a<sub>ik</sub>/a<sub>kk</sub>)·R<sub>k</sub></code>, which drives everything below the pivot to zero. Repeating this across all columns produces an upper-triangular form (row echelon form).</p>
+  <p>Once triangular, the system is solved by <strong>back-substitution</strong>: the last pivot equation gives one variable, which is substituted upward, so <code>x<sub>i</sub> = (b<sub>i</sub> − Σ<sub>j&gt;i</sub> a<sub>ij</sub>x<sub>j</sub>) / a<sub>ii</sub></code>. Classification comes from the <strong>Rouché–Capelli theorem</strong>: comparing <code>rank(A)</code> with <code>rank([A | b])</code>. If the ranks differ, a row reduces to <code>0 = nonzero</code> and there is <strong>no solution</strong>. If they are equal to the number of unknowns, the solution is <strong>unique</strong>; if equal but smaller, free variables remain and there are <strong>infinitely many solutions</strong>. The solver reports the rank, the number of free variables, and each row operation performed along the way, so you can check homework or debug a numerical routine step by step.</p>
+
+  <h2>Related Tools</h2>
+  <ul class="related">
+    <li><a href="/tools/matrix-determinant-calculator">Matrix Determinant Calculator</a> — cofactor and LU-based determinants.</li>
+    <li><a href="/tools/matrix-inverse-calculator">Matrix Inverse Calculator</a> — invert A via Gauss–Jordan.</li>
+    <li><a href="/tools/matrix-rref-calculator">Reduced Row Echelon Form (RREF)</a> — full Gauss–Jordan reduction.</li>
+  </ul>
+</main>
+<footer>
+  <div>
+    <a href="/">Home</a>
+    <a href="/tools/">All Tools</a>
+    <a href="/tools/matrix-inverse-calculator">Matrix Inverse</a>
+  </div>
+  <p>© 2026 ml3x.com · Built by <a href="https://zovo.one">Michael Lip</a></p>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var EPS = 1e-9;
+  var mtxEl = document.getElementById('mtx');
+  var dpEl = document.getElementById('dp');
+  var stepsChk = document.getElementById('showSteps');
+  var verdictEl = document.getElementById('verdict');
+  var solEl = document.getElementById('solution');
+  var stepsEl = document.getElementById('steps');
+
+  var EXAMPLES = {
+    unique: "2 1 -1 8\n-3 -1 2 -11\n-2 1 2 -3",
+    none:   "1 1 1 1\n1 1 1 2\n2 3 1 5",
+    inf:    "1 2 -1 3\n2 4 -2 6\n1 1 1 6",
+    pivot:  "0 2 1 4\n1 1 1 6\n2 -1 1 3",
+    two:    "3 2 12\n1 -1 1"
+  };
+
+  // Parse a token that may be an integer, decimal, or fraction a/b
+  function parseNum(tok){
+    tok = tok.trim();
+    if(tok === '') return null;
+    if(tok.indexOf('/') !== -1){
+      var parts = tok.split('/');
+      if(parts.length !== 2) return NaN;
+      var n = Number(parts[0]), d = Number(parts[1]);
+      if(!isFinite(n) || !isFinite(d) || d === 0) return NaN;
+      return n / d;
+    }
+    var v = Number(tok);
+    return isFinite(v) ? v : NaN;
+  }
+
+  function parseMatrix(text){
+    var lines = text.split('\n');
+    var rows = [];
+    for(var i=0;i<lines.length;i++){
+      var line = lines[i].trim();
+      if(line === '') continue;
+      var toks = line.split(/[\s,]+/).filter(function(t){return t.length>0;});
+      var row = [];
+      for(var j=0;j<toks.length;j++){
+        var v = parseNum(toks[j]);
+        if(v === null || (typeof v==='number' && isNaN(v))){
+          return {error: "Row "+(rows.length+1)+": cannot read value \""+toks[j]+"\"."};
+        }
+        row.push(v);
+      }
+      if(row.length < 2){
+        return {error: "Row "+(rows.length+1)+" needs at least one coefficient and a right-hand side."};
+      }
+      rows.push(row);
+    }
+    if(rows.length === 0) return {error:"Enter at least one equation."};
+    var w = rows[0].length;
+    for(var r=0;r<rows.length;r++){
+      if(rows[r].length !== w){
+        return {error:"All rows must have the same length. Row "+(r+1)+" has "+rows[r].length+", expected "+w+"."};
+      }
+    }
+    return {rows: rows, ncols: w-1};
+  }
+
+  // number formatting
+  function fmt(x){
+    var mode = dpEl.value;
+    if(Math.abs(x) < 1e-12) x = 0;
+    if(mode === 'frac'){
+      return toFraction(x);
+    }
+    var dp = parseInt(mode,10);
+    var r = Number(x.toFixed(dp));
+    if(Object.is(r,-0)) r = 0;
+    // strip trailing zeros
+    var s = r.toFixed(dp);
+    if(s.indexOf('.') !== -1){
+      s = s.replace(/0+$/,'').replace(/\.$/,'');
+    }
+    return s;
+  }
+
+  function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){var t=b;b=a%b;a=t;}return a;}
+  function toFraction(x){
+    if(Math.abs(x) < 1e-12) return "0";
+    if(Math.abs(x - Math.round(x)) < 1e-9) return String(Math.round(x));
+    var den = 1, num = x, best = null;
+    for(var d=1; d<=100000; d++){
+      var n = x*d;
+      if(Math.abs(n - Math.round(n)) < 1e-7){
+        num = Math.round(n); den = d;
+        var g = gcd(num,den) || 1;
+        return (num/g)+"/"+(den/g);
+      }
+    }
+    return x.toFixed(6);
+  }
+
+  function cloneMtx(m){return m.map(function(r){return r.slice();});}
+
+  // Build an HTML table for an augmented matrix
+  function matrixTable(m, ncols, pivotRow, pivotCol){
+    var html = '<div class="matrix"><table class="mtx">';
+    for(var i=0;i<m.length;i++){
+      var cls = (i===pivotRow) ? ' class="pivot-row"' : '';
+      html += '<tr'+cls+'>';
+      for(var j=0;j<m[i].length;j++){
+        var cellCls = [];
+        if(j === ncols) cellCls.push('aug');
+        if(i===pivotRow && j===pivotCol) cellCls.push('pivot-cell');
+        var attr = cellCls.length ? ' class="'+cellCls.join(' ')+'"' : '';
+        html += '<td'+attr+'>'+fmt(m[i][j])+'</td>';
+      }
+      html += '</tr>';
+    }
+    html += '</table></div>';
+    return html;
+  }
+
+  function solve(){
+    var parsed = parseMatrix(mtxEl.value);
+    stepsEl.innerHTML = '';
+    solEl.innerHTML = '';
+    if(parsed.error){
+      verdictEl.className = 'error';
+      verdictEl.textContent = '⚠ ' + parsed.error;
+      return;
+    }
+    var ncols = parsed.ncols;           // number of unknowns
+    var m = cloneMtx(parsed.rows);
+    var nrows = m.length;
+    var steps = [];
+    var pivotCols = [];                 // columns that received a pivot
+    var pivotRowCount = 0;
+
+    // ---- Forward elimination with partial pivoting ----
+    var row = 0;
+    for(var col=0; col<ncols && row<nrows; col++){
+      // find max abs pivot at/below current row in this column
+      var maxRow = row, maxVal = Math.abs(m[row][col]);
+      for(var r=row+1; r<nrows; r++){
+        if(Math.abs(m[r][col]) > maxVal){ maxVal = Math.abs(m[r][col]); maxRow = r; }
+      }
+      if(maxVal < EPS){
+        continue; // no pivot in this column -> free variable
+      }
+      var ops = [];
+      if(maxRow !== row){
+        var tmp = m[row]; m[row] = m[maxRow]; m[maxRow] = tmp;
+        ops.push('swap R'+(row+1)+' ↔ R'+(maxRow+1)+' (partial pivot)');
+      }
+      // eliminate below
+      for(var i=row+1; i<nrows; i++){
+        if(Math.abs(m[i][col]) < EPS) continue;
+        var factor = m[i][col] / m[row][col];
+        for(var j=col; j<m[i].length; j++){
+          m[i][j] -= factor * m[row][j];
+        }
+        m[i][col] = 0; // enforce exact zero
+        ops.push('R'+(i+1)+' → R'+(i+1)+' − ('+fmt(factor)+')·R'+(row+1));
+      }
+      pivotCols.push(col);
+      steps.push({
+        title: 'Pivot on column '+(col+1)+', row '+(row+1)+' (value '+fmt(m[row][col])+')',
+        ops: ops,
+        snapshot: cloneMtx(m),
+        pr: row, pc: col
+      });
+      pivotRowCount++;
+      row++;
+    }
+
+    // ---- Rank analysis (Rouché–Capelli) ----
+    var rankA = pivotCols.length;
+    var rankAug = rankA;
+    var inconsistent = false;
+    var badRow = -1;
+    for(var i=0;i<nrows;i++){
+      var allZeroCoef = true;
+      for(var j=0;j<ncols;j++){ if(Math.abs(m[i][j])>EPS){allZeroCoef=false;break;} }
+      if(allZeroCoef && Math.abs(m[i][ncols])>EPS){
+        inconsistent = true; rankAug = rankA+1; badRow = i; break;
+      }
+    }
+
+    // ---- Render steps ----
+    if(stepsChk.checked){
+      var initHtml = '<div class="step"><div class="step-head">Starting augmented matrix [A | b]</div>'
+                   + matrixTable(parsed.rows, ncols, -1, -1) + '</div>';
+      var sHtml = '';
+      for(var s=0;s<steps.length;s++){
+        sHtml += '<div class="step"><div class="step-head">Step '+(s+1)+': '+steps[s].title+'</div>';
+        if(steps[s].ops.length){
+          for(var o=0;o<steps[s].ops.length;o++){
+            sHtml += '<span class="op-tag">'+steps[s].ops[o]+'</span>';
+          }
+        } else {
+          sHtml += '<span class="op-tag">column already reduced</span>';
+        }
+        sHtml += matrixTable(steps[s].snapshot, ncols, steps[s].pr, steps[s].pc);
+        sHtml += '</div>';
+      }
+      var echelonHtml = '<div class="step"><div class="step-head">Row echelon form (upper triangular)</div>'
+                      + matrixTable(m, ncols, -1, -1) + '</div>';
+      stepsEl.innerHTML = initHtml + sHtml + echelonHtml;
+    }
+
+    // ---- Verdict + solution ----
+    if(inconsistent){
+      verdictEl.className = 'none';
+      verdictEl.textContent = 'No solution — row '+(badRow+1)
+        +' reduces to 0 = '+fmt(m[badRow][ncols])
+        +'. rank(A)='+rankA+' ≠ rank([A|b])='+rankAug+'.';
+      return;
+    }
+
+    if(rankA < ncols){
+      // infinitely many solutions
+      var free = ncols - rankA;
+      verdictEl.className = 'inf';
+      verdictEl.textContent = 'Infinitely many solutions — rank(A)=rank([A|b])='+rankA
+        +' < '+ncols+' unknowns, leaving '+free+' free variable'+(free>1?'s':'')+'.';
+      solEl.innerHTML = buildParametric(m, ncols, pivotCols);
+      return;
+    }
+
+    // unique solution -> back-substitution
+    var x = new Array(ncols).fill(0);
+    // pivotCols aligned with rows 0..rankA-1
+    for(var p=rankA-1; p>=0; p--){
+      var c = pivotCols[p];
+      var sum = m[p][ncols];
+      for(var j=c+1; j<ncols; j++){ sum -= m[p][j]*x[j]; }
+      x[c] = sum / m[p][c];
+    }
+    verdictEl.className = 'unique';
+    verdictEl.textContent = 'Unique solution — rank(A)=rank([A|b])='+rankA+' = number of unknowns.';
+    var sol = '<div class="solbox">';
+    for(var v=0; v<ncols; v++){
+      sol += '<span class="var">x' + sub(v+1) + '</span> = ' + fmt(x[v]) + (v<ncols-1?'<br>':'');
+    }
+    sol += '</div>';
+    solEl.innerHTML = sol;
+  }
+
+  function sub(n){
+    var subs = "₀₁₂₃₄₅₆₇₈₉";
+    return String(n).split('').map(function(d){return subs[+d];}).join('');
+  }
+
+  // Build a parametric description for infinite-solution systems
+  function buildParametric(m, ncols, pivotCols){
+    var isPivot = new Array(ncols).fill(false);
+    pivotCols.forEach(function(c){isPivot[c]=true;});
+    var freeVars = [];
+    for(var c=0;c<ncols;c++){ if(!isPivot[c]) freeVars.push(c); }
+
+    var out = '<div class="solbox">';
+    out += 'Free variable' + (freeVars.length>1?'s':'') + ': ';
+    out += freeVars.map(function(c){return '<span class="var">x'+sub(c+1)+'</span>';}).join(', ');
+    out += ' (any real value)<br><br>';
+
+    // Express each pivot variable in terms of free vars using its row
+    for(var p=0;p<pivotCols.length;p++){
+      var c = pivotCols[p];
+      var piv = m[p][c];
+      var terms = fmt(m[p][ncols]/piv);
+      for(var j=c+1;j<ncols;j++){
+        var coef = m[p][j]/piv;
+        if(Math.abs(coef) < EPS) continue;
+        var sign = coef>0 ? ' − ' : ' + ';
+        terms += sign + fmt(Math.abs(coef)) + '·x' + sub(j+1);
+      }
+      out += '<span class="var">x'+sub(c+1)+'</span> = ' + terms + '<br>';
+    }
+    out += '</div>';
+    return out;
+  }
+
+  // events
+  mtxEl.addEventListener('input', solve);
+  dpEl.addEventListener('change', solve);
+  stepsChk.addEventListener('change', solve);
+  document.querySelectorAll('button.ex').forEach(function(b){
+    b.addEventListener('click', function(){
+      mtxEl.value = EXAMPLES[b.getAttribute('data-ex')];
+      solve();
+    });
+  });
+
+  // initial run
+  solve();
+})();
+</script>
+</body>
+</html>

@@ -206,4 +206,7 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
+<url><loc>https://ml3x.com/tools/condition-number-calculator</loc><lastmod>2026-07-09</lastmod></url>
+<url><loc>https://ml3x.com/tools/linear-system-solver</loc><lastmod>2026-07-09</lastmod></url>
+<url><loc>https://ml3x.com/tools/rref-gaussian-elimination-calculator</loc><lastmod>2026-07-09</lastmod></url>
 </urlset>
