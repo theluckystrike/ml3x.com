@@ -438,22 +438,28 @@
         let newRoots = [];
         for (let i=0; i<3; i++) {
           let r = roots[i].real, im = roots[i].imag;
-          let denom = 1;
+          let denomRe = 1, denomIm = 0;
           for (let j=0; j<3; j++) {
             if (i===j) continue;
             const dr = r - roots[j].real;
             const di = im - roots[j].imag;
             const mag2 = dr*dr + di*di;
             if (mag2 < 1e-20) continue;
-            denom *= (dr + di*1i);
+            // complex multiply: denom *= (dr + di*i)
+            const nRe = denomRe*dr - denomIm*di;
+            const nIm = denomRe*di + denomIm*dr;
+            denomRe = nRe; denomIm = nIm;
           }
           // evaluate polynomial at root
           const re = r, iim = im;
-          const pVal = re*re*re - 3*re*iim*iim + a*(re*re - iim*iim) + b*re + c + 
-                       (3*re*re*iim - iim*iim*iim + 2*a*re*iim + b*iim)*1i;
-          const denomC = denom;
-          const step = pVal / denomC;
-          newRoots.push({real: r - step.real, imag: im - step.imag});
+          const pRe = re*re*re - 3*re*iim*iim + a*(re*re - iim*iim) + b*re + c;
+          const pIm = 3*re*re*iim - iim*iim*iim + 2*a*re*iim + b*iim;
+          // complex divide: step = (pRe + pIm*i) / (denomRe + denomIm*i)
+          const dMag2 = denomRe*denomRe + denomIm*denomIm;
+          if (dMag2 < 1e-300) { newRoots.push({real: r, imag: im}); continue; }
+          const stepRe = (pRe*denomRe + pIm*denomIm) / dMag2;
+          const stepIm = (pIm*denomRe - pRe*denomIm) / dMag2;
+          newRoots.push({real: r - stepRe, imag: im - stepIm});
         }
         roots = newRoots;
       }

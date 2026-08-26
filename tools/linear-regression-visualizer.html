@@ -670,12 +670,16 @@ function drawQQ(residuals) {
     const a=[2.50662823884,-18.61500062529,41.39119773534,-25.44106049637];
     const b=[-8.47351093090,23.08336743743,-21.06224101826,3.13082909833];
     const c=[0.3374754822726147,0.9761690190917186,0.1607979714918209,0.0276438810333863,0.0038405729373609,0.0003951896511349,0.0000321767881768,0.0000002888167364,0.0000003960315187];
-    if(p<0.5){
-      const r=Math.sqrt(-2*Math.log(p));
-      return -(((((((c[8]*r+c[7])*r+c[6])*r+c[5])*r+c[4])*r+c[3])*r+c[2])*r+c[1])*r+c[0])/(((((((r+b[3])*r+b[2])*r+b[1])*r+b[0]));
+    const y=p-0.5;
+    if(Math.abs(y)<0.42){
+      // Central: Beasley-Springer rational in r=y^2, Horner numerator over Horner denominator
+      const r=y*y;
+      return y*(((a[3]*r+a[2])*r+a[1])*r+a[0])/((((b[3]*r+b[2])*r+b[1])*r+b[0])*r+1);
     }
-    const r=Math.sqrt(-2*Math.log(1-p));
-    return (((((((c[8]*r+c[7])*r+c[6])*r+c[5])*r+c[4])*r+c[3])*r+c[2])*r+c[1])*r+c[0])/(((((((r+b[3])*r+b[2])*r+b[1])*r+b[0]));
+    // Tails: Moro series in r=log(-log(q)), negated for the lower tail
+    const r=Math.log(-Math.log(p<0.5?p:1-p));
+    const x=(((((((c[8]*r+c[7])*r+c[6])*r+c[5])*r+c[4])*r+c[3])*r+c[2])*r+c[1])*r+c[0];
+    return p<0.5? -x : x;
   }
   // Simpler: use standard normal approximation
   function invNorm(p){
