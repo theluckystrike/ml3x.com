@@ -485,6 +485,7 @@
       }
       // gaussian elimination
       let row = 0;
+      const pivotCols = [];
       for (let col=0; col<n && row<n; col++) {
         let pivot = row;
         for (let i=row; i<n; i++) {
@@ -499,25 +500,21 @@
           const factor = mat[i][col];
           for (let j=col; j<n; j++) mat[i][j] -= factor * mat[row][j];
         }
+        pivotCols.push(col);
         row++;
       }
-      // find free variable
+      // find free variable: a column with no pivot (not an all-zero column)
       let vec = new Array(n).fill(0);
       let freeCol = -1;
       for (let j=0; j<n; j++) {
-        let allZero = true;
-        for (let i=0; i<n; i++) if (Math.abs(mat[i][j]) > 1e-12) { allZero=false; break; }
-        if (allZero) { freeCol = j; break; }
+        if (pivotCols.indexOf(j) === -1) { freeCol = j; break; }
       }
       if (freeCol === -1) freeCol = n-1; // fallback
       vec[freeCol] = 1;
-      for (let i=0; i<n; i++) {
-        if (i===freeCol) continue;
-        let sum = 0;
-        for (let j=0; j<n; j++) {
-          if (j!==freeCol) sum += mat[i][j] * vec[j];
-        }
-        vec[i] = -sum;
+      // back-substitute: row i's pivot variable is pivotCols[i], not i
+      for (let i=0; i<pivotCols.length; i++) {
+        if (pivotCols[i] === freeCol) continue;
+        vec[pivotCols[i]] = -mat[i][freeCol];
       }
       // normalize
       const norm = vecNorm(vec);
