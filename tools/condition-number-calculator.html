@@ -14,9 +14,10 @@
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "Matrix Condition Number & Norm Calculator",
+  "name": "Condition Number & Matrix Norms, Computed Live",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Any",
+  "dateModified": "2026-10-28",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
   "author": { "@type": "Person", "name": "Michael Lip", "url": "https://zovo.one" },
   "breadcrumb": {
@@ -24,7 +25,7 @@
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://ml3x.com/" },
       { "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://ml3x.com/tools/" },
-      { "@type": "ListItem", "position": 3, "name": "Matrix Condition Number & Norm Calculator", "item": "https://ml3x.com/tools/condition-number-calculator" }
+      { "@type": "ListItem", "position": 3, "name": "Condition Number & Matrix Norms, Computed Live", "item": "https://ml3x.com/tools/condition-number-calculator" }
     ]
   }
 }
@@ -102,6 +103,10 @@
 <main>
   <h1>Condition Number &amp; Matrix Norms, Computed Live</h1>
   <p class="lead">Enter a square or rectangular matrix and instantly get its 2-norm condition number (from singular values), the 1-, infinity-, and Frobenius norms, and a plain-English read on how numerically stable it is.</p>
+  <div class="page-answer" style="margin:14px 0 18px;padding:14px 18px;border-left:3px solid #58a6ff;background:rgba(88,166,255,0.07);border-radius:6px">
+    <p style="margin:0 0 6px">The condition number κ₂(A) is the ratio of the largest singular value to the smallest. This page computes it from AᵀA with the cyclic Jacobi algorithm, and also reports the 1-norm, infinity-norm and Frobenius norm. A value near 1 is well conditioned; near 10¹⁶ in double precision the matrix is numerically singular.</p>
+    <p style="margin:0;font-size:.85rem;color:#8b949e">Updated 2026-10-28</p>
+  </div>
 
   <section id="tool" aria-label="Matrix condition number calculator">
     <div class="ctrls">
