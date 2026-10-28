@@ -14,10 +14,11 @@
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "RREF & Matrix Rank Calculator",
+  "name": "Reduce Any Matrix to RREF and Read Off Its Rank",
   "url": "https://ml3x.com/tools/rref-gaussian-elimination-calculator",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Any",
+  "dateModified": "2026-10-28",
   "description": "Compute the reduced row echelon form, rank, and pivot columns of any matrix. Full Gauss-Jordan elimination shown step by step with exact fractions.",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
   "author": { "@type": "Person", "name": "Michael Lip", "url": "https://zovo.one" },
@@ -26,7 +27,7 @@
     "itemListElement": [
       { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://ml3x.com/" },
       { "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://ml3x.com/tools/" },
-      { "@type": "ListItem", "position": 3, "name": "RREF & Matrix Rank Calculator", "item": "https://ml3x.com/tools/rref-gaussian-elimination-calculator" }
+      { "@type": "ListItem", "position": 3, "name": "Reduce Any Matrix to RREF and Read Off Its Rank", "item": "https://ml3x.com/tools/rref-gaussian-elimination-calculator" }
     ]
   }
 }
@@ -119,6 +120,10 @@
 <main>
   <h1>Reduce Any Matrix to RREF and Read Off Its Rank</h1>
   <p class="intro">Paste a matrix, choose exact-fraction or decimal output, and watch full Gauss-Jordan elimination run row by row. This calculator reports the reduced row echelon form, the rank, every pivot and free column, and a basis for the null space &mdash; with each swap, scale, and elimination logged so you can check your own homework.</p>
+  <div class="page-answer" style="margin:14px 0 18px;padding:14px 18px;border-left:3px solid #58a6ff;background:rgba(88,166,255,0.07);border-radius:6px">
+    <p style="margin:0 0 6px">Paste a matrix to get its reduced row echelon form. The calculator runs Gauss-Jordan elimination in rational arithmetic, so a pivot of 1/3 stays 1/3. It reports the rank, the pivot and free columns, and a basis for the null space, and can treat the last column as an augmented right-hand side.</p>
+    <p style="margin:0;font-size:.85rem;color:#8b949e">Updated 2026-10-28</p>
+  </div>
 
   <section id="tool" aria-label="RREF calculator">
     <div class="controls">
@@ -170,7 +175,7 @@
   <h2>Related Tools</h2>
   <p class="related">
     <a href="/tools/matrix-determinant-calculator">Matrix Determinant Calculator</a>
-    <a href="/tools/matrix-inverse-calculator">Matrix Inverse Calculator</a>
+    <a href="/tools/inverse-matrix.html">Matrix Inverse Calculator</a>
     <a href="/tools/linear-system-solver">Linear System Solver</a>
   </p>
 </main>

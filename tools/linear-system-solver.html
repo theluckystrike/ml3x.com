@@ -16,11 +16,12 @@
   "@graph": [
     {
       "@type": "WebApplication",
-      "name": "Linear System Solver (Ax = b) with Steps",
+      "name": "Gaussian Elimination Solver for Ax = b",
       "url": "https://ml3x.com/tools/linear-system-solver",
       "description": "Solve systems of linear equations Ax = b via Gaussian elimination with partial pivoting, showing every row-reduction step and classifying solutions.",
       "applicationCategory": "UtilitiesApplication",
       "operatingSystem": "Any",
+      "dateModified": "2026-10-28",
       "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
       "author": {"@type": "Person", "name": "Michael Lip", "url": "https://zovo.one"}
     },
@@ -29,7 +30,7 @@
       "itemListElement": [
         {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://ml3x.com/"},
         {"@type": "ListItem", "position": 2, "name": "Tools", "item": "https://ml3x.com/tools/"},
-        {"@type": "ListItem", "position": 3, "name": "Linear System Solver (Ax = b) with Steps", "item": "https://ml3x.com/tools/linear-system-solver"}
+        {"@type": "ListItem", "position": 3, "name": "Gaussian Elimination Solver for Ax = b", "item": "https://ml3x.com/tools/linear-system-solver"}
       ]
     }
   ]
@@ -140,6 +141,10 @@
 <main>
   <h1>Gaussian Elimination Solver for Ax = b</h1>
   <p class="muted">Enter an augmented matrix <code>[A | b]</code> and watch every pivot, row swap, and elimination step. The solver classifies your system as having a <strong>unique solution</strong>, <strong>no solution</strong>, or <strong>infinitely many solutions</strong> using ranks.</p>
+  <div class="page-answer" style="margin:14px 0 18px;padding:14px 18px;border-left:3px solid #58a6ff;background:rgba(88,166,255,0.07);border-radius:6px">
+    <p style="margin:0 0 6px">Enter an augmented matrix [A|b], one equation per line. The solver runs Gaussian elimination with partial pivoting, logs every pivot, swap and elimination step, then compares rank(A) with rank([A|b]) to classify the system as consistent with a unique solution, inconsistent, or underdetermined with infinitely many solutions.</p>
+    <p style="margin:0;font-size:.85rem;color:#8b949e">Updated 2026-10-28</p>
+  </div>
 
   <section id="tool">
     <label for="mtx">Augmented matrix [A&nbsp;|&nbsp;b]</label>
@@ -187,15 +192,15 @@
   <h2>Related Tools</h2>
   <ul class="related">
     <li><a href="/tools/matrix-determinant-calculator">Matrix Determinant Calculator</a> — cofactor and LU-based determinants.</li>
-    <li><a href="/tools/matrix-inverse-calculator">Matrix Inverse Calculator</a> — invert A via Gauss–Jordan.</li>
-    <li><a href="/tools/matrix-rref-calculator">Reduced Row Echelon Form (RREF)</a> — full Gauss–Jordan reduction.</li>
+    <li><a href="/tools/inverse-matrix.html">Matrix Inverse Calculator</a> — invert A via Gauss–Jordan.</li>
+    <li><a href="/tools/rref-gaussian-elimination-calculator.html">Reduced Row Echelon Form (RREF)</a> — full Gauss–Jordan reduction.</li>
   </ul>
 </main>
 <footer>
   <div>
     <a href="/">Home</a>
     <a href="/tools/">All Tools</a>
-    <a href="/tools/matrix-inverse-calculator">Matrix Inverse</a>
+    <a href="/tools/inverse-matrix.html">Matrix Inverse</a>
   </div>
   <p>© 2026 ml3x.com · Built by <a href="https://zovo.one/lifetime?utm_source=ml3x&amp;utm_medium=footer&amp;utm_campaign=tools-linear-system-solver">Michael Lip</a></p>
 </footer>

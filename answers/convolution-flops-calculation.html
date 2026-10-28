@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How Are FLOPs Estimated for a Convolution? | ML3X</title>
+<meta name="description" content="Multiply the kernel height by the kernel width, by the input channels, by the output height and width, by the output channels, then multiply the result by two. One multiply and one add count as two FLOPs. A 3×3 kernel over 3 input channels producing 64 channels at 32×32 needs 3,538,944 FLOPs.">
+<link rel="canonical" href="https://ml3x.com/answers/convolution-flops-calculation.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How Are FLOPs Estimated for a Convolution?">
+<meta property="og:description" content="Multiply the kernel height by the kernel width, by the input channels, by the output height and width, by the output channels, then multiply the result by two. One multiply and one add count as two FLOPs. A 3×3 kernel over 3 input channels producing 64 channels at 32×32 needs 3,538,944 FLOPs.">
+<meta property="og:url" content="https://ml3x.com/answers/convolution-flops-calculation.html">
+<meta property="og:image" content="https://ml3x.com/assets/og-image.png">
+<meta property="og:site_name" content="Zovo Tools">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How Are FLOPs Estimated for a Convolution?">
+<meta name="twitter:description" content="Multiply the kernel height by the kernel width, by the input channels, by the output height and width, by the output channels, then multiply the result by two. One multiply and one add count as two FLOPs. A 3×3 kernel over 3 input channels producing 64 channels at 32×32 needs 3,538,944 FLOPs.">
+<meta name="twitter:image" content="https://ml3x.com/assets/og-image.png">
+<link rel="stylesheet" href="/assets/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "How Are FLOPs Estimated for a Convolution?",
+  "description": "Multiply the kernel height by the kernel width, by the input channels, by the output height and width, by the output channels, then multiply the result by two. One multiply and one add count as two FLOPs. A 3×3 kernel over 3 input channels producing 64 channels at 32×32 needs 3,538,944 FLOPs.",
+  "@id": "https://ml3x.com/answers/convolution-flops-calculation.html",
+  "url": "https://ml3x.com/answers/convolution-flops-calculation.html",
+  "datePublished": "2026-10-28",
+  "dateModified": "2026-10-28",
+  "author": {
+    "@type": "Person",
+    "name": "Michael Lip",
+    "url": "https://zovo.one"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "ML3X",
+    "url": "https://ml3x.com/"
+  }
+}
+</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://ml3x.com/"}, {"@type": "ListItem", "position": 2, "name": "Answers", "item": "https://ml3x.com/answers/"}, {"@type": "ListItem", "position": 3, "name": "How Are FLOPs Estimated for a Convolution?", "item": "https://ml3x.com/answers/convolution-flops-calculation.html"}]}</script>
+</head>
+<body>
+<header class="site-header">
+  <a href="/" class="site-logo">ML3X</a>
+  <nav class="site-nav">
+    <a href="/">Calculator</a>
+    <a href="/blog/">Blog</a>
+    <a href="/about.html">About</a>
+    <div class="nav-right">
+      <a href="https://zovo.one/pricing?utm_source=ml3x&amp;utm_medium=satellite&amp;utm_campaign=nav-link" class="nav-pro" target="_blank">Go Pro &#10022;</a>
+      <a href="https://zovo.one/tools?utm_source=ml3x&amp;utm_medium=nav&amp;utm_campaign=answers-convolution-flops-calculation" class="nav-zovo">Zovo Tools</a>
+    </div>
+  </nav>
+</header>
+
+<main style="max-width:720px;margin:0 auto;padding:2rem 1.5rem;">
+  <nav class="breadcrumb" aria-label="Breadcrumb" style="margin-bottom:1.5rem;font-size:0.9rem;">
+    <a href="/">Home</a> &rsaquo; <a href="/answers/">Answers</a> &rsaquo; <span>Convolution FLOPs</span>
+  </nav>
+
+  <article>
+<h1>How Are FLOPs Estimated for a Convolution?</h1>
+
+<p><strong>Multiply the kernel height by the kernel width, by the input channels, by the output height and width, by the output channels, then multiply the result by two. One multiply and one add count as two FLOPs. A 3&times;3 kernel over 3 input channels producing 64 channels at 32&times;32 needs 3,538,944 FLOPs.</strong></p>
+
+<h2>The Formula</h2>
+<pre style="background:var(--bg-secondary,#1a1a2e);padding:1rem;border-radius:8px;overflow-x:auto;"><code>FLOPs = 2 * kH * kW * C_in * out_H * out_W * C_out</code></pre>
+<p>Each output element is a dot product over a kH&times;kW patch in every input channel, so it needs kH &times; kW &times; C_in multiply-add pairs. There are out_H &times; out_W positions and C_out output channels, and each multiply-add counts as two operations.</p>
+
+<h2>Why the Factor of Two</h2>
+<p>A multiply and an add are separate floating-point operations. Convolution inner loops do both for every term, which is why peak hardware figures are usually quoted in FMA (fused multiply-add) pairs and the count doubles when it is expressed in FLOPs. The bias add is one operation per output element instead of kH &times; kW &times; C_in, so it is left out.</p>
+
+<h2>Worked Example</h2>
+<p>A convolution with a 3&times;3 kernel, 3 input channels, 64 output channels, and an output feature map of 32&times;32:</p>
+<pre style="background:var(--bg-secondary,#1a1a2e);padding:1rem;border-radius:8px;overflow-x:auto;"><code>2 * 3 * 3 * 3 * 32 * 32 * 64 = 3,538,944 FLOPs
+parameters: 3 * 3 * 3 * 64 + 64 = 1,792</code></pre>
+<p>The parameter count uses the same kernel and channel terms plus one bias per output channel: 1,728 weights and 64 biases. FLOPs scale with the output area as well, so the same layer on a 64&times;64 output map costs four times as much for the same number of weights.</p>
+
+<h2>Getting the Output Size First</h2>
+<p>The formula needs out_H and out_W. For a standard convolution the calculator uses:</p>
+<pre style="background:var(--bg-secondary,#1a1a2e);padding:1rem;border-radius:8px;overflow-x:auto;"><code>out = floor((in + 2 * pad - dilation * (kernel - 1) - 1) / stride) + 1</code></pre>
+<p>Stride and padding change the output area, and the output area is multiplied into the FLOP count, so a stride of 2 cuts the cost to roughly a quarter of the same layer at stride 1.</p>
+
+<h2>What the Number Leaves Out</h2>
+<ul>
+  <li>Activation functions, pooling, normalisation and the bias add.</li>
+  <li>Memory traffic. Moving weights and activations often costs more wall-clock time than the arithmetic, which is why measured throughput stays below peak FLOPs.</li>
+  <li>Kernel launch and framework overhead, which dominate on small layers.</li>
+</ul>
+<p>Treat the result as an estimate for comparing layer shapes and model sizes, not as a runtime prediction. The <a href="/tools/convolution-output-size-calculator/">convolution output size calculator</a> prints FLOPs, parameter count and receptive field for each layer and sums them across a stack.</p>
+
+<section class="related-links">
+  <h2>Related Questions</h2>
+  <div class="related-grid">
+    <a href="/tools/convolution-output-size-calculator/" class="related-card">Convolution output size calculator</a>
+    <a href="/tools/activation-function-explorer/" class="related-card">Activation function explorer</a>
+    <a href="/answers/cosine-similarity-vector-vs-text-mode.html" class="related-card">What is the difference between vector mode and text mode?</a>
+    <a href="/research/matrix-numpy-benchmark.html" class="related-card">How does matrix size affect NumPy performance?</a>
+  </div>
+</section>
+
+<div class="last-updated"><time datetime="2026-10-28">Last updated: 2026-10-28</time></div>
+  </article>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-inner">
+        <div class="footer-brand">Zovo Tools</div>
+        <div class="footer-tagline">Free developer tools by a solo dev. No tracking.</div>
+        <a href="https://zovo.one/pricing?utm_source=ml3x&amp;utm_medium=satellite&amp;utm_campaign=footer-link" class="footer-cta">Zovo Lifetime — $99 once, free forever &rarr;</a>
+        <div class="footer-copy">&copy; 2026 <a href="https://zovo.one/lifetime?utm_source=ml3x&amp;utm_medium=footer&amp;utm_campaign=answers-convolution-flops-calculation">Zovo</a> &middot; 47/500 founding spots</div>
+    </div>
+</footer>
+
+<nav class="zovo-network" aria-label="Zovo Tools Network">
+    <div class="zovo-network-inner">
+        <h3 class="zovo-network-title">Explore More Tools</h3>
+        <div class="zovo-network-links">
+            <a href="https://abwex.com">ABWex — A/B Testing</a>
+            <a href="https://b2berp.com">B2BERP — Business Tools</a>
+            <a href="https://bugbountyreality.com">BugBountyReality — Security</a>
+            <a href="https://claudflow.com">ClaudFlow — Workflows</a>
+            <a href="https://claudkit.com">ClaudKit — API Tools</a>
+            <a href="https://dismissticket.com">DismissTicket — Support</a>
+            <a href="https://enhio.com">Enhio — Text Tools</a>
+            <a href="https://epochpilot.com">EpochPilot — Timestamps</a>
+            <a href="https://gen8x.com">Gen8X — Color Tools</a>
+            <a href="https://gpt0x.com">GPT0X — AI Models</a>
+            <a href="https://heytensor.com">HeyTensor — ML Tools</a>
+            <a href="https://ingredientcalculator.com">IngredientCalc — Recipes</a>
+            <a href="https://invokebot.com">InvokeBot — Webhooks</a>
+            <a href="https://kappafy.com">Kappafy — JSON</a>
+            <a href="https://kappakit.com">KappaKit — Dev Toolkit</a>
+            <a href="https://kickllm.com">KickLLM — LLM Costs</a>
+            <a href="https://krzen.com">Krzen — Image Tools</a>
+            <a href="https://lochbot.com">LochBot — Security</a>
+            <a href="https://lockml.com">LockML — ML Security</a>
+            <a href="https://ml0x.com?utm_source=ml3x&amp;utm_medium=nav&amp;utm_campaign=answers-convolution-flops-calculation">ML0X — ML Basics</a>
+            <a href="https://pictureeditor.net">PictureEditor — Image Editing</a>
+            <a href="https://recipetool.net">RecipeTool — Cooking</a>
+            <a href="https://viryd.com">Viryd — Dev Tools</a>
+            <a href="https://tg.zovo.one/">Tiny Telegram Tools — Telegram Bots</a>
+        </div>
+    </div>
+</nav>
+
+<div class="pow-strip">
+  <div class="pow-strip-inner">
+    <span class="pow-label">By the same builder:</span>
+    <a href="https://github.com/theluckystrike" rel="nofollow">GitHub — theluckystrike</a>
+    <a href="https://www.belikenative.com" rel="nofollow">BeLikeNative — Grammar AI</a>
+    <a href="https://earlythunder.com" rel="nofollow">EarlyThunder — Dev Blog</a>
+    <a href="https://bugbountyreality.com" rel="nofollow">Bug Bounty Reality</a>
+    <a href="https://zovo.one/lifetime?utm_source=ml3x&amp;utm_medium=inline&amp;utm_campaign=answers-convolution-flops-calculation" rel="nofollow">Zovo — AI Dev Tools</a>
+  </div>
+</div>
+
+<section style="margin-top:48px;padding:24px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:12px;">
+<h2 style="font-size:18px;margin-bottom:16px;">Related Tools</h2>
+<ul style="list-style:none;padding:0;display:grid;gap:8px;">
+<li><a href="/guides/matrix-multiplication-explained.html" style="color:#3b82f6;text-decoration:none;">Matrix Multiplication Explained — Step-by-Step Calculator & Guide</a></li>
+<li><a href="/tools/matrix-multiplication.html" style="color:#3b82f6;text-decoration:none;">Matrix Multiplication Calculator — Step-by-Step</a></li>
+<li><a href="/answers/2x2-matrix-inverse.html" style="color:#3b82f6;text-decoration:none;">How Do I Find the Inverse of a 2x2 Matrix?</a></li>
+<li><a href="/answers/matrix-operations-reference.html" style="color:#3b82f6;text-decoration:none;">Matrix Operations Reference — Interactive Cheatsheet with Visual Examples</a></li>
+</ul>
+</section>
+
+</body>
+</html>
